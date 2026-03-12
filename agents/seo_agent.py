@@ -1,9 +1,14 @@
+import os
+import json
 from openai import OpenAI
 from pydantic import BaseModel
 from typing import List, Dict
-import json
+from dotenv import load_dotenv
 
-from config.system_config import OPENAI_API_KEY, OPENAI_MODEL_SEO
+load_dotenv()
+
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+OPENAI_MODEL_SEO = os.getenv("OPENAI_MODEL_SEO")
 
 client = OpenAI(api_key=OPENAI_API_KEY)
 

@@ -1,6 +1,12 @@
+import os
 from openai import OpenAI
 from pydantic import BaseModel
-from config.system_config import OPENAI_API_KEY, OPENAI_MODEL_SCRIPT
+from dotenv import load_dotenv
+
+load_dotenv()
+
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+OPENAI_MODEL_SCRIPT = os.getenv("OPENAI_MODEL_SCRIPT")
 
 client = OpenAI(api_key=OPENAI_API_KEY)
 
