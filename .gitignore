@@ -108,3 +108,5 @@ cython_debug/
 # Cursor
 .cursorignore
 .cursorindexingignore
+
+.env
