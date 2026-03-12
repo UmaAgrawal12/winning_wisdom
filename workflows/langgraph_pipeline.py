@@ -1,145 +1,176 @@
 from typing import TypedDict, List
 import random
+import json
+import logging
 
 from langchain_core.prompts import ChatPromptTemplate
 from langgraph.graph import StateGraph, END
 
-from llm_client import topic_llm, script_llm, seo_llm
+from llm_client import topic_llm, script_llm
+from agents.seo_agent import generate_seo_metadata, SEOResult
+from agents.script_agent import generate_script
+from agents.topic_agent import generate_topics
 
 
 class PipelineState(TypedDict, total=False):
     topics: List[str]
     chosen_topic: str
     script: str
-    seo_json: str
+    seo_result: SEOResult
+    quality_report: str
+    quality_passed: bool
 
 
 def topic_node(state: PipelineState) -> PipelineState:
-    llm = topic_llm()
-    prompt = ChatPromptTemplate.from_template(
-        """
-You are a content strategist for a motivational short-form video brand called "Winning Wisdom".
-
-- Niche: discipline, consistency, mindset, self-improvement, productivity.
-- Platforms: YouTube Shorts, TikTok, Instagram Reels, Facebook Reels.
-- Output: 10 short topic ideas.
-- Style: 5–10 words each, punchy, curiosity-driven, no clickbait.
-
-Theme to focus on: {theme}
-
-Return only a numbered list of topic titles.
-"""
+    """
+    Generate topics using SerpAPI (REQUIRED).
+    This function uses generate_topics() from topic_agent.py which fetches
+    trending topics directly from Google search via SerpAPI.
+    """
+    logging.info("topic_node() called - using SerpAPI via generate_topics()")
+    
+    # Use SerpAPI-based topic generation (REQUIRED)
+    # Focus on Stoic philosophy and wisdom-based content
+    # n=None means return all available trending topics (flexible count)
+    topics_result = generate_topics(
+        theme="discipline and self-improvement",
+        n=None,  # Get all available trending topics (flexible)
+        audience="general_self_improver",
     )
-    chain = prompt | llm
-    resp = chain.invoke({"theme": "discipline and self-improvement"})
-    raw_text = resp.content.strip()
-    lines = [line.strip() for line in raw_text.split("\n") if line.strip()]
-    topics: List[str] = []
-    for line in lines:
-        cleaned = line
-        if "." in line[:3] or ")" in line[:3]:
-            cleaned = line.split(".", 1)[-1].split(")", 1)[-1].strip()
-        topics.append(cleaned)
-
-    # Pick a random topic from the generated list for more variety
+    
+    topics = topics_result.topics
     chosen = random.choice(topics) if topics else ""
+    
+    logging.info("topic_node() complete - generated %d topics, chosen: %r", len(topics), chosen)
 
     return {"topics": topics, "chosen_topic": chosen}
 
 
 def script_node(state: PipelineState) -> PipelineState:
+    """
+    Generate a production-ready short-form script using the dedicated script agent.
+    """
+    script = generate_script(topic=state["chosen_topic"], audience="general_self_improver")
+    return {"script": script.text.strip()}
+
+
+def script_quality_node(state: PipelineState) -> PipelineState:
+    """
+    Validate the generated script before it moves further down the pipeline.
+
+    Checks:
+    - Script length (aiming for ~30–45 seconds spoken, roughly 110–220 words).
+    - Tone and clarity (direct, practical, motivational, no fluff).
+    - Platform suitability (short-form vertical video, strong opening, short paragraphs,
+      no platform name mentions, no like/subscribe/follow CTAs).
+    - Engagement potential (clear hook, concrete insight, specific takeaway).
+
+    The node returns:
+    - quality_report: a human-readable review with scores.
+    - quality_passed: True if the script meets minimum thresholds, False otherwise.
+    """
     llm = script_llm()
     prompt = ChatPromptTemplate.from_template(
         """
-You are a senior short-form script writer for a motivational brand called "Winning Wisdom".
+You are a senior editorial lead for "Winning Wisdom," a motivational short-form video brand.
+Your job is to strictly evaluate whether a script is ready for production.
 
-Write a script for a 30–45 second vertical video based on the topic:
-"{topic}"
+SCRIPT TO REVIEW:
+\"\"\"
+{script}
+\"\"\"
 
-Constraints:
-- Structure: Hook → Insight → Example → Takeaway.
-- Tone: direct, practical, motivational, no fluff.
-- Audience: people who struggle with discipline and consistency.
-- Format: Use short paragraphs and line breaks for natural pacing.
-- Do NOT mention any platform (YouTube, TikTok, etc.).
-- Do NOT ask people to like/subscribe/follow.
+Evaluate this script on the following dimensions, each scored 1–10:
+1) Length
+   - Target: 30–45 seconds spoken (~110–220 words).
+   - Penalize if clearly too short or too long for a short-form vertical video.
+2) ToneClarity
+   - Target: direct, practical, motivational, no fluff.
+   - Plain language. No complicated jargon. Feels like it's talking to one person.
+3) PlatformFit
+   - Target: short-form vertical video (YouTube Shorts, TikTok, Reels style).
+   - Strong opening line (hook), short paragraphs/line breaks, no mention of any platform
+     by name, no "like/subscribe/follow" style CTAs.
+4) Engagement
+   - Target: a specific, relatable hook, a clear insight, and a concrete takeaway.
+   - Viewer should feel "this is about me" and know what to do differently after.
 
-Return only the script text.
+SCORING RULES:
+- Score each dimension from 1–10 with a one-line explanation.
+- OVERALL should be PASS only if:
+  * All four dimensions are at least 7/10, AND
+  * The script clearly fits a 30–45 second short video.
+- Otherwise, OVERALL must be FAIL.
+
+OUTPUT FORMAT (must follow this EXACT structure, no extra lines before or after):
+Length: <score>/10 - <short reason>
+ToneClarity: <score>/10 - <short reason>
+PlatformFit: <score>/10 - <short reason>
+Engagement: <score>/10 - <short reason>
+OVERALL: PASS   (or OVERALL: FAIL)
+
+Do not add any additional commentary outside this format.
 """
     )
     chain = prompt | llm
-    resp = chain.invoke({"topic": state["chosen_topic"]})
-    return {"script": resp.content.strip()}
+    resp = chain.invoke({"script": state["script"]})
+    report = resp.content.strip()
+    passed = "OVERALL: PASS" in report
+    return {"quality_report": report, "quality_passed": passed}
 
 
 def seo_node(state: PipelineState) -> PipelineState:
-    llm = seo_llm()
-    prompt = ChatPromptTemplate.from_template(
-        """
-You are an expert social media copywriter for a motivational brand "Winning Wisdom".
-
-Here is the script:
-
-\"\"\"{script_text}\"\"\"
-
-1) Create an engaging video TITLE.
-2) Write a short DESCRIPTION or CAPTION (1–3 sentences).
-3) Suggest 8–12 relevant HASHTAGS (without the # symbol, just words).
-
-Do this separately for each platform:
-- YouTube
-- Instagram
-- TikTok
-- Facebook
-
-Return the result strictly as JSON in this format (keys and structure MUST match):
-
-{{
-  "youtube": {{
-    "title": "...",
-    "description": "...",
-    "hashtags": ["...", "..."]
-  }},
-  "instagram": {{
-    "title": "...",
-    "description": "...",
-    "hashtags": ["...", "..."]
-  }},
-  "tiktok": {{
-    "title": "...",
-    "description": "...",
-    "hashtags": ["...", "..."]
-  }},
-  "facebook": {{
-    "title": "...",
-    "description": "...",
-    "hashtags": ["...", "..."]
-  }}
-}}
-"""
+    seo_result = generate_seo_metadata(
+        topic=state["chosen_topic"],
+        script_text=state["script"],
+        audience="general_self_improver",
     )
-    chain = prompt | llm
-    resp = chain.invoke({"script_text": state["script"]})
-    return {"seo_json": resp.content.strip()}
+    return {"seo_result": seo_result}
 
 
 def build_text_only_graph():
     graph = StateGraph(PipelineState)
     graph.add_node("topics", topic_node)
     graph.add_node("script", script_node)
+    graph.add_node("script_quality", script_quality_node)
     graph.add_node("seo", seo_node)
 
     graph.set_entry_point("topics")
     graph.add_edge("topics", "script")
-    graph.add_edge("script", "seo")
+    graph.add_edge("script", "script_quality")
+    graph.add_edge("script_quality", "seo")
     graph.add_edge("seo", END)
 
     return graph.compile()
 
 
+def print_seo_output(seo: SEOResult):
+    platforms = {
+        "youtube": {
+            "title": seo.youtube.title,
+            "description": seo.youtube.description,
+            "hashtags": seo.youtube.hashtags,
+        },
+        "instagram": {
+            "caption": seo.instagram.description,
+            "hashtags": seo.instagram.hashtags,
+        },
+        "tiktok": {
+            "caption": seo.tiktok.description,
+            "hashtags": seo.tiktok.hashtags,
+        },
+        "facebook": {
+            "caption": seo.facebook.description,
+            "hashtags": seo.facebook.hashtags,
+        },
+    }
+    print(json.dumps(platforms, indent=2))
+
+
 def run_langgraph_pipeline():
     app = build_text_only_graph()
     final_state = app.invoke({})
+
     print("=== Topics ===")
     for i, t in enumerate(final_state["topics"], start=1):
         print(f"{i}. {t}")
@@ -151,6 +182,4 @@ def run_langgraph_pipeline():
     print(final_state["script"])
 
     print("\n=== SEO JSON ===")
-    print(final_state["seo_json"])
-
-
+    print_seo_output(final_state["seo_result"])

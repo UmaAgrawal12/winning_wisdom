@@ -48,9 +48,8 @@ def generate_seo_metadata(
 
     Notes by platform:
     - YouTube: real video title + description + hashtags (separate field).
-    - Instagram Reels, TikTok, Facebook Reels: single caption field only;
-      `description` includes the full caption WITH hashtags appended,
-      and `title` must be an empty string "".
+    - Instagram Reels, TikTok, Facebook Reels: caption (description) is kept clean,
+      hashtags are stored separately in the hashtags field only — NOT appended to caption.
     """
 
     hashtag_context = AUDIENCE_HASHTAG_CONTEXT.get(
@@ -115,7 +114,7 @@ DESCRIPTION / CAPTION:
     Line 1 (Hook): First line must stop the scroll. Bold claim, direct callout, or painful truth.
                    Instagram shows only the first ~125 characters before "more" — make it count.
     Lines 2–3 (Body): 1–2 lines that deepen the hook or tease the insight.
-    Do NOT add hashtags here — they will be appended from the hashtags field.
+    Do NOT include any hashtags in the description — they belong in the hashtags field only.
 - Tone: emotional resonance first, insight second. Instagram rewards saves and shares.
 - Avoid: generic phrases like "Swipe to learn more," "double tap if you agree," "drop a comment."
 
@@ -128,7 +127,7 @@ DESCRIPTION / CAPTION:
 - Line 1: The most direct, provocative version of the video's core truth.
 - Lines 2–3 (optional): Reinforce with a short follow-up or contrasting line.
 - TikTok skews younger and more direct — cut anything that sounds like it's trying too hard.
-- Do NOT add hashtags here — they will be appended from the hashtags field.
+- Do NOT include any hashtags in the description — they belong in the hashtags field only.
 
 ── FACEBOOK REELS ──
 TITLE: must be "" (empty string).
@@ -138,7 +137,7 @@ DESCRIPTION / CAPTION:
 - Facebook audience skews slightly older and prefers slightly more context.
 - 2–4 lines. Can be a tiny bit warmer and more conversational than TikTok.
 - Still lead with a strong first line — Facebook autoplay means captions compete for attention too.
-- Do NOT add hashtags here — they will be appended from the hashtags field.
+- Do NOT include any hashtags in the description — they belong in the hashtags field only.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 HASHTAG RULES (apply to all platforms)
@@ -159,7 +158,7 @@ QUALITY CHECK — before finalizing, verify:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ✓ YouTube title does NOT repeat verbatim in any caption.
 ✓ Each platform's caption feels native to that platform's voice and audience behavior.
-✓ No caption contains hashtag symbols (# chars) — those are in the hashtags array only.
+✓ No caption (description field) contains any hashtags — hashtags are ONLY in the hashtags array.
 ✓ Instagram caption's first 125 characters are the strongest possible hook.
 ✓ No generic filler: "check this out," "so true," "game changer," "life-changing."
 
@@ -220,7 +219,8 @@ Return ONLY valid JSON. No preamble, no explanation, no markdown fences.
         "hashtags": [h.lstrip("#").strip() for h in yt.get("hashtags", []) if isinstance(h, str)],
     }
 
-    # For IG / TikTok / FB: force title="", build full caption with hashtags appended
+    # For IG / TikTok / FB: force title="", keep caption and hashtags SEPARATE
+    # Hashtags are NOT appended to the caption/description text
     for platform in ["instagram", "tiktok", "facebook"]:
         block = parsed.get(platform, {})
         base_description = block.get("description", "") or ""
@@ -232,15 +232,9 @@ Return ONLY valid JSON. No preamble, no explanation, no markdown fences.
             raw_tags = []
         hashtags = [h.lstrip("#").strip() for h in raw_tags if isinstance(h, str)]
 
-        hashtag_text = ""
-        if hashtags:
-            hashtag_text = "\n\n" + " ".join(f"#{h}" for h in hashtags)
-
-        full_caption = (base_description.rstrip() + hashtag_text).strip()
-
         parsed[platform] = {
             "title": "",
-            "description": full_caption,
+            "description": base_description.strip(),
             "hashtags": hashtags,
         }
 
