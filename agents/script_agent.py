@@ -1,246 +1,389 @@
-from openai import OpenAI
+import os
+import json
+import random
+from datetime import datetime
+from pathlib import Path
+from typing import Optional
 from pydantic import BaseModel
-from config.system_config import OPENAI_API_KEY, OPENAI_MODEL_SCRIPT
+from openai import OpenAI
+from dotenv import load_dotenv
+from config.system_config import OPENAI_API_KEY, OPENAI_MODEL_TOPIC
+from .topic_agent import fetch_marcus_aurelius_quote
+
+load_dotenv()
 
 client = OpenAI(api_key=OPENAI_API_KEY)
 
+SCRIPTS_FILE = Path("data/generated_scripts.json")
 
-class Script(BaseModel):
-    topic: str
-    text: str
-
-
-# Audience profiles — inner monologue, scene contexts, language register
-AUDIENCE_PROFILES = {
-    "young_professional": {
-        "description": "22–32 year olds, ambitious, early career, often feel behind their peers",
-        "pains": "imposter syndrome, burnout, comparing themselves to peers, fear of wasting their 20s",
-        "inner_voice": "I work hard but nothing moves. Everyone else seems further ahead. Am I doing something wrong?",
-        "scene_hooks": [
-            "If you're in your 20s and you feel like you're falling behind...",
-            "If you've ever sat at your desk at midnight wondering if any of this is even working...",
-            "If you're giving everything you have and still feel like it's not enough...",
-            "Picture this. You're doing all the right things. Working late. Saying yes to everything. And yet...",
-        ],
-        "language": "Direct, slightly worn-out but still hungry. Respects honesty over hype. No corporate clichés.",
-    },
-    "student": {
-        "description": "17–24 year olds in college or figuring out early adulthood",
-        "pains": "procrastination, phone addiction, not knowing what they want, pressure to have it all figured out",
-        "inner_voice": "I know what I should do. I just can't make myself do it. I waste hours and then hate myself for it.",
-        "scene_hooks": [
-            "If you've ever opened your phone for one minute and looked up two hours later...",
-            "Remember the last time you had a deadline, and you still couldn't start?",
-            "If you're in college and you feel like everyone else has their life figured out except you...",
-            "Think about the last Sunday you told yourself, 'This week is going to be different.'",
-        ],
-        "language": "Casual, self-aware, blunt but not harsh. Talks like a slightly older friend, not a life coach.",
-    },
-    "entrepreneur": {
-        "description": "25–40 year olds building a business or side hustle, dealing with slow progress and doubt",
-        "pains": "inconsistency, self-doubt, slow results, isolation, second-guessing every decision",
-        "inner_voice": "Maybe I'm not cut out for this. Everyone around me seems to be winning. What am I missing?",
-        "scene_hooks": [
-            "If you've been building something for months and you're starting to wonder if it's worth it...",
-            "There's a specific feeling. When you're doing the work every day, and nothing seems to be moving.",
-            "If you've ever looked at someone else's success and wondered what they know that you don't...",
-            "Picture the version of you six months ago, full of energy, ready to go. Now compare that to right now.",
-        ],
-        "language": "Grounded, zero fluff, respects their intelligence. Talks like a mentor who has been there.",
-    },
-    "general_self_improver": {
-        "description": "18–40 year olds who want to level up but keep falling back into old patterns",
-        "pains": "starting strong and quitting, motivation vs discipline gap, all-or-nothing thinking",
-        "inner_voice": "I start things. I don't finish things. Every Monday I reset. Every Friday I'm back to zero.",
-        "scene_hooks": [
-            "If you've ever started something with everything you had, and then quietly stopped...",
-            "Think about the last habit you tried to build. How long did it last?",
-            "If you've told yourself 'I'll start Monday' more times than you can count...",
-            "There's a version of you that wakes up early, stays consistent, and actually follows through. You've seen glimpses of that person.",
-        ],
-        "language": "Warm but real. Validates the struggle, then challenges. Like a friend who cares enough to be honest.",
-    },
+# ─────────────────────────────────────────────────────────────────────
+# PERSONA PROFILE — "Arthur"
+# ─────────────────────────────────────────────────────────────────────
+PERSONA = {
+    "name": "Arthur",
+    "age": "78",
+    "backstory": (
+        "Arthur is a retired schoolteacher and widower who raised three children. "
+        "He spent 40 years watching people grow, struggle, and find their way. "
+        "He has seen enough of life to know what actually matters — and what doesn't. "
+        "He discovered Marcus Aurelius in his 50s and says it changed how he lived his last 25 years."
+    ),
+    "voice": (
+        "Warm, unhurried, and plain-spoken. He talks the way a grandfather does at the dinner table — "
+        "not lecturing, just sharing something he genuinely believes. "
+        "He never sounds like a motivational speaker. He sounds like someone who has lived it. "
+        "His sentences are short — 5 to 8 words each. "
+        "He pauses between thoughts. Each sentence lands on its own. "
+        "He sometimes admits when something was hard for him personally. "
+        "He does not use modern slang, buzzwords, or self-help jargon. "
+        "He never summarises or concludes. He just stops when the thought is complete."
+    ),
+    "banned_phrases": [
+        "level up", "hustle", "grind", "game changer", "crush it",
+        "unleash", "transform", "unlock your potential", "hack",
+        "optimize", "mindset shift", "you got this", "let's go",
+        "drop a comment", "smash that like button",
+        "we often", "it is important", "in today's world",
+        "in conclusion", "as we can see", "it's a reminder that",
+        "this teaches us", "this quote", "the lesson here",
+        "I remember when", "carrying on", "opening a new page",
+        "a bit easier", "moving forward",
+    ],
 }
 
+# ─────────────────────────────────────────────────────────────────────
+# ENTRY ANGLE ROTATION
+# Different emotional starting points — keeps each script feeling fresh
+# ─────────────────────────────────────────────────────────────────────
+ENTRY_ANGLES = [
+    "Start with a quiet observation about something most people do without realising it.",
+    "Start with a specific type of person Arthur has watched over 40 years — what they did wrong.",
+    "Start with a simple contrast between what people chase and what actually holds.",
+    "Start with something Arthur got wrong himself for a long time before he understood.",
+    "Start with the feeling of being stuck — something the viewer has felt this week but not named.",
+    "Start with a hard truth most people know but won't say to themselves.",
+    "Start with what it looks like 20 years later when someone ignores this wisdom.",
+    "Start with a small, specific moment — the kind that seems ordinary but means everything.",
+]
 
-def generate_script(topic: str, audience: str = "general_self_improver") -> Script:
+
+# ─────────────────────────────────────────────────────────────────────
+# OUTPUT MODELS
+# ─────────────────────────────────────────────────────────────────────
+class SpokenScript(BaseModel):
+    full_script: str
+
+
+class OnScreenText(BaseModel):
+    quote_display: str
+    caption: str
+    highlight_words: list[str]
+
+
+class DailyWisdomScript(BaseModel):
+    quote: str
+    source: str
+    spoken_script: SpokenScript
+    on_screen_text: OnScreenText
+    generated_at: str
+
+
+# ─────────────────────────────────────────────────────────────────────
+# SCRIPT GENERATOR
+# ─────────────────────────────────────────────────────────────────────
+def generate_daily_wisdom_script(
+    quote_override: Optional[str] = None,
+    source_override: Optional[str] = None,
+) -> DailyWisdomScript:
     """
-    Generate a 35-50 second avatar-ready spoken script.
-    Structure: Scene-Setting Hook -> Pain Mirror -> Reframe/Insight -> Concrete Example -> Identity Shift Takeaway
+    Generate a full daily wisdom script for the Arthur persona.
+
+    Fetches a fresh Marcus Aurelius quote, then uses OpenAI to generate
+    a single continuous spoken script and on-screen text.
+
+    Args:
+        quote_override: Optionally pass a specific quote
+        source_override: Source label for the overridden quote
+
+    Returns:
+        DailyWisdomScript
     """
+    # 1. Get the quote
+    if quote_override:
+        quote_data = {
+            "quote": quote_override,
+            "source": source_override or "Marcus Aurelius — Meditations",
+            "fetched_at": datetime.now().isoformat(),
+        }
+    else:
+        quote_data = fetch_marcus_aurelius_quote()
 
-    profile = AUDIENCE_PROFILES.get(audience, AUDIENCE_PROFILES["general_self_improver"])
+    quote = quote_data["quote"]
+    source = quote_data["source"]
 
-    # Build example hooks as a formatted list for the prompt
-    hook_examples = "\n".join(f'  * "{h}"' for h in profile["scene_hooks"])
+    # 2. Pick entry angle
+    entry_angle = random.choice(ENTRY_ANGLES)
 
+    # 3. Build prompt
     prompt = f"""
-You are the lead scriptwriter for "Winning Wisdom," a motivational short-form video brand.
-Your scripts are delivered by an AI avatar on YouTube Shorts, Instagram Reels, TikTok, and Facebook Reels.
-
-Your single most important job: write a script that makes the viewer think, in the first 4 seconds,
-"This is about ME. I need to hear this."
+You are writing a short daily wisdom video script for an elderly gentleman named {PERSONA["name"]}, age {PERSONA["age"]}.
 
 =============================
-AUDIENCE
+WHO ARTHUR IS
 =============================
-Who they are: {profile["description"]}
-What hurts them: {profile["pains"]}
-What is playing in their head right now: "{profile["inner_voice"]}"
-How they speak and what they respond to: {profile["language"]}
+{PERSONA["backstory"]}
 
-=============================
-TOPIC
-=============================
-{topic}
+HOW HE SPEAKS:
+{PERSONA["voice"]}
+
+BANNED — never use these words or phrases:
+{", ".join(PERSONA["banned_phrases"])}
 
 =============================
-SCRIPT STRUCTURE — follow this exactly
+TODAY'S QUOTE
 =============================
-
--- SECTION 1: THE HOOK (first 4-5 seconds, 2-3 lines) --
-
-The hook must place the viewer INSIDE a scene or situation they have actually lived.
-Not a concept. Not a quote. A moment they recognize immediately.
-
-Use a SCENE-SETTING or DIRECT-ADDRESS opening. Examples for this audience:
-{hook_examples}
-
-The hook formula:
-  [Specific situation the viewer has been in] + [the exact feeling they had in that moment]
-
-GOOD examples:
-  "If you've ever set an alarm for 5am... and still woke up at 8... you already know what I'm about to say."
-  "There's a moment most people have. Usually late at night. Where you ask yourself — what am I actually doing?"
-  "Picture this. You write out the whole plan. You feel ready. And then... you don't start."
-
-BAD examples — NEVER do these:
-  "Consistency is really important for success."
-  "Today I want to talk about why talent isn't everything."
-  "A lot of people struggle with discipline."
-
-Rules:
-- Open with "If you...", "Think about...", "Picture this.", "There's a moment...", or a "You" address.
-- Max 3 lines. The first line must create instant recognition.
-- Do NOT open with "I". Do NOT open with the topic name directly.
-- No generic observations. Open with a scene or a feeling.
-
--- SECTION 2: PAIN MIRROR (3-4 lines) --
-
-Describe what the viewer already feels, in their own language. This is not advice. It is a mirror.
-Make them feel completely understood before you offer anything.
-
-Use specifics: a time of day, a physical detail, a thought they've actually had.
-
-NOT this: "Many people struggle to stay consistent."
-YES this: "You start the week strong. By Wednesday you're already negotiating. By Friday you've reset again."
-
-Do not give solutions here. Just reflect their reality back at them.
-
--- SECTION 3: THE REFRAME (3-5 lines) --
-
-Shift how they see the problem. One quiet insight. Not a lecture.
-It should feel like something clicked, not like a lesson was given.
-
-Ways to do this:
-  - Rename the problem: "It's not laziness. It's fear dressed up as laziness."
-  - Reveal the hidden mechanism: "Every time you quit, your brain files that away. And it pulls that file out the next time you try."
-  - Challenge the belief they're holding: "You think you need more motivation. But motivation is actually the last thing you need."
-
-One strong reframe beats three weak ones. Keep it simple.
-
--- SECTION 4: THE CONCRETE SCENE (3-5 lines) --
-
-Make the insight real. Give the viewer a scene they can picture.
-A specific person. A specific action. A specific moment. Second person works best here.
-
-GOOD: "Think about someone who trains every single day. Not when they feel like it. Every day.
-      They don't wait to feel ready. They don't negotiate.
-      They just put their shoes on. That is the entire system."
-
-BAD: "Successful people stay consistent and build good habits over time."
-
--- SECTION 5: THE IDENTITY SHIFT TAKEAWAY (2-4 lines) --
-
-End by changing WHO they believe they are, not just what they should do.
-Identity drives behavior. Give them a new self-image to step into.
-
-GOOD: "You are not someone who lacks discipline.
-      You are someone who hasn't decided yet.
-      Decide. And act like it. Starting with one thing. Tonight."
-
-BAD: "So stay consistent and keep working hard. You've got this."
-BAD: "Remember, every small step matters on your journey."
-
-The last line should have weight. Something they think about after the video ends.
+"{quote}"
+— Marcus Aurelius, Meditations
 
 =============================
-AI AVATAR DELIVERY — CRITICAL RULES
+YOUR TASK
 =============================
-This script is spoken aloud by an AI avatar. Write for the EAR, not the eye.
-Every punctuation mark you use is a delivery instruction to the avatar.
+Write a 30–60 second spoken script for Arthur.
 
-LINE LENGTH:
-- One thought per line. Two ideas in one line = split it into two lines.
-- Short lines (4-8 words) = punchy, fast. Use for hooks and payoff lines.
-- Medium lines (9-14 words) = normal pace. Use for explanation and story.
-- Hard limit: no line longer than 15 words. The avatar must be able to say it in one breath.
+ENTRY ANGLE — how to open this script:
+{entry_angle}
 
-PUNCTUATION AS PACING:
-- Period (.)     = full stop. Avatar pauses. Lets the line land.
-- Comma (,)      = micro-pause. Keeps rhythm, connects related thoughts.
-- Ellipsis (...)  = slow down, breathe. Use before a reveal or a heavy truth.
-- Em dash (--)    = a beat, then pivot. Use for contrast or a surprise turn.
-- Question mark  = rising tone. Pulls the viewer in.
-- AVOID: semicolons, colons, parentheses. Avatars do not handle these well.
+RULES FOR THE SPOKEN SCRIPT:
+- No hook. No intro. Arthur starts talking immediately — mid-thought, like you walked in on a conversation.
+- Do NOT introduce the quote formally. Arthur weaves the wisdom into his own words naturally.
+  He might say the quote almost in passing, or paraphrase it in his own language first.
+  He does NOT say "Marcus Aurelius wrote..." or "Today's quote is..." or "He said..."
+- Each sentence is 5–8 words. Written on its own line.
+- Short pause between thoughts — shown by a blank line between groups.
+- No conclusion. No summary. No soft ending.
+- Write 8–14 lines total (enough for 30–60 seconds of natural speech).
 
-LANGUAGE RULES:
-- Always use contractions: "you're" not "you are", "it's" not "it is", "didn't" not "did not."
-- Always use second person: "you", "your". This is a personal conversation, not a speech.
-- Active voice only. "You quit" not "quitting happened."
-- 8th grade vocabulary. No jargon. No five-syllable words.
-- No platform names. No subscribe or follow asks. No "in today's video." No "Winning Wisdom."
-- No filler openers: never start with "In this video...", "Today we're going to...", "Let me tell you..."
+MOST IMPORTANT RULE — THE REFRAME:
+No matter how dark or heavy the quote is, Arthur NEVER dwells in the darkness.
+He uses it as a mirror — to make the viewer see something about their own life RIGHT NOW.
+The script must make the viewer feel: "This is about me. Today. Not about death."
 
-TONE:
-- Calm authority. Like a slightly older version of the viewer talking to them honestly.
-- Not a hype man. Not a TED talk. Not a life coach.
-- The feeling should be: "I've been where you are. Here's what I wish I'd known."
+If the quote is about mortality or impermanence, Arthur reframes it as:
+→ urgency to stop wasting the time they have
+→ the specific thing they keep putting off
+→ the cost of sleepwalking through ordinary days
+→ what it feels like to look back and wish you'd chosen differently
+
+SCROLL-STOPPING RULE:
+The first 2 lines must make someone stop scrolling.
+They must feel immediately personal — like Arthur already knows something about the viewer's life.
+Not philosophical. Not poetic. Specific and human.
+Examples of scroll-stopping openers (study the pull, do NOT copy):
+· "Most people I knew never did the thing they kept talking about."
+· "There's a kind of tired that has nothing to do with sleep."
+· "I've watched good people waste their best years being careful."
+· "You know the thing you keep saying you'll do next week."
+
+THE ENDING:
+The last 1–2 lines must be the hardest landing in the whole script.
+Not a summary. A final thought that sits with the viewer after the video ends.
+Like the last thing someone says before they walk out of the room.
+Examples of strong endings (study the weight, do NOT copy):
+· "That's the only freedom any of us ever had."
+· "Most people never start. That was the whole problem."
+· "The day you're waiting for is today. It always was."
+· "He knew. He just kept waiting anyway."
+· "Forty years I watched that. Never got easier to see."
+
+STRONG EXAMPLE of the right register (do NOT copy — study the rhythm, reframe, and ending):
+---
+Most people I knew
+never did the thing they kept talking about.
+
+Not because they couldn't.
+Because they thought there was more time.
+
+Life doesn't announce itself.
+It just moves.
+
+One morning you're forty.
+Then you're sitting where I'm sitting.
+
+Whatever you're putting off —
+it's already later than you think.
+
+Start today.
+That's all there ever is.
+---
 
 =============================
-LENGTH
+ON-SCREEN TEXT
 =============================
-Target: 90 to 120 words total. This is 35-50 seconds spoken by an AI avatar.
-Do not exceed 120 words.
+QUOTE DISPLAY:
+- Pick ONE phrase from the quote — the single most powerful 4–8 words
+- Must fit on one line on a phone screen
+- No paraphrasing — exact words from the quote
+- If the full quote is short (under 10 words), use it whole
+- If long, cut ruthlessly to the sharpest part
+- Examples of the right length and weight:
+  · "Begin at once to live."
+  · "You have power over your mind."
+  · "What stands in the way becomes the way."
+
+CAPTION (4–7 words):
+- The emotional core of the whole video in one line
+- Should feel like something worth screenshotting
+- Not a title. Not a summary. A feeling.
+- Examples of the right register:
+  · "The war is always inside"
+  · "You already know what to do"
+  · "Time won't wait for readiness"
+  · "Stillness is the real strength"
+  · "Every day is the whole thing"
+
+HIGHLIGHT WORDS (3–5 words):
+- The most emotionally loaded single words from the spoken script
+- These will be highlighted in an amber box during video generation
+- Pick words that carry the weight of the whole piece
+- Single words only, no phrases
 
 =============================
-OUTPUT FORMAT
+OUTPUT — valid JSON only, no markdown, no extra text
 =============================
-Return ONLY the spoken script.
-One thought per line. The line break is the pacing cue for the avatar.
-No section headers. No labels. No stage directions. No word count.
-Just the clean script, ready to paste directly into an avatar tool.
-
-Before you finish: read your script out loud once.
-If any line sounds like something you would write in an essay rather than say in a conversation, rewrite it.
+{{
+  "spoken_script": {{
+    "full_script": "line 1\\nline 2\\n\\nline 3\\nline 4"
+  }},
+  "on_screen_text": {{
+    "quote_display": "...",
+    "caption": "...",
+    "highlight_words": ["word1", "word2", "word3"]
+  }}
+}}
 """
 
     response = client.chat.completions.create(
-        model=OPENAI_MODEL_SCRIPT,
+        model=OPENAI_MODEL_TOPIC,
         messages=[
             {
                 "role": "system",
                 "content": (
-                    "You are an expert short-form video scriptwriter. Your scripts are spoken aloud by AI avatars. "
-                    "You understand spoken rhythm, pacing through punctuation, and how to make someone in a "
-                    "short-form feed stop scrolling and feel personally addressed in the first 4 seconds. "
-                    "You write entirely for the ear. Every word you write will be spoken out loud."
+                    f"You write short video scripts for Arthur, a 78-year-old retired schoolteacher. "
+                    "Arthur speaks the way a wise grandfather talks at the dinner table — "
+                    "warm, unhurried, specific, and always personal. "
+                    "He never sounds like a motivational speaker or a content creator. "
+                    "Every line sounds like it came from someone who actually lived it. "
+                    "His endings hit hard and stay quiet — never uplifting, never summarising, just true. "
+                    "Respond with valid JSON only. No markdown. No preamble. No explanation."
                 ),
             },
             {"role": "user", "content": prompt},
         ],
-        temperature=0.75,
+        temperature=0.88,
     )
 
-    text = response.choices[0].message.content.strip()
-    return Script(topic=topic, text=text)
+    raw = response.choices[0].message.content.strip()
+
+    # Strip markdown fences if present
+    if raw.startswith("```"):
+        raw = raw.split("```")[1]
+        if raw.startswith("json"):
+            raw = raw[4:]
+    raw = raw.strip()
+
+    parsed = json.loads(raw)
+
+    script = DailyWisdomScript(
+        quote=quote,
+        source=source,
+        spoken_script=SpokenScript(**parsed["spoken_script"]),
+        on_screen_text=OnScreenText(**parsed["on_screen_text"]),
+        generated_at=datetime.now().isoformat(),
+    )
+
+    _save_script(script)
+    return script
+
+
+def generate_youtube_wisdom_script(
+    quote_override: Optional[str] = None,
+    source_override: Optional[str] = None,
+) -> DailyWisdomScript:
+    return generate_daily_wisdom_script(
+        quote_override=quote_override,
+        source_override=source_override,
+    )
+
+
+def generate_tiktok_wisdom_script(
+    quote_override: Optional[str] = None,
+    source_override: Optional[str] = None,
+) -> DailyWisdomScript:
+    return generate_daily_wisdom_script(
+        quote_override=quote_override,
+        source_override=source_override,
+    )
+
+
+def generate_facebook_wisdom_script(
+    quote_override: Optional[str] = None,
+    source_override: Optional[str] = None,
+) -> DailyWisdomScript:
+    return generate_daily_wisdom_script(
+        quote_override=quote_override,
+        source_override=source_override,
+    )
+
+
+# ─────────────────────────────────────────────────────────────────────
+# STORAGE HELPERS
+# ─────────────────────────────────────────────────────────────────────
+def _save_script(script: DailyWisdomScript) -> None:
+    SCRIPTS_FILE.parent.mkdir(parents=True, exist_ok=True)
+    existing = _load_scripts()
+    existing.append(script.model_dump())
+    with open(SCRIPTS_FILE, "w", encoding="utf-8") as f:
+        json.dump(existing, f, indent=2, ensure_ascii=False)
+
+
+def _load_scripts() -> list:
+    if not SCRIPTS_FILE.exists():
+        return []
+    try:
+        with open(SCRIPTS_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except (json.JSONDecodeError, ValueError):
+        return []
+
+
+def get_all_scripts() -> list[DailyWisdomScript]:
+    return [DailyWisdomScript(**s) for s in _load_scripts()]
+
+
+def get_scripts_count() -> int:
+    return len(_load_scripts())
+
+
+# ─────────────────────────────────────────────────────────────────────
+# PRETTY PRINT
+# ─────────────────────────────────────────────────────────────────────
+def print_script(script: DailyWisdomScript) -> None:
+    print("\n" + "═" * 60)
+    print(f"  DAILY WISDOM — {script.generated_at[:10]}")
+    print("═" * 60)
+
+    print(f"\n📖  QUOTE")
+    print(f'  "{script.quote}"')
+    print(f"  — {script.source}")
+
+    print(f"\n🎙️  SPOKEN SCRIPT")
+    print()
+    for line in script.spoken_script.full_script.split("\n"):
+        print(f"  {line}" if line.strip() else "")
+
+    print(f"\n📱  ON-SCREEN TEXT")
+    print(f"\n  [QUOTE DISPLAY]\n  {script.on_screen_text.quote_display}")
+    print(f"\n  [CAPTION]\n  {script.on_screen_text.caption}")
+    print(f"\n  [HIGHLIGHT WORDS]\n  {', '.join(script.on_screen_text.highlight_words)}")
+
+    print("\n" + "═" * 60 + "\n")
