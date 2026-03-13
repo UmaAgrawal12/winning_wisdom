@@ -33,6 +33,7 @@ def _save_used_quote(quote_text: str) -> None:
 
 
 QUOTE_SEARCH_QUERIES = [
+    # Core Marcus Aurelius angles
     "Marcus Aurelius Meditations quotes wisdom",
     "Marcus Aurelius best quotes stoicism",
     "Marcus Aurelius quotes on life and purpose",
@@ -47,10 +48,26 @@ QUOTE_SEARCH_QUERIES = [
     "Marcus Aurelius quotes on change and impermanence",
 ]
 
+# Separate search configs for the multi-author Winning Wisdom theme.
+# Each entry encodes both the search query and the author-style source
+# label we want to show (so we don't rely on noisy page titles like
+# "41 Quotes to Change Your Habits - And Your Life").
+WINNING_WISDOM_SEARCH_CONFIG = [
+    # Other Stoics — same "flavour" as Marcus
+    {"query": "Seneca quotes on discipline and self control", "source": "Seneca"},
+    {"query": "Seneca quotes on courage and character", "source": "Seneca"},
+    {"query": "Epictetus quotes on inner freedom and self mastery", "source": "Epictetus"},
+    {"query": "Epictetus quotes on doing the work", "source": "Epictetus"},
+
+    # Modern \"winning wisdom\" voices
+    {"query": "Viktor Frankl quotes on meaning and responsibility", "source": "Viktor Frankl"},
+    {"query": "James Clear quotes on habits and systems", "source": "James Clear"},
+    {"query": "Jim Rohn quotes on discipline and success", "source": "Jim Rohn"},
+    {"query": "F. M. Alexander quotes on habits and life", "source": "F. M. Alexander"},
+]
+
 # ─────────────────────────────────────────────────────────────────────
-# HARD-CODED FALLBACK QUOTES
-# Clean, verified Marcus Aurelius quotes used when SerpAPI
-# returns dirty/incomplete results
+# HARD-CODED FALLBACK QUOTES — MARCUS ONLY
 # ─────────────────────────────────────────────────────────────────────
 FALLBACK_QUOTES = [
     {"quote": "You have power over your mind, not outside events. Realize this, and you will find strength.", "source": "Marcus Aurelius — Meditations"},
@@ -83,6 +100,33 @@ FALLBACK_QUOTES = [
     {"quote": "The universe is change; our life is what our thoughts make it.", "source": "Marcus Aurelius — Meditations"},
     {"quote": "Just as nature takes every obstacle, every impediment, and works around it — turns it to its purposes, incorporates it into itself — so, too, a rational being can turn each setback into raw material and use it to achieve its goals.", "source": "Marcus Aurelius — Meditations"},
     {"quote": "You always own the option of having no opinion. There is never any need to get worked up or to trouble your soul about things you can't control.", "source": "Marcus Aurelius — Meditations"},
+]
+
+
+# ─────────────────────────────────────────────────────────────────────
+# HARD-CODED FALLBACK QUOTES — WINNING WISDOM (MULTI-AUTHOR)
+# ─────────────────────────────────────────────────────────────────────
+WINNING_WISDOM_QUOTES = [
+    # Marcus (kept in the mix)
+    {"quote": "You have power over your mind, not outside events. Realize this, and you will find strength.", "source": "Marcus Aurelius — Meditations"},
+    {"quote": "The impediment to action advances action. What stands in the way becomes the way.", "source": "Marcus Aurelius — Meditations"},
+    {"quote": "Waste no more time arguing about what a good man should be. Be one.", "source": "Marcus Aurelius — Meditations"},
+    {"quote": "Begin at once to live, and count each separate day as a separate life.", "source": "Marcus Aurelius — Meditations"},
+
+    # Other Stoics
+    {"quote": "We suffer more often in imagination than in reality.", "source": "Seneca — Letters from a Stoic"},
+    {"quote": "Luck is what happens when preparation meets opportunity.", "source": "Seneca"},
+    {"quote": "If a man knows not to which port he sails, no wind is favorable.", "source": "Seneca"},
+    {"quote": "First say to yourself what you would be; and then do what you have to do.", "source": "Epictetus — Discourses"},
+    {"quote": "No man is free who is not master of himself.", "source": "Epictetus"},
+
+    # Modern "winning wisdom" voices
+    {"quote": "Between stimulus and response there is a space. In that space is our power to choose our response. In our response lies our growth and our freedom.", "source": "Viktor Frankl — Man's Search for Meaning"},
+    {"quote": "You will never always be motivated, so you must learn to be disciplined.", "source": "Unknown"},
+    {"quote": "Success is nothing more than a few simple disciplines, practiced every day.", "source": "Jim Rohn"},
+    {"quote": "You do not rise to the level of your goals. You fall to the level of your systems.", "source": "James Clear — Atomic Habits"},
+    {"quote": "People do not decide their futures, they decide their habits and their habits decide their futures.", "source": "F. M. Alexander"},
+    {"quote": "Suffer the pain of discipline or suffer the pain of regret.", "source": "Unknown"},
 ]
 
 
@@ -145,10 +189,74 @@ def fetch_marcus_aurelius_quote(
     )
 
 
+def fetch_winning_wisdom_quote(
+    avoid_used: bool = True,
+    location: str = "United States",
+) -> dict:
+    """
+    Fetch a quote for the Winning Wisdom theme.
+
+    First tries SerpAPI with multi-author \"winning wisdom\" queries
+    aimed at specific authors (Seneca, Epictetus, Frankl, etc.).
+    If SerpAPI is unavailable or returns nothing clean, it falls back
+    to the curated WINNING_WISDOM_QUOTES hardcoded bank.
+
+    Returns:
+        dict with keys: quote, source, fetched_at
+    """
+    used_quotes = _load_used_quotes() if avoid_used else set()
+
+    # ── 1. Try SerpAPI first (multi-author) ───────────────────────────
+    if SERPAPI_API_KEY:
+        configs = WINNING_WISDOM_SEARCH_CONFIG.copy()
+        random.shuffle(configs)
+
+        for cfg in configs:
+            query = cfg["query"]
+            author_source = cfg["source"]
+            candidates = _search_quotes(query=query, location=location)
+            for candidate in candidates:
+                quote_text = candidate.get("quote", "").strip()
+                if not quote_text:
+                    continue
+                if avoid_used and quote_text.lower() in used_quotes:
+                    continue
+                _save_used_quote(quote_text)
+                # Use the configured author-style source instead of
+                # noisy page titles like "41 Quotes to Change Your Habits..."
+                source = author_source
+                return {
+                    "quote": quote_text,
+                    "source": source,
+                    "fetched_at": datetime.now().isoformat(),
+                }
+        print("SerpAPI returned no clean Winning Wisdom quotes — using curated bank.")
+    else:
+        print("No SERPAPI_API_KEY found for Winning Wisdom — using curated bank.")
+
+    # ── 2. Fallback: hardcoded multi-author bank ──────────────────────
+    candidates = WINNING_WISDOM_QUOTES.copy()
+    random.shuffle(candidates)
+
+    for candidate in candidates:
+        quote_text = candidate["quote"]
+        if avoid_used and quote_text.lower() in used_quotes:
+            continue
+        _save_used_quote(quote_text)
+        return {
+            "quote": quote_text,
+            "source": candidate["source"],
+            "fetched_at": datetime.now().isoformat(),
+        }
+
+    raise RuntimeError(
+        "All Winning Wisdom quotes have been used. Run reset_used_quotes() to start fresh."
+    )
+
+
 def _search_quotes(query: str, location: str) -> list[dict]:
     """
     Run a SerpAPI Google search and extract CLEAN quotes only.
-    Strict filtering — rejects anything that looks like a snippet or summary.
     """
     try:
         from serpapi import GoogleSearch
@@ -175,14 +283,25 @@ def _search_quotes(query: str, location: str) -> list[dict]:
             ).strip()
             cleaned = _clean_quote(text)
             if cleaned and _is_clean_quote(cleaned):
-                candidates.append({"quote": cleaned})
+                source = answer_box.get("title") or "Winning Wisdom"
+                candidates.append({"quote": cleaned, "source": source})
 
-        # 2. Organic rich snippets — list items are usually standalone quotes
+        # 2. Organic snippets — check full snippet text
         for result in results.get("organic_results", []):
+            snippet = result.get("snippet", "").strip()
+            cleaned = _clean_quote(snippet)
+            if cleaned and _is_clean_quote(cleaned):
+                title = result.get("title") or ""
+                source = title or "Winning Wisdom"
+                candidates.append({"quote": cleaned, "source": source})
+
+            # 3. Rich snippet extensions — often contain standalone quotes
             for item in result.get("rich_snippet", {}).get("top", {}).get("extensions", []):
                 cleaned = _clean_quote(item)
                 if cleaned and _is_clean_quote(cleaned):
-                    candidates.append({"quote": cleaned})
+                    title = result.get("title") or ""
+                    source = title or "Winning Wisdom"
+                    candidates.append({"quote": cleaned, "source": source})
 
         return candidates
 
@@ -198,21 +317,21 @@ def _search_quotes(query: str, location: str) -> list[dict]:
 
 def _is_clean_quote(text: str) -> bool:
     """
-    Strict check: is this a clean, standalone quote?
-    Rejects summaries, listicles, partial snippets, and metadata.
+    Check if text is a clean, standalone quote.
+    Rejects summaries, snippets, and metadata.
     """
     text = text.strip()
 
-    # Length bounds — quotes are typically 10–200 characters
-    if len(text) < 15 or len(text) > 300:
+    # Length bounds
+    if len(text) < 15 or len(text) > 400:
         return False
 
-    # Reject if it contains commentary/summary language
+    # Reject commentary and metadata language only
     reject_phrases = [
         "this quote", "reminds us", "teaches us", "according to",
-        "in this quote", "meaning", "summary", "list of", "top 10",
-        "http", "www.", "click", "learn more", "see more",
-        ":", "–", "...\"",  # mid-sentence breaks typical of snippets
+        "in this quote", "summary", "list of", "top 10",
+        "http", "www.", "click here", "learn more", "see more",
+        "read more", "shop now", "buy now",
     ]
     text_lower = text.lower()
     for phrase in reject_phrases:
@@ -221,10 +340,10 @@ def _is_clean_quote(text: str) -> bool:
 
     # Must be mostly alphabetic
     alpha_ratio = sum(c.isalpha() for c in text) / max(len(text), 1)
-    if alpha_ratio < 0.65:
+    if alpha_ratio < 0.55:
         return False
 
-    # Should end like a sentence, not trail off
+    # Should not trail off mid-sentence
     if text.endswith("...") or text.endswith("…"):
         return False
 

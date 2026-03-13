@@ -8,7 +8,7 @@ from pydantic import BaseModel
 from openai import OpenAI
 from dotenv import load_dotenv
 from config.system_config import OPENAI_API_KEY, OPENAI_MODEL_TOPIC
-from .topic_agent import fetch_marcus_aurelius_quote
+from .topic_agent import fetch_winning_wisdom_quote
 
 load_dotenv()
 
@@ -24,46 +24,100 @@ PERSONA = {
     "age": "78",
     "backstory": (
         "Arthur is a retired schoolteacher and widower who raised three children. "
-        "He spent 40 years watching people grow, struggle, and find their way. "
-        "He has seen enough of life to know what actually matters — and what doesn't. "
-        "He discovered Marcus Aurelius in his 50s and says it changed how he lived his last 25 years."
+        "He spent 40 years watching students grow, struggle, fall, and find their way. "
+        "He lost his wife Margaret after 44 years of marriage. That changed him. "
+        "He discovered Marcus Aurelius in his 50s and says it gave him a quiet place to stand. "
+        "He now lives alone, tends a small garden, reads every morning, and occasionally writes "
+        "letters to people he cares about — even strangers he somehow feels he knows."
     ),
     "voice": (
-        "Warm, unhurried, and plain-spoken. He talks the way a grandfather does at the dinner table — "
-        "not lecturing, just sharing something he genuinely believes. "
-        "He never sounds like a motivational speaker. He sounds like someone who has lived it. "
-        "His sentences are short — 5 to 8 words each. "
-        "He pauses between thoughts. Each sentence lands on its own. "
-        "He sometimes admits when something was hard for him personally. "
-        "He does not use modern slang, buzzwords, or self-help jargon. "
-        "He never summarises or concludes. He just stops when the thought is complete."
+        "Arthur speaks the way a loving grandfather writes a letter to someone he worries about. "
+        "He is warm, direct, and completely without performance. "
+        "He does not lecture. He shares — the way you share something at the end of a long day "
+        "when the pretending is over and you just say the true thing. "
+        "He speaks TO the viewer, not at them. He uses 'you' — but gently, like he means just them. "
+        "He sometimes uses soft terms of address: 'my friend', 'dear one', 'son', 'love' — "
+        "never more than once per script, never forced. "
+        "His sentences are short — 5 to 8 words. Each one lands on its own line. "
+        "He pauses. He breathes. There is space between thoughts. "
+        "He never summarises. He never concludes. He just stops when the truth has been said. "
+        "He sounds like someone who has already lost enough to know what matters."
     ),
     "banned_phrases": [
+        # Content creator language
         "level up", "hustle", "grind", "game changer", "crush it",
         "unleash", "transform", "unlock your potential", "hack",
         "optimize", "mindset shift", "you got this", "let's go",
         "drop a comment", "smash that like button",
+        # Lecture language
         "we often", "it is important", "in today's world",
         "in conclusion", "as we can see", "it's a reminder that",
         "this teaches us", "this quote", "the lesson here",
-        "I remember when", "carrying on", "opening a new page",
-        "a bit easier", "moving forward",
+        # Weak transitions
+        "carrying on", "opening a new page", "moving forward",
+        "a bit easier", "I remember when",
+        # Abstract openers that lose people
+        "have you ever", "you ever", "we all", "so many people",
+        "most of us", "life is", "it's easy to", "think about",
+        "there are people", "sometimes we",
+        # Formal quote introduction
+        "Marcus Aurelius wrote", "Marcus Aurelius said",
+        "today's quote", "he once wrote", "as the quote says",
     ],
 }
 
 # ─────────────────────────────────────────────────────────────────────
-# ENTRY ANGLE ROTATION
-# Different emotional starting points — keeps each script feeling fresh
+# ENTRY ANGLES
+# Each angle gives Arthur a specific emotional door into the script.
+# The goal: viewer feels seen within the first two lines.
 # ─────────────────────────────────────────────────────────────────────
 ENTRY_ANGLES = [
-    "Start with a quiet observation about something most people do without realising it.",
-    "Start with a specific type of person Arthur has watched over 40 years — what they did wrong.",
-    "Start with a simple contrast between what people chase and what actually holds.",
-    "Start with something Arthur got wrong himself for a long time before he understood.",
-    "Start with the feeling of being stuck — something the viewer has felt this week but not named.",
-    "Start with a hard truth most people know but won't say to themselves.",
-    "Start with what it looks like 20 years later when someone ignores this wisdom.",
-    "Start with a small, specific moment — the kind that seems ordinary but means everything.",
+    # Direct, intimate address — like a letter
+    "Open as if Arthur is writing directly to someone he loves who is struggling. "
+    "He names what they are carrying — not as a question, but as a quiet fact he already knows. "
+    "e.g. 'I know you've been tired lately. Not the kind sleep fixes.'",
+
+    "Open with Arthur speaking gently to the viewer as if he can see them right now — "
+    "something specific about what this season of life feels like for them. "
+    "e.g. 'You've been working very hard. And it still doesn't feel like enough.'",
+
+    "Open with Arthur addressing the viewer with a soft term of endearment — "
+    "then immediately naming something true about where they are in life. "
+    "e.g. 'My friend — you've been putting something off for a long time now.'",
+
+    # Something Arthur lived and is sharing, not teaching
+    "Open with a short, personal truth from Arthur's own life — "
+    "something he got wrong, something he lost, something he wishes he'd understood sooner. "
+    "One sentence. No setup. Not a lesson — just a man telling the truth. "
+    "e.g. 'I spent thirty years being right. It cost me a lot.'",
+
+    "Open with something Arthur learned after Margaret died — "
+    "a quiet, specific truth about what mattered and what didn't. "
+    "e.g. 'After she was gone, I stopped caring about being right.'",
+
+    # What Arthur has watched happen to people
+    "Open with what Arthur watched happen to good people who ignored this truth — "
+    "described plainly, with no judgment. Just what he saw. "
+    "e.g. 'The most talented students I taught often ended up the most lost.'",
+
+    "Open with a specific student or person Arthur remembers — "
+    "one sentence about what they did or didn't do, and what happened. "
+    "No emotion. Just the plain fact. The viewer will feel it themselves.",
+
+    # The gap between intention and life
+    "Open by gently naming the gap between what the viewer means to do "
+    "and what actually fills their days. "
+    "Stated as quiet observation, not accusation. "
+    "e.g. 'You meant to start that thing. Weeks ago now.'",
+
+    "Open with the feeling of time passing faster than expected — "
+    "stated as a simple, personal observation directed at the viewer. "
+    "e.g. 'The years have a way of going quietly. You'll look up one day.'",
+
+    # Reflective / seasonal tone
+    "Open with Arthur in a reflective mood — evening, garden, end of day — "
+    "sharing one thought that came to him, addressed directly to the viewer. "
+    "e.g. 'I was sitting in the garden this evening, thinking about you.'",
 ]
 
 
@@ -96,10 +150,11 @@ def generate_daily_wisdom_script(
     source_override: Optional[str] = None,
 ) -> DailyWisdomScript:
     """
-    Generate a full daily wisdom script for the Arthur persona.
+    Generate a full daily Winning Wisdom script for the Arthur persona.
 
-    Fetches a fresh Marcus Aurelius quote, then uses OpenAI to generate
-    a single continuous spoken script and on-screen text.
+    Fetches a fresh Winning Wisdom quote (multi-author, on-theme), then
+    uses OpenAI to generate a single continuous spoken script and
+    on-screen text.
 
     Args:
         quote_override: Optionally pass a specific quote
@@ -116,7 +171,7 @@ def generate_daily_wisdom_script(
             "fetched_at": datetime.now().isoformat(),
         }
     else:
-        quote_data = fetch_marcus_aurelius_quote()
+        quote_data = fetch_winning_wisdom_quote()
 
     quote = quote_data["quote"]
     source = quote_data["source"]
@@ -133,119 +188,173 @@ WHO ARTHUR IS
 =============================
 {PERSONA["backstory"]}
 
-HOW HE SPEAKS:
+HOW ARTHUR SPEAKS:
 {PERSONA["voice"]}
 
-BANNED — never use these words or phrases:
+WORDS AND PHRASES ARTHUR NEVER USES:
 {", ".join(PERSONA["banned_phrases"])}
 
 =============================
-TODAY'S QUOTE
+TODAY'S QUOTE (Marcus Aurelius)
 =============================
 "{quote}"
-— Marcus Aurelius, Meditations
+— {source}
 
 =============================
 YOUR TASK
 =============================
-Write a 30–60 second spoken script for Arthur.
+Write a 30–60 second spoken script in Arthur's voice.
 
-ENTRY ANGLE — how to open this script:
+ENTRY ANGLE for this script:
 {entry_angle}
 
-RULES FOR THE SPOKEN SCRIPT:
-- No hook. No intro. Arthur starts talking immediately — mid-thought, like you walked in on a conversation.
-- Do NOT introduce the quote formally. Arthur weaves the wisdom into his own words naturally.
-  He might say the quote almost in passing, or paraphrase it in his own language first.
-  He does NOT say "Marcus Aurelius wrote..." or "Today's quote is..." or "He said..."
-- Each sentence is 5–8 words. Written on its own line.
-- Short pause between thoughts — shown by a blank line between groups.
-- No conclusion. No summary. No soft ending.
-- Write 8–14 lines total (enough for 30–60 seconds of natural speech).
+=============================
+THE MOST IMPORTANT THING — READ THIS FIRST
+=============================
+Arthur is not a wisdom account.
+He is a person — warm, real, speaking directly to ONE viewer.
 
-MOST IMPORTANT RULE — THE REFRAME:
-No matter how dark or heavy the quote is, Arthur NEVER dwells in the darkness.
-He uses it as a mirror — to make the viewer see something about their own life RIGHT NOW.
-The script must make the viewer feel: "This is about me. Today. Not about death."
+The reason content like this goes viral is simple:
+People stop scrolling when it feels like someone who loves them
+is speaking TO them — not teaching them, not quoting at them,
+but saying the quiet true thing the way a grandparent does
+when they sit beside you and speak without pretending.
 
-If the quote is about mortality or impermanence, Arthur reframes it as:
-→ urgency to stop wasting the time they have
-→ the specific thing they keep putting off
-→ the cost of sleepwalking through ordinary days
-→ what it feels like to look back and wish you'd chosen differently
+Your only goal is to make the viewer feel:
+  "He is talking about me. He sees me. He knows."
 
-SCROLL-STOPPING RULE:
-The first 2 lines must make someone stop scrolling.
-They must feel immediately personal — like Arthur already knows something about the viewer's life.
-Not philosophical. Not poetic. Specific and human.
-Examples of scroll-stopping openers (study the pull, do NOT copy):
-· "Most people I knew never did the thing they kept talking about."
-· "There's a kind of tired that has nothing to do with sleep."
-· "I've watched good people waste their best years being careful."
-· "You know the thing you keep saying you'll do next week."
+NOT: "This is interesting wisdom content."
+NOT: "What a good quote."
+YES: "I needed to hear this today."
+YES: "This is exactly where I am right now."
+YES: "This feels like my grandfather."
 
-THE ENDING:
-The last 1–2 lines must be the hardest landing in the whole script.
-Not a summary. A final thought that sits with the viewer after the video ends.
-Like the last thing someone says before they walk out of the room.
-Examples of strong endings (study the weight, do NOT copy):
-· "That's the only freedom any of us ever had."
-· "Most people never start. That was the whole problem."
-· "The day you're waiting for is today. It always was."
-· "He knew. He just kept waiting anyway."
-· "Forty years I watched that. Never got easier to see."
+=============================
+RULE 1 — THE HOOK (first 1–2 lines)
+=============================
+The hook must make someone stop scrolling in under 2 seconds.
+It works when it names something the viewer is already feeling —
+quietly, specifically — as if Arthur already knows them.
 
-STRONG EXAMPLE of the right register (do NOT copy — study the rhythm, reframe, and ending):
----
-Most people I knew
-never did the thing they kept talking about.
+✅ HOOKS THAT STOP SCROLLING:
+  · "I know you've been tired lately."
+  · "You've been carrying something for a long time now."
+  · "My friend — you've been waiting for the right moment."
+  · "I spent thirty years being right. It cost me everything."
+  · "The best student I ever had never believed she was good enough."
+  · "After Margaret died, I understood what I'd been wasting."
+  · "You meant to start that. It's been months."
+  · "The years go faster than you expect them to."
+  · "I was wrong about most things. This was the biggest one."
 
-Not because they couldn't.
-Because they thought there was more time.
+❌ HOOKS THAT FAIL:
+  · Any question: "Have you ever...", "You ever...", "Do you..."
+  · Generic wisdom: "Life is...", "We all...", "So many people..."
+  · Quote intro: "Marcus Aurelius wrote...", "Today's quote is..."
+  · Motivational: "Today is your day...", "You have the power..."
+  · Abstract (no specific feeling, person, or moment named)
 
-Life doesn't announce itself.
-It just moves.
+HOOK TEST: Could this first line appear on any generic wisdom page?
+If yes — it is not good enough. Rewrite until it feels written for one person.
 
-One morning you're forty.
-Then you're sitting where I'm sitting.
+=============================
+RULE 2 — SCRIPT STRUCTURE
+=============================
+- No intro. No greeting. Arthur starts mid-thought.
+- He weaves the Marcus Aurelius wisdom into his own words naturally.
+  He does NOT introduce the quote. He lives inside the idea.
+  He might paraphrase it as a plain personal observation.
+- Each sentence: 5–8 words. Its own line.
+- Blank line between thought-groups (natural pause).
+- 8–14 lines total (30–60 seconds of natural speech).
+- No summary. No conclusion. No uplifting sign-off.
+  Arthur stops when the truth has been said.
 
-Whatever you're putting off —
-it's already later than you think.
+=============================
+RULE 3 — WARMTH AND PERSONAL ADDRESS
+=============================
+Arthur speaks TO the viewer. Use "you" often. Make it feel like a letter.
 
-Start today.
-That's all there ever is.
----
+He may use a term of address ONCE per script if it feels natural:
+"my friend", "dear one", "son", "love" — never forced, never more than once.
+
+He sometimes shares something personal — a loss, a mistake, a regret.
+Not for sympathy. Because it's true and it helps the person reading it.
+
+=============================
+RULE 4 — THE ENDING (last 1–2 lines)
+=============================
+The ending lands hard and sits quietly. It is the last true thing.
+Not uplifting. Not a summary. Not a call to action.
+The kind of thing that stays with you after the video ends.
+
+✅ ENDINGS THAT LAND:
+  · "That's all I know. But it took me fifty years."
+  · "She never started. I still think about her."
+  · "The day you're waiting for — it's today. It always was."
+  · "I wish someone had sat me down and said this."
+  · "He knew. He just kept waiting anyway."
+  · "Don't do what I did."
+
+❌ ENDINGS THAT DON'T WORK:
+  · Summaries ("So remember...", "The lesson is...")
+  · Uplift ("You can do this.", "Believe in yourself.")
+  · Neat wrap-ups that tie everything together
+
+=============================
+COMPLETE EXAMPLE — study the feel, do NOT copy:
+=============================
+I know you've been tired lately.
+
+Not the kind that sleep fixes.
+
+The kind that comes from doing everything right
+and still feeling like it's not enough.
+
+I felt that for a long time.
+Kept thinking I just needed to push harder.
+
+But the war wasn't out there.
+It never was.
+
+It was the voice inside —
+the one that says you're not ready yet.
+
+You don't have to win that argument.
+You just have to stop having it.
+
+I found that quiet too late.
+You don't have to wait as long as I did.
+=============================
 
 =============================
 ON-SCREEN TEXT
 =============================
+
 QUOTE DISPLAY:
-- Pick ONE phrase from the quote — the single most powerful 4–8 words
+- The single most powerful 4–8 words from today's Marcus Aurelius quote
+- Exact words from the quote — no paraphrasing
 - Must fit on one line on a phone screen
-- No paraphrasing — exact words from the quote
-- If the full quote is short (under 10 words), use it whole
-- If long, cut ruthlessly to the sharpest part
-- Examples of the right length and weight:
-  · "Begin at once to live."
+- Cut to the sharpest, most emotionally resonant fragment
+- Examples:
   · "You have power over your mind."
   · "What stands in the way becomes the way."
+  · "Begin at once to live."
 
 CAPTION (4–7 words):
-- The emotional core of the whole video in one line
-- Should feel like something worth screenshotting
-- Not a title. Not a summary. A feeling.
-- Examples of the right register:
+- The emotional core of the whole video — one line
+- Worth screenshotting. A feeling, not a title.
+- Examples:
   · "The war is always inside"
+  · "Stop waiting. It won't come."
+  · "Tired is not the same as done"
+  · "He sees you. Start now."
   · "You already know what to do"
-  · "Time won't wait for readiness"
-  · "Stillness is the real strength"
-  · "Every day is the whole thing"
 
-HIGHLIGHT WORDS (3–5 words):
-- The most emotionally loaded single words from the spoken script
-- These will be highlighted in an amber box during video generation
-- Pick words that carry the weight of the whole piece
-- Single words only, no phrases
+HIGHLIGHT WORDS (3–5 single words):
+- The most emotionally loaded words from the spoken script
+- Will be visually highlighted during video
+- Single words only — no phrases
 
 =============================
 OUTPUT — valid JSON only, no markdown, no extra text
@@ -268,12 +377,15 @@ OUTPUT — valid JSON only, no markdown, no extra text
             {
                 "role": "system",
                 "content": (
-                    f"You write short video scripts for Arthur, a 78-year-old retired schoolteacher. "
-                    "Arthur speaks the way a wise grandfather talks at the dinner table — "
-                    "warm, unhurried, specific, and always personal. "
-                    "He never sounds like a motivational speaker or a content creator. "
-                    "Every line sounds like it came from someone who actually lived it. "
-                    "His endings hit hard and stay quiet — never uplifting, never summarising, just true. "
+                    "You write short daily wisdom video scripts for Arthur — "
+                    "a 78-year-old retired schoolteacher and widower who lost his wife Margaret. "
+                    "Arthur speaks the way a loving grandfather writes a letter: "
+                    "warm, direct, personal, and completely without performance. "
+                    "He is not a wisdom account. He is a real person speaking to ONE viewer "
+                    "who needs to hear exactly this, today. "
+                    "The viewer must feel seen — not educated. "
+                    "The first line must feel like Arthur already knows something about their life. "
+                    "The ending must land quietly and stay with them. "
                     "Respond with valid JSON only. No markdown. No preamble. No explanation."
                 ),
             },
