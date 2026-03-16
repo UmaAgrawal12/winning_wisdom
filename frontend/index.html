@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Winning Wisdom Studio</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #f3f4f6;
+      --panel: #ffffff;
+      --accent: #4f46e5;
+      --accent-soft: rgba(79, 70, 229, 0.08);
+      --text: #111827;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --danger: #ef4444;
+      --success: #16a34a;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at top, #e5e7eb 0, #f9fafb 40%, #ffffff 100%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      padding: 32px 16px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 1120px;
+      background: linear-gradient(145deg, rgba(249,250,251,0.96), rgba(255,255,255,0.98));
+      border-radius: 24px;
+      border: 1px solid rgba(209,213,219,0.9);
+      box-shadow:
+        0 30px 70px rgba(15,23,42,0.12),
+        0 0 0 1px rgba(148,163,184,0.25);
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: minmax(0, 2.3fr) minmax(0, 2fr);
+    }
+
+    @media (max-width: 900px) {
+      .app {
+        grid-template-columns: minmax(0,1fr);
+      }
+    }
+
+    .left {
+      padding: 24px 28px;
+      border-right: 1px solid rgba(229,231,235,0.9);
+    }
+
+    .right {
+      padding: 24px 24px 24px 20px;
+      background: radial-gradient(circle at top left, rgba(79,70,229,0.08), transparent 55%);
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 20%, #facc15, #f97316 40%, #4f46e5 100%);
+      box-shadow: 0 0 24px rgba(250,204,21,0.4);
+    }
+
+    .brand-text h1 {
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+
+    .brand-text p {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .stepper {
+      display: flex;
+      gap: 8px;
+      font-size: 11px;
+    }
+
+    .step-pill {
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(55,65,81,0.9);
+      color: var(--muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .step-pill.active {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      color: #e5e7eb;
+    }
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--muted);
+    }
+
+    .step-pill.active .badge-dot {
+      background: #22c55e;
+      box-shadow: 0 0 0 4px rgba(34,197,94,0.25);
+    }
+
+    .panel {
+      background: radial-gradient(circle at top, #ffffff, #f9fafb);
+      border-radius: 18px;
+      border: 1px solid rgba(229,231,235,0.9);
+      padding: 16px 16px 14px;
+      margin-bottom: 16px;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .panel-title {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: #6b7280;
+    }
+
+    .pill {
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(55,65,81,0.9);
+      color: var(--muted);
+    }
+
+    .quote-text {
+      font-size: 14px;
+      line-height: 1.6;
+      color: #111827;
+      margin-bottom: 4px;
+    }
+
+    .quote-source {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    textarea {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: radial-gradient(circle at top, #f9fafb, #f9fafb 40%, #ffffff 100%);
+      color: var(--text);
+      padding: 10px 11px;
+      font-size: 13px;
+      resize: vertical;
+      min-height: 80px;
+      outline: none;
+    }
+
+    textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(79,70,229,0.7);
+    }
+
+    .field-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: radial-gradient(circle at top, #f9fafb, #f9fafb 40%, #ffffff 100%);
+      color: var(--text);
+      padding: 7px 10px;
+      font-size: 13px;
+      outline: none;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(79,70,229,0.7);
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .btn {
+      padding: 7px 14px;
+      font-size: 13px;
+      border-radius: 999px;
+      border: 1px solid rgba(209,213,219,0.9);
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #6366f1, #4f46e5);
+      border-color: transparent;
+      color: #f9fafb;
+      box-shadow: 0 10px 25px rgba(79,70,229,0.4);
+    }
+
+    .btn-primary:disabled,
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: default;
+      box-shadow: none;
+    }
+
+    .btn-outline {
+      border-color: rgba(209,213,219,1);
+      color: #111827;
+      background: rgba(249,250,251,0.9);
+    }
+
+    .status {
+      margin-top: 6px;
+      font-size: 11px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 0 4px rgba(79,70,229,0.3);
+    }
+
+    .status-dot.error {
+      background: var(--danger);
+      box-shadow: 0 0 0 4px rgba(239,68,68,0.35);
+    }
+
+    .status-dot.ok {
+      background: var(--success);
+      box-shadow: 0 0 0 4px rgba(34,197,94,0.35);
+    }
+
+    .script-view {
+      font-size: 13px;
+      line-height: 1.8;
+      color: #111827;
+      white-space: pre-wrap;
+      background: #f9fafb;
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      padding: 12px 12px 10px;
+      max-height: 260px;
+      overflow: auto;
+      margin-top: 6px;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .small-pill {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(209,213,219,0.8);
+      color: var(--muted);
+      background: rgba(249,250,251,0.9);
+    }
+
+    .score-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .score-card {
+      background: rgba(249,250,251,0.95);
+      border-radius: 10px;
+      border: 1px solid rgba(229,231,235,0.9);
+      padding: 8px 8px 7px;
+      font-size: 11px;
+    }
+
+    .score-label {
+      color: var(--muted);
+      margin-bottom: 2px;
+    }
+
+    .score-value {
+      font-weight: 600;
+      color: #111827;
+    }
+
+    .hashtags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 6px;
+      font-size: 11px;
+    }
+
+    .tag {
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(249,250,251,0.9);
+      border: 1px solid rgba(209,213,219,0.9);
+      color: #111827;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="left">
+      <div class="header">
+        <div class="brand">
+          <div class="logo"></div>
+          <div class="brand-text">
+            <h1>Winning Wisdom Studio</h1>
+            <p>Two approvals. Zero writing.</p>
+          </div>
+        </div>
+        <div class="stepper">
+          <div id="step-pill-1" class="step-pill active">
+            <span class="badge-dot"></span> Quote
+          </div>
+          <div id="step-pill-2" class="step-pill">
+            <span class="badge-dot"></span> Script Review
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">Step 1 · Quote</div>
+          </div>
+          <div class="pill">Daily seed</div>
+        </div>
+
+        <div id="quote-display">
+          <p class="quote-text" id="current-quote">Loading quote…</p>
+          <p class="quote-source" id="current-source"></p>
+        </div>
+
+        <div style="margin-top: 10px;">
+          <div class="field-label">Adjust if you like</div>
+          <textarea id="quote-input"></textarea>
+
+          <div class="field-row">
+            <div>
+              <div class="field-label">Source</div>
+              <input id="source-input" type="text" />
+            </div>
+            <div>
+              <div class="field-label">Quick actions</div>
+              <div class="buttons" style="justify-content: flex-start; margin-top: 2px;">
+                <button id="btn-refresh" class="btn" type="button">New quote</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="buttons">
+            <button id="btn-generate-script" class="btn-primary" type="button">
+              Generate script
+            </button>
+          </div>
+
+          <div class="status" id="status-topic">
+            <div class="status-dot"></div>
+            <span>Waiting for your topic approval.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">Step 2 · Script Review</div>
+
+          </div>
+          <div class="pill">Arthur’s voice</div>
+        </div>
+
+        <div>
+          <div class="field-label">Generated script</div>
+          <div id="script-view" class="script-view">No script yet. Approve a topic to generate one.</div>
+
+          <div style="margin-top: 10px;">
+            <div class="field-label">Make edits (optional)</div>
+            <textarea id="script-edit" placeholder="Any tweaks before this goes live?"></textarea>
+          </div>
+
+          <div class="buttons">
+            <button id="btn-approve-script" class="btn-outline" type="button" disabled>
+              Approve script &amp; score
+            </button>
+          </div>
+
+          <div class="status" id="status-script">
+            <div class="status-dot"></div>
+            <span>Script not generated yet.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="right">
+      <div class="panel" style="margin-bottom: 16px;">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">Reel Score</div>
+          </div>
+          <div class="pill" id="score-badge">Waiting…</div>
+        </div>
+
+        <div class="score-grid" id="score-grid">
+          <div class="score-card">
+            <div class="score-label">Hook strength</div>
+            <div class="score-value" id="score-hook">–</div>
+          </div>
+          <div class="score-card">
+            <div class="score-label">Scroll-stopping</div>
+            <div class="score-value" id="score-scroll">–</div>
+          </div>
+          <div class="score-card">
+            <div class="score-label">Emotional impact</div>
+            <div class="score-value" id="score-emotion">–</div>
+          </div>
+          <div class="score-card">
+            <div class="score-label">Structure</div>
+            <div class="score-value" id="score-structure">–</div>
+          </div>
+          <div class="score-card">
+            <div class="score-label">Persona fit</div>
+            <div class="score-value" id="score-persona">–</div>
+          </div>
+          <div class="score-card">
+            <div class="score-label">Visual potential</div>
+            <div class="score-value" id="score-visual">–</div>
+          </div>
+        </div>
+
+        <div style="margin-top: 8px; font-size: 11px; color: var(--muted);" id="score-summary">
+          Approve a script to see a full score breakdown.
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">SEO Hashtags</div>
+
+          </div>
+          <div class="pill">AI-optimized</div>
+        </div>
+
+        <div>
+          <div class="field-label">YouTube</div>
+          <div id="tags-youtube" class="hashtags"></div>
+
+          <div class="field-label" style="margin-top: 10px;">Instagram</div>
+          <div id="tags-instagram" class="hashtags"></div>
+
+          <div class="field-label" style="margin-top: 10px;">TikTok</div>
+          <div id="tags-tiktok" class="hashtags"></div>
+
+          <div class="field-label" style="margin-top: 10px;">Facebook</div>
+          <div id="tags-facebook" class="hashtags"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Point the frontend to the FastAPI backend.
+    // Backend should be running on: http://127.0.0.1:8000
+    const API_BASE = "http://127.0.0.1:8000/api";
+
+    const els = {
+      quoteText: document.getElementById("current-quote"),
+      quoteSource: document.getElementById("current-source"),
+      quoteInput: document.getElementById("quote-input"),
+      sourceInput: document.getElementById("source-input"),
+      btnRefresh: document.getElementById("btn-refresh"),
+      btnGenerateScript: document.getElementById("btn-generate-script"),
+      btnApproveScript: document.getElementById("btn-approve-script"),
+      scriptView: document.getElementById("script-view"),
+      scriptEdit: document.getElementById("script-edit"),
+      statusTopic: document.getElementById("status-topic"),
+      statusScript: document.getElementById("status-script"),
+      step1: document.getElementById("step-pill-1"),
+      step2: document.getElementById("step-pill-2"),
+      scoreBadge: document.getElementById("score-badge"),
+      scoreHook: document.getElementById("score-hook"),
+      scoreScroll: document.getElementById("score-scroll"),
+      scoreEmotion: document.getElementById("score-emotion"),
+      scoreStructure: document.getElementById("score-structure"),
+      scorePersona: document.getElementById("score-persona"),
+      scoreVisual: document.getElementById("score-visual"),
+      scoreSummary: document.getElementById("score-summary"),
+      tagsYoutube: document.getElementById("tags-youtube"),
+      tagsInstagram: document.getElementById("tags-instagram"),
+      tagsTiktok: document.getElementById("tags-tiktok"),
+      tagsFacebook: document.getElementById("tags-facebook"),
+    };
+
+    let lastQuote = null;
+    let lastSource = null;
+    let lastScript = null;
+
+    function setStatus(el, text, variant = "pending") {
+      const dot = el.querySelector(".status-dot");
+      const span = el.querySelector("span");
+      span.textContent = text;
+      dot.classList.remove("ok", "error");
+      if (variant === "ok") dot.classList.add("ok");
+      if (variant === "error") dot.classList.add("error");
+    }
+
+    function setStep(step) {
+      if (step === 1) {
+        els.step1.classList.add("active");
+        els.step2.classList.remove("active");
+      } else {
+        els.step1.classList.remove("active");
+        els.step2.classList.add("active");
+      }
+    }
+
+    async function fetchJSON(url, options) {
+      const res = await fetch(url, {
+        headers: { "Content-Type": "application/json" },
+        ...options,
+      });
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text || "Request failed");
+      }
+      return res.json();
+    }
+
+    async function loadQuote() {
+      try {
+        els.btnRefresh.disabled = true;
+        setStatus(els.statusTopic, "Fetching a fresh quote for you…");
+
+        const data = await fetchJSON(`${API_BASE}/topic`);
+        lastQuote = data.quote;
+        lastSource = data.source;
+
+        els.quoteText.textContent = `“${data.quote}”`;
+        els.quoteSource.textContent = `— ${data.source}`;
+        els.quoteInput.value = data.quote;
+        els.sourceInput.value = data.source;
+
+        setStatus(els.statusTopic, "Quote loaded. Adjust if needed, then generate the script.", "ok");
+      } catch (err) {
+        console.error(err);
+        setStatus(els.statusTopic, "Couldn’t fetch a quote. Check backend logs.", "error");
+      } finally {
+        els.btnRefresh.disabled = false;
+      }
+    }
+
+    // Full automatic flow: new quote → script → score + SEO
+    async function autoGenerateAll() {
+      // 1) Get a fresh quote
+      await loadQuote();
+      // 2) Generate script for that quote
+      await onGenerateScript();
+      // 3) Immediately approve script as‑is to score + build SEO
+      await onApproveScript();
+    }
+
+    async function onGenerateScript() {
+      try {
+        els.btnGenerateScript.disabled = true;
+        setStatus(els.statusTopic, "Generating Arthur’s script for this quote…");
+        setStep(2);
+
+        const quote = els.quoteInput.value.trim();
+        const source = els.sourceInput.value.trim() || "Winning Wisdom";
+
+        const script = await fetchJSON(`${API_BASE}/topic/approve`, {
+          method: "POST",
+          body: JSON.stringify({ quote, source }),
+        });
+
+        const full = script.spoken_script.full_script || "";
+        lastQuote = script.quote;
+        lastSource = script.source;
+        lastScript = full;
+
+        els.scriptView.textContent = full;
+        els.scriptEdit.value = full;
+        els.btnApproveScript.disabled = false;
+
+        setStatus(els.statusTopic, "Topic locked in. You can tweak and approve the script next.", "ok");
+        setStatus(els.statusScript, "Script generated. Make any edits, then approve to score & build SEO.", "ok");
+      } catch (err) {
+        console.error(err);
+        setStatus(els.statusTopic, "Script generation failed. See backend logs.", "error");
+      } finally {
+        els.btnGenerateScript.disabled = false;
+      }
+    }
+
+    function renderTags(container, tags) {
+      container.innerHTML = "";
+      if (!tags || !tags.length) return;
+      for (const t of tags) {
+        const el = document.createElement("span");
+        el.className = "tag";
+        el.textContent = `#${t}`;
+        container.appendChild(el);
+      }
+    }
+
+    async function onApproveScript() {
+      try {
+        els.btnApproveScript.disabled = true;
+        setStatus(els.statusScript, "Scoring script and generating SEO hashtags…");
+
+        const approvedText = els.scriptEdit.value.trim();
+
+        const result = await fetchJSON(`${API_BASE}/script/approve`, {
+          method: "POST",
+          body: JSON.stringify({
+            quote: lastQuote,
+            source: lastSource,
+            approved_script: approvedText,
+          }),
+        });
+
+        const score = result.score;
+        els.scoreBadge.textContent = score.overall_score
+          ? `Overall ${score.overall_score}/10`
+          : "Scored";
+
+        els.scoreHook.textContent = score.hook_strength?.score ?? "–";
+        els.scoreScroll.textContent = score.scroll_stopping?.score ?? "–";
+        els.scoreEmotion.textContent = score.emotional_impact?.score ?? "–";
+        els.scoreStructure.textContent = score.structure?.score ?? "–";
+        els.scorePersona.textContent = score.persona_consistency?.score ?? "–";
+        els.scoreVisual.textContent = score.visual_potential?.score ?? "–";
+
+        const verdict = score.verdict || "Score ready.";
+        const priorityFix = score.priority_fix ? ` Priority fix: ${score.priority_fix}` : "";
+        els.scoreSummary.textContent = `${verdict}.${priorityFix}`;
+
+        const seo = result.seo;
+        renderTags(els.tagsYoutube, seo.youtube?.hashtags || []);
+        renderTags(els.tagsInstagram, seo.instagram?.hashtags || []);
+        renderTags(els.tagsTiktok, seo.tiktok?.hashtags || []);
+        renderTags(els.tagsFacebook, seo.facebook?.hashtags || []);
+
+        setStatus(els.statusScript, "Script approved, scored, and SEO hashtags ready.", "ok");
+      } catch (err) {
+        console.error(err);
+        setStatus(els.statusScript, "Script approval or scoring failed. See backend logs.", "error");
+      } finally {
+        els.btnApproveScript.disabled = false;
+      }
+    }
+
+    // When you click "New quote", automatically:
+    // 1) fetch quote, 2) generate script, 3) score + SEO
+    els.btnRefresh.addEventListener("click", () => {
+      autoGenerateAll().catch(err => console.error(err));
+    });
+    els.btnGenerateScript.addEventListener("click", onGenerateScript);
+    els.btnApproveScript.addEventListener("click", onApproveScript);
+
+    loadQuote();
+  </script>
+</body>
+</html>
+
+

@@ -1,6 +1,7 @@
 from agents.topic_agent import generate_topics
 from agents.script_agent import generate_script
 from agents.seo_agent import generate_seo_metadata
+from media_pipeline.voice_generation import generate_voice_for_script
 import random
 
 
@@ -42,3 +43,8 @@ def run_text_only_pipeline():
     print("Title:", seo.facebook.title)
     print("Description:", seo.facebook.description)
     print("Hashtags:", ", ".join("#" + h for h in seo.facebook.hashtags))
+
+    # 5) Generate voiceover audio
+    print("\n=== Voice Generation ===")
+    audio_path = generate_voice_for_script(script.text, script_id="winning_wisdom")
+    print("Audio file:", audio_path)

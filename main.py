@@ -14,6 +14,7 @@ import argparse
 from agents.script_agent import generate_daily_wisdom_script, print_script, get_scripts_count
 from agents.topic_agent import reset_used_quotes, get_used_quotes_count
 from agents.score_agent import score_reel_script, print_score
+from agents.seo_agent import generate_seo_metadata
 
 
 def main():
@@ -45,6 +46,26 @@ def main():
     print("Scoring script with AI...")
     score = score_reel_script(script)
     print_score(score)
+
+    print("\nGenerating SEO hashtags...")
+    seo_result = generate_seo_metadata(
+        topic=script.quote,
+        script_text=script.spoken_script.full_script,
+        audience="general_self_improver"
+    )
+    
+    print("\n" + "=" * 60)
+    print("  SEO HASHTAGS")
+    print("=" * 60)
+    print("\n📺 YOUTUBE:")
+    print("  " + " ".join([f"#{tag}" for tag in seo_result.youtube.hashtags]))
+    print("\n📷 INSTAGRAM:")
+    print("  " + " ".join([f"#{tag}" for tag in seo_result.instagram.hashtags]))
+    print("\n🎵 TIKTOK:")
+    print("  " + " ".join([f"#{tag}" for tag in seo_result.tiktok.hashtags]))
+    print("\n👥 FACEBOOK:")
+    print("  " + " ".join([f"#{tag}" for tag in seo_result.facebook.hashtags]))
+    print("\n" + "=" * 60)
 
 
 if __name__ == "__main__":

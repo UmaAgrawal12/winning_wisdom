@@ -1,641 +1,380 @@
 [
   {
-    "quote": "My favorite is \"You could leave life right now. Let that determine what you do and say and think\" or “Our life is what our thoughts make it.",
+    "quote": "You have power over your mind, not outside events. Realize this, and you will find strength.",
     "source": "Marcus Aurelius — Meditations",
     "spoken_script": {
-      "full_script": "I used to think I had all the time.\nThought I could always start tomorrow.\n\nBut you could leave life right now.\nThat idea hit me hard.\n\nSo many mornings wasted in waiting.\nWaiting for the right feeling or moment.\n\nOur life is what our thoughts make it.\nEvery day shapes what we become.\n\nThe things you put off today\nare the stories you’ll regret later.\n\nNo one comes with a warning.\nYou reckon you have forever.\nBut you don’t."
+      "full_script": "You meant to start that. It's been months.\nBut the days fill up with other things.\nYour mind races to what feels urgent.\nAnd yet the quiet struggles stay silent.\n\nControl isn't out there with the noise.\nIt's settled deep where you meet yourself.\nYou can't command the world’s unending storms.\nBut you hold the calm inside your mind.\n\nIt’s a small place to stand firm.\nEven when the ground shifts beneath you.\nI lost Margaret and thought the world cracked.\nFound strength only when I looked within.\n\nThat's all I know. But it took me fifty years."
     },
     "on_screen_text": {
-      "quote_display": "You could leave life right now",
-      "caption": "Time won’t wait for readiness",
+      "quote_display": "You have power over your mind.",
+      "caption": "The calm you hold inside",
       "highlight_words": [
-        "time",
-        "waiting",
-        "regret",
-        "life"
-      ]
-    },
-    "generated_at": "2026-03-13T12:13:51.457828"
-  },
-  {
-    "quote": "A man's true greatness lies in the consciousness of an honest purpose in life, founded on a just estimate of himself and everything else.",
-    "source": "Marcus Aurelius — Meditations",
-    "spoken_script": {
-      "full_script": "I watched men chase grand titles and fail.\nThey never knew what they truly wanted.\n\nA man's greatness is tied to honest purpose.\nNot the sparkle of a job or a name.\nIt’s quiet, steady, based on truth about himself.\n\nKnowing who you are means seeing things clearly.\nIncluding your own faults and your worth.\n\nThat took me years to understand.\nIt’s no easy thing to face yourself fully.\n\nMost never stop to check their own measure.\nThey drift until the years slip through their hands."
-    },
-    "on_screen_text": {
-      "quote_display": "A man's true greatness lies in the consciousness",
-      "caption": "Knowing yourself is the real work",
-      "highlight_words": [
-        "greatness",
-        "purpose",
-        "truth",
-        "yourself"
-      ]
-    },
-    "generated_at": "2026-03-13T12:14:33.541675"
-  },
-  {
-    "quote": "Birds weren't given wings just to walk everywhere . . . and you weren't born with resilience and a beautiful mind just to have an easy life.",
-    "source": "Marcus Aurelius — Meditations",
-    "spoken_script": {
-      "full_script": "You wake up some mornings\nfeeling like you’re stuck in place.\n\nLike there’s a part of you\nthat’s meant for more than this.\n\nBirds weren’t made just to walk.\nNeither were we made to coast.\n\nResilience and sharp minds\naren’t meant for easy days.\n\nThat’s something I had to learn.\nIt wasn’t simple or quick.\n\nYou have more inside than that.\nBut you won’t find it standing still."
-    },
-    "on_screen_text": {
-      "quote_display": "Birds weren't given wings just to walk everywhere",
-      "caption": "You’re made for more than this",
-      "highlight_words": [
-        "stuck",
-        "resilience",
-        "more",
-        "standing",
-        "still"
-      ]
-    },
-    "generated_at": "2026-03-13T12:15:40.518843"
-  },
-  {
-    "quote": "It is filled with wonderful quotes but one of my most favourite has to be: \"The happiness of your life depends upon the quality of your thoughts.",
-    "source": "Marcus Aurelius — Meditations",
-    "spoken_script": {
-      "full_script": "I spent years chasing quiet outside.\nThought peace was something out there.\n\nThen I learned it lives right here.\nIn the way your mind sorts things.\n\nThe happiness of your life depends upon the quality of your thoughts.\n\nI used to let worry steal my mornings.\nIt’s a habit harder to break than I thought.\n\nYou can’t control everything, but you can choose the thoughts.\nAnd that’s where the work begins.\n\nMost people never see how much their mind shapes their days."
-    },
-    "on_screen_text": {
-      "quote_display": "The happiness of your life depends upon the quality of your thoughts.",
-      "caption": "You already know what to do",
-      "highlight_words": [
-        "happiness",
-        "thoughts",
-        "quality"
-      ]
-    },
-    "generated_at": "2026-03-13T12:18:15.555823"
-  },
-  {
-    "quote": "You have power over your mind - not outside events. · Dwell on the beauty of life. · The happiness of your life depends upon the quality of your thoughts.",
-    "source": "Marcus Aurelius — Meditations",
-    "spoken_script": {
-      "full_script": "I used to blame the world\nfor my worry and bad days.\n\nIt took me a long time\nto see how much power\nI gave to things outside me.\n\nOur minds decide what we hold on to.\nI learned to look at the good,\nnot because life was easy,\nbut because I had no choice.\n\nYour thoughts shape your day.\nAnd sometimes, that’s the only thing you own.\n\nI fought this truth for years.\nNow, I live with it quietly."
-    },
-    "on_screen_text": {
-      "quote_display": "You have power over your mind",
-      "caption": "Your thoughts shape your day",
-      "highlight_words": [
-        "power",
-        "mind",
-        "thoughts",
-        "own"
-      ]
-    },
-    "generated_at": "2026-03-13T12:32:52.907625"
-  },
-  {
-    "quote": "Strength of character is forged through enduring hardship and maintaining composure in the face of difficulties.\" - Marcus Aurelius .",
-    "source": "Marcus Aurelius — Meditations",
-    "spoken_script": {
-      "full_script": "Most folks don’t realize how strong they are.\nThey think strength means never feeling weak.\n\nBut real strength shows when things fall apart.\nWhen you stay calm while everything’s shaking.\n\nI had my share of hard knocks.\nSome days I wanted to give up.\n\nHolding steady isn’t about being unbreakable.\nIt’s about not letting the hard days win.\n\nThat quiet grit is what shapes who you are.\nNot easy to find inside yourself.\n\nBut it’s there. Waiting."
-    },
-    "on_screen_text": {
-      "quote_display": "Strength of character is forged",
-      "caption": "Stillness is the real strength",
-      "highlight_words": [
-        "strength",
-        "calm",
-        "steady"
-      ]
-    },
-    "generated_at": "2026-03-13T12:34:00.900473"
-  },
-  {
-    "quote": "The happiness of your life depends upon the quality of your thoughts.” “If you are distressed by anything external, the pain is not due to the thing itself.",
-    "source": "Marcus Aurelius — Meditations",
-    "spoken_script": {
-      "full_script": "You don’t realize how much noise fills your mind.\nThoughts come and go, uninvited and loud.\n\nI used to blame things outside me.\nFelt hurt when the world acted a certain way.\nBut pain wasn’t in those things.\nIt lived in how I thought about them.\n\nThe quality of your thoughts shapes your days.\nIt’s easy to let worries run unchecked.\nThey make small troubles feel like mountains.\n\nYou can’t always choose what happens.\nBut you can tend to what’s inside your mind.\nHow much time do you waste fighting shadows?\nThat’s where the pain really hides."
-    },
-    "on_screen_text": {
-      "quote_display": "The happiness of your life depends",
-      "caption": "The war is always inside",
-      "highlight_words": [
-        "pain",
-        "thoughts",
-        "hides"
-      ]
-    },
-    "generated_at": "2026-03-13T12:35:56.009571"
-  },
-  {
-    "quote": "First say to yourself what you would be; and then do what you have to do.",
-    "source": "Epictetus — Discourses",
-    "spoken_script": {
-      "full_script": "You know the thing you say you'll do tomorrow.\nBut tomorrow comes and goes again.\n\nI wasn’t always like this.\nI had to figure out who I wanted to be first.\nThen, I had to do the hard work to get there.\nNot everyone does that.\n\nIt’s simple, but not easy.\nYou say one thing.\nThen you do another.\n\nThat gap between thought and action grows.\nSometimes, it swallows whole years.\n\nWhat you want to be waits in silence.\nWaiting is how it becomes someone else’s story."
-    },
-    "on_screen_text": {
-      "quote_display": "First say to yourself what you would be",
-      "caption": "You already know what to do",
-      "highlight_words": [
-        "tomorrow",
-        "figure",
-        "hard",
-        "gap",
-        "waiting"
-      ]
-    },
-    "generated_at": "2026-03-13T12:41:13.261206"
-  },
-  {
-    "quote": "Waste no more time arguing about what a good man should be. Be one.",
-    "source": "Marcus Aurelius — Meditations",
-    "spoken_script": {
-      "full_script": "You ever catch yourself arguing\nabout what a good person looks like?\n\nI did it, many times over.\nIt just wasted my breath and hours.\n\nOne day, I stopped talking myself around\nand just tried being the man I spoke of.\n\nIt’s quieter that way.\nLess fuss, more doing.\n\nIf you’re waiting to figure it out first,\nwell, you might never start.\n\nBeing good isn’t loud or flashy.\nIt’s the quiet steps you take today."
-    },
-    "on_screen_text": {
-      "quote_display": "Waste no more time arguing",
-      "caption": "You probably know what to do",
-      "highlight_words": [
-        "arguing",
-        "wasted",
-        "quiet",
-        "doing",
-        "start"
-      ]
-    },
-    "generated_at": "2026-03-13T12:42:02.098601"
-  },
-  {
-    "quote": "Concentrate every minute on doing what's in front of you. You don't have to turn this into something. It doesn't have to upset you.",
-    "source": "Marcus Aurelius — Meditations",
-    "spoken_script": {
-      "full_script": "It feels like nothing’s moving forward.\nLike you’re stuck in the same spot again.\n\nYou look at the pile of things in front of you.\nAnd it feels too much to handle all at once.\n\nSometimes all you need is to do the next thing.\nNot turn it into a problem or make it bigger.\nJust that one thing, fully.\n\nI had to learn that the hard way.\nYou don’t have to make every minute a mountain.\nConcentrate on what’s right there in front of you.\nThat’s enough for today.\n\nMost days aren’t about leaps.\nThey’re about the small steps we forget to take."
-    },
-    "on_screen_text": {
-      "quote_display": "Concentrate every minute on doing what's in front of you.",
-      "caption": "One step, nothing more",
-      "highlight_words": [
-        "stuck",
-        "pile",
-        "next",
-        "concentrate",
-        "steps"
-      ]
-    },
-    "generated_at": "2026-03-13T12:48:52.030993"
-  },
-  {
-    "quote": "It means choosing what is right over what is easy, focusing on what you can control, and letting go of distractions that take you away from your purpose.",
-    "source": "Marcus Aurelius — Meditations",
-    "spoken_script": {
-      "full_script": "You keep scrolling past the same thought.\nThat thing you could do right now.\n\nIt’s easier to look away.\nTo chase the noise instead.\n\nBut choosing what is right over easy\nmeans sharpening your focus.\n\nControl what you can hold.\nLet the rest fall away.\n\nI found distractions don’t just steal time.\nThey steal purpose too.\n\nMost people live tangled up in that.\nIt’s a harder thing to untangle than you think."
-    },
-    "on_screen_text": {
-      "quote_display": "choosing what is right over what is easy",
-      "caption": "You already know what to do",
-      "highlight_words": [
-        "right",
-        "easy",
+        "start",
         "control",
-        "distractions",
-        "purpose"
-      ]
-    },
-    "generated_at": "2026-03-13T12:50:46.571362"
-  },
-  {
-    "quote": "Go against the grain, refuse to conform, take the road less traveled instead of the well-beaten path. Laugh in the face of adversity, and leap before you look.",
-    "source": "Winning Wisdom",
-    "spoken_script": {
-      "full_script": "Most folks follow the crowd without thinking.\nIt’s easier that way, isn't it?\n\nThey choose the road well traveled.\nSafe, predictable, worn smooth by many feet.\n\nBut sometimes you have to go against the grain.\nTake the path few dare to walk.\n\nI learned that laughter helps when trouble comes.\nIt’s not about recklessness, but about courage.\n\nLeap before you look means trusting yourself.\nEven if it scares you.\n\nNot everyone will understand.\nBut the road less traveled might teach you who you really are."
-    },
-    "on_screen_text": {
-      "quote_display": "Go against the grain",
-      "caption": "Trust the road less traveled",
-      "highlight_words": [
-        "courage",
-        "trusting",
-        "laughter"
-      ]
-    },
-    "generated_at": "2026-03-13T12:54:16.973094"
-  },
-  {
-    "quote": "I've gathered these transformative quotes about living with purpose. Not just to inspire, but to spark real change in how we approach each day.",
-    "source": "Winning Wisdom",
-    "spoken_script": {
-      "full_script": "I see people twenty years from now.\nStill stuck where they started.\n\nTalking about doing more.\nBut doing less instead.\n\nThey forget what I learned late.\nLiving with purpose means choosing daily.\nNot grand plans tomorrow.\n\nIt’s the small moments ignored.\nThe things we say we’ll start.\nThen set aside.\n\nYou don’t get a second chance for today.\nThat time you wasted?\nIt never comes back."
-    },
-    "on_screen_text": {
-      "quote_display": "Not just to inspire, but to spark real change",
-      "caption": "Time won't wait for readiness",
-      "highlight_words": [
-        "purpos",
-        "daily",
-        "wasted",
-        "chance"
-      ]
-    },
-    "generated_at": "2026-03-13T12:55:05.778984"
-  },
-  {
-    "quote": "Success is to be measured not so much by the position that one has reached in life as by the obstacles which he has overcome.” — Booker T.",
-    "source": "Famous People on How Adversity Made Them Stronger",
-    "spoken_script": {
-      "full_script": "You’ve felt stuck this week, haven’t you?\nLike the same door keeps slamming shut.\n\nI learned success isn’t about your title.\nIt’s about the walls you’ve pushed past.\n\nThat’s what Booker T. meant by success.\nNot the place you reach,\nbut the trouble you’ve faced and beaten.\n\nI wasn’t good at this at first.\nI thought life was about smooth roads.\n\nBut it’s the hard climbs that matter most.\nThey mark where you grew, even if quiet.\n\nSome days, the weight of it all\nfeels like it’s meant to break you.\n\nBut that weight also holds your story.\nMost folks never see that part."
-    },
-    "on_screen_text": {
-      "quote_display": "obstacles which he has overcome",
-      "caption": "Success is the struggle you outlast",
-      "highlight_words": [
-        "stuck",
-        "success",
-        "obstacles",
-        "weight",
-        "story"
-      ]
-    },
-    "generated_at": "2026-03-13T12:59:13.121069"
-  },
-  {
-    "quote": "Life without obstacles removes opportunity for growth.” “You have to take advantage of your disadvantages.” “Victims stay trapped, but visionaries bounce back.",
-    "source": "Top Quotes for Overcoming Adversity | Blind Ambition™",
-    "spoken_script": {
-      "full_script": "You’re tired of hitting the same wall.\nBut you keep walking toward it anyway.\n\nEasy days don’t teach you much.\nI spent years wishing for smooth sailing.\nUntil I realized rough patches teach more.\nThey force your hands.\nThey show you what you’re made of.\n\nI had to lean into my troubles.\nTaking advantage of disadvantages isn’t clever.\nIt’s just how you survive.\nVictims stay stuck holding those burdens.\nVisionaries learn to bounce back.\n\nThat bounce is harder than it looks.\nBut it’s the only way out."
-    },
-    "on_screen_text": {
-      "quote_display": "You have to take advantage of your disadvantages.",
-      "caption": "There’s no growth without struggle",
-      "highlight_words": [
-        "tired",
-        "rough",
-        "disadvantages",
-        "bounce",
-        "survive"
-      ]
-    },
-    "generated_at": "2026-03-13T12:59:36.822908"
-  },
-  {
-    "quote": "Strong mental strength encouraging quotes that uplift. ; “Difficulties strengthen the mind, as labor does the body.” Seneca ; “If it is endurable, then endure it.",
-    "source": "Mental Strength Quotes to Power Your Mind and Fuel ...",
-    "spoken_script": {
-      "full_script": "You feel stuck, but don't name it.\nLike the world just keeps holding still.\n\nI learned long ago that struggles\nare like exercise for the mind.\nHard days aren’t just mistakes.\nThey’re the work itself.\n\nIf it’s endurable, you endure it.\nYou find strength by carrying on.\n\nSome days, it was painful for me.\nBut pain was part of the building.\n\nThe mind grows tough like a muscle.\nNot by avoiding the hard things.\nBut by facing them, day by day."
-    },
-    "on_screen_text": {
-      "quote_display": "\"Difficulties strengthen the mind\"",
-      "caption": "Strength grows in hard moments",
-      "highlight_words": [
-        "stuck",
-        "struggles",
-        "endure",
-        "strength"
-      ]
-    },
-    "generated_at": "2026-03-13T13:00:10.769363"
-  },
-  {
-    "quote": "You must take personal responsibility. You cannot change the circumstances, the seasons, or the wind, but you can change yourself.” — Jim Rohn.",
-    "source": "54 accountability quotes you'll want bookmarked",
-    "spoken_script": {
-      "full_script": "You know the thing you blame on others?\nThe weather, the people, your bad luck.\n\nI learned a hard way long ago.\nYou can’t change those things.\nThey just happen.\n\nBut you can change yourself.\nThat’s the part you own.\nIt took me years to see that.\n\nMost hold on to excuses.\nThey forget who holds the reins.\nWhen I finally did — things shifted.\nNot outside me, inside me.\nThat’s the only place to start."
-    },
-    "on_screen_text": {
-      "quote_display": "You must take personal responsibility.",
-      "caption": "You own the reins today",
-      "highlight_words": [
-        "blame",
-        "change",
-        "excuses",
-        "reins",
+        "mind",
+        "strength",
         "inside"
       ]
     },
-    "generated_at": "2026-03-13T13:01:09.262439"
+    "generated_at": "2026-03-16T11:41:08.258072"
   },
   {
-    "quote": "You can't make yourself feel positive, but you can choose how to act, and if you choose right, it builds your confidence.",
-    "source": "41 Quotes to Change Your Habits - And Your Life",
+    "quote": "Begin at once to live, and count each separate day as a separate life.",
+    "source": "Marcus Aurelius — Meditations",
     "spoken_script": {
-      "full_script": "You ever notice how waiting feels like doing?\nLike you’re moving, but nowhere at all.\n\nI used to think feeling better meant waiting.\nWaiting for some spark to light inside.\n\nBut feeling positive isn’t a switch you flip.\nIt’s how you decide to act that changes things.\n\nOne step right after another builds quiet confidence.\nI found it hard at first. Still do sometimes.\n\nBut the choice to act is always there.\nWaiting for that feeling first? That’s the trap.\n\nConfidence comes from doing, not feeling.\nThat’s the only way it ever worked for me."
+      "full_script": "My friend — you've been waiting for the right moment.\nThat moment feels like it never comes.\n\nTime slips quietly by, one day at a time.\nI learned to see each day as its own life.\nNot tied to the past or the future.\n\nThere’s freedom in starting again every morning.\nLike planting a seed as if for the first time.\nYou don’t have to carry yesterday’s weight today.\n\nI held on too long to what should have been.\nThat made the days blur and grow heavy.\n\nYou can live today fresh and whole.\nThe day you’re waiting for — it’s today. It always was."
     },
     "on_screen_text": {
-      "quote_display": "You can't make yourself feel positive",
-      "caption": "Confidence comes from doing",
+      "quote_display": "Begin at once to live",
+      "caption": "The day you’re waiting for",
       "highlight_words": [
         "waiting",
-        "choice",
-        "confidence"
-      ]
-    },
-    "generated_at": "2026-03-13T13:01:45.622036"
-  },
-  {
-    "quote": "Life ultimately means taking the responsibility to find the right answer to its problems and to fulfill the tasks which it constantly sets for each individual.",
-    "source": "Viktor Frankl",
-    "spoken_script": {
-      "full_script": "You keep saying you'll figure it out.\nBut the days just keep rolling by.\n\nEvery morning brings another question.\nNot the big ones.\nSmall problems that never stop coming.\n\nLife asks you to find your answer.\nNot once, but over and over again.\n\nI didn’t always want that weight.\nBut there’s no escaping it.\n\nIt’s the job life gives you.\nYou either take it on or stay stuck.\n\nMost folks avoid it.\nLiving in the quiet corners of maybe later."
-    },
-    "on_screen_text": {
-      "quote_display": "Life ultimately means taking the responsibility",
-      "caption": "You already know what to do",
-      "highlight_words": [
-        "figure",
-        "question",
-        "answer",
-        "weight",
-        "responsibility"
-      ]
-    },
-    "generated_at": "2026-03-13T13:13:09.729613"
-  },
-  {
-    "quote": "There is only one way to happiness and that is to cease worrying about things which are beyond the power or our will.",
-    "source": "Epictetus",
-    "spoken_script": {
-      "full_script": "Most folks I met\ncarried troubles they couldn’t change.\n\nWorrying about things beyond control\nfelt like dragging heavy chains.\n\nIt took me too long to learn\nthat peace starts when you let go.\n\nYou hold on, wasting your breath.\nTime doesn’t wait for grudges or fears.\n\nSo many years spent waiting for change.\nOnly to find it never came.\n\nThe only way forward is to stop trying\nwhere you have no say."
-    },
-    "on_screen_text": {
-      "quote_display": "cease worrying about things",
-      "caption": "The cost of wasted breath",
-      "highlight_words": [
-        "worrying",
-        "chains",
-        "peace",
-        "time",
-        "waiting"
-      ]
-    },
-    "generated_at": "2026-03-13T13:13:45.793635"
-  },
-  {
-    "quote": "Do not ask things to happen as you wish, but wish them to happen as they do happen, and your life will go smoothly.” Epictetus, The Handbook, 8. Copy. Share on.",
-    "source": "Epictetus",
-    "spoken_script": {
-      "full_script": "You watch a day go by.\nYou want it to be different.\n\nBut most days don’t bend to your will.\nThey come as they’ll come.\n\nIt took me a long time to see that.\nTo stop wrestling with what was.\n\nThe trick is wishing for things as they are.\nNot as you dream them to be.\n\nLife moves smoother that way.\nLike a river you stop trying to dam.\n\nIt’s not about giving up.\nIt’s about giving in to what’s real.\n"
-    },
-    "on_screen_text": {
-      "quote_display": "wish them to happen as they do happen",
-      "caption": "Peace lives where you stop fighting",
-      "highlight_words": [
-        "wrestling",
-        "wishing",
-        "real",
-        "river"
-      ]
-    },
-    "generated_at": "2026-03-13T13:20:12.487394"
-  },
-  {
-    "quote": "Seneca's quote, *“The body should be treated rigorously, that it may not be disobedient to the mind, ”* encapsulates a timeless philosophy about the relationship between physical discipline and mental mastery.",
-    "source": "Seneca",
-    "spoken_script": {
-      "full_script": "You tell yourself you’ll start tomorrow.\nTomorrow when the mind feels sharp enough.\n\nBut the body is already listening, you see.\nIt won’t wait around for your good intentions.\n\nSeneca said the body must be treated rigorously.\nSo it won’t disobey the mind’s command.\n\nI learned that the hard way.\nLetting my body slip was letting time slip.\n\nYou can’t separate the two.\nOne drags the other down.\n\nIf your body doesn’t listen, neither will your mind.\nAnd the days start to unravel quietly."
-    },
-    "on_screen_text": {
-      "quote_display": "The body should be treated rigorously",
-      "caption": "You already know what to do",
-      "highlight_words": [
-        "body",
-        "treated",
-        "rigorously",
-        "mind",
-        "disobey"
-      ]
-    },
-    "generated_at": "2026-03-13T13:21:13.809605"
-  },
-  {
-    "quote": "Stoicism has a lot to say accepting the world as it is, not complaining and generally living in harmony with the world.",
-    "source": "Seneca",
-    "spoken_script": {
-      "full_script": "Most days, we barely notice the world as it is.\nWe spend so much time wishing things were different.\n\nI struggled with this myself for many years.\nComplaints felt easier than acceptance.\n\nSeneca said living in harmony with the world matters.\nNot pushing against what’s outside your reach.\n\nIt’s not about giving up or settling.\nIt’s about stopping the noise in your own mind.\n\nYou can’t change the wind.\nBut you can adjust your sails.\n\nThat’s where real peace begins."
-    },
-    "on_screen_text": {
-      "quote_display": "accepting the world as it is",
-      "caption": "Peace begins with acceptance",
-      "highlight_words": [
-        "accepting",
-        "harmony",
-        "peace"
-      ]
-    },
-    "generated_at": "2026-03-13T13:25:49.074716"
-  },
-  {
-    "quote": "Explore Epictetus quotes on self-mastery. Famous quotes by Epictetus ... Freedom isn't doing whatever we feel like, it's mastery over ourselves.",
-    "source": "Epictetus",
-    "spoken_script": {
-      "full_script": "Everyone wants freedom.\nThey think it means doing as they please.\n\nBut I’ve learned freedom’s something different.\nIt’s about mastering yourself.\nNot chasing every impulse.\n\nSelf-control was the hardest lesson.\nEspecially when I was younger.\nI thought freedom was just choice.\n\nIt’s not. It’s knowing when to say no.\nWhen to hold steady.\nWhen to keep quiet.\n\nThat’s the only freedom any of us ever had."
-    },
-    "on_screen_text": {
-      "quote_display": "Freedom isn't doing whatever we feel like",
-      "caption": "True freedom is self-mastery",
-      "highlight_words": [
+        "moment",
         "freedom",
-        "mastering",
-        "self-control"
+        "today",
+        "heavy"
       ]
     },
-    "generated_at": "2026-03-13T13:27:10.745600"
+    "generated_at": "2026-03-16T11:42:06.281990"
   },
   {
-    "quote": "In that space is our power to choose our response. In our response lies our growth and our freedom.” This is not just a quote.",
-    "source": "Viktor Frankl",
+    "quote": "We suffer more often in imagination than in reality.",
+    "source": "Seneca — Letters from a Stoic",
     "spoken_script": {
-      "full_script": "You know the moment you said \"tomorrow\" again.\nLike it was a place you could visit anytime.\n\nBut tomorrow is a stranger.\nAlways just out of reach.\n\nIn that pause before you act,\nthere’s a choice you make.\nIt’s smaller than fear, bigger than comfort.\n\nThat pause holds the power\nto change the day you live.\n\nI learned that late.\nIt’s a quiet weight to carry.\nMost people carry it empty."
+      "full_script": "You meant to start that.\nIt's been months now.\n\nBut the days fill with worries instead.\nSmall fears that gather like shadows.\n\nYou imagine what could go wrong.\nMore than what truly does.\n\nI spent years caught like that.\nMaking storms from thin air.\n\nYou don’t have to carry those storms.\nThey’re often lighter than they seem.\n\nI wish someone had sat me down and said this."
     },
     "on_screen_text": {
-      "quote_display": "In that space is our power to choose",
-      "caption": "The pause that holds power",
+      "quote_display": "We suffer more often in imagination",
+      "caption": "The storms are lighter than they seem",
       "highlight_words": [
-        "tomorrow",
-        "choice",
-        "pause",
-        "power",
-        "carry"
+        "start",
+        "worries",
+        "imagine",
+        "storms",
+        "lighter"
       ]
     },
-    "generated_at": "2026-03-13T14:35:38.648599"
+    "generated_at": "2026-03-16T11:43:00.087331"
+  },
+  {
+    "quote": "We suffer more often in imagination than in reality.",
+    "source": "Seneca — Letters from a Stoic",
+    "spoken_script": {
+      "full_script": "My friend — you’ve been carrying that worry for days.\nIt’s pressing, heavy, like a stone in your pocket.\n\nMost of that weight lives in your mind.\nNot in what’s actually waiting for you out there.\n\nI used to shape storms from shadows.\nMade mountains where there were only hills.\n\nYour thoughts can stretch a moment into forever.\nBut the real moment is quieter, softer.\n\nYou don’t have to suffer what’s not real.\nIt’s okay to let some things be light.\n\nI learned that slowly, after losing Margaret.\nThat some burdens we carry aren’t ours to hold.\n\nThat’s all I know. But it took me fifty years."
+    },
+    "on_screen_text": {
+      "quote_display": "We suffer more often in imagination",
+      "caption": "The weight is mostly inside",
+      "highlight_words": [
+        "worry",
+        "weight",
+        "mind",
+        "real",
+        "burdens"
+      ]
+    },
+    "generated_at": "2026-03-16T11:43:20.627343"
+  },
+  {
+    "quote": "We suffer more often in imagination than in reality.",
+    "source": "Seneca — Letters from a Stoic",
+    "spoken_script": {
+      "full_script": "My friend — you've been carrying that worry again.\nLike it’s heavier than it needs to be.\n\nI used to do that myself.\nTurn over every bad thing in my mind,\nLong before it ever happened.\n\nThe trouble is — the hardest part often lives in your head.\nNot out there in the world.\nNot in the moment you fear.\n\nYou’re spending hours with a shadow.\nHolding tight to something that might never come.\n\nThat weight could be a little lighter.\nThat quiet place you need — it’s waiting.\n\nThat's all I know. But it took me fifty years."
+    },
+    "on_screen_text": {
+      "quote_display": "We suffer more often in imagination",
+      "caption": "The hardest part lives in your head",
+      "highlight_words": [
+        "worry",
+        "shadow",
+        "weight",
+        "quiet",
+        "imagination"
+      ]
+    },
+    "generated_at": "2026-03-16T11:49:14.727875"
+  },
+  {
+    "quote": "We suffer more often in imagination than in reality.",
+    "source": "Seneca — Letters from a Stoic",
+    "spoken_script": {
+      "full_script": "My friend — you've been carrying something for a long time now.\nThat weight lives mostly in your head.\nYou worry about what might go wrong.\nThe shadows that stretch out before tomorrow.\n\nI did that after Margaret passed.\nThought the worst was always just ahead.\nBut most of it was a story I told myself.\nNot the hard fact.\n\nYour mind paints storms darker than they are.\nYou suffer more in imagination’s grip.\nAnd the moment itself? Usually quieter than you feared.\n\nThat’s all I know. But it took me fifty years."
+    },
+    "on_screen_text": {
+      "quote_display": "We suffer more often in imagination",
+      "caption": "Most pain lives in your mind",
+      "highlight_words": [
+        "carrying",
+        "weight",
+        "worry",
+        "imagination",
+        "quiet"
+      ]
+    },
+    "generated_at": "2026-03-16T11:49:31.064779"
+  },
+  {
+    "quote": "Success is nothing more than a few simple disciplines, practiced every day; while failure is simply a few errors in judgment, repeated every day.",
+    "source": "Jim Rohn",
+    "spoken_script": {
+      "full_script": "I know you've been carrying doubt quietly.\nNot the kind you can just shake off.\n\nEvery day, you choose again.\nSmall things done right or wrong.\n\nI spent years thinking success was a grand leap.\nIt’s not.\nIt’s the tiny steps repeated.\n\nMistakes pile up when we don't notice.\nBut so does steady care.\n\nYou don’t need to fix everything today.\nJust one small, simple thing.\n\nThat's all I know. But it took me fifty years."
+    },
+    "on_screen_text": {
+      "quote_display": "a few simple disciplines, practiced every day",
+      "caption": "Small steps quietly matter",
+      "highlight_words": [
+        "carrying",
+        "small",
+        "steps",
+        "mistakes",
+        "simple"
+      ]
+    },
+    "generated_at": "2026-03-16T11:51:38.574914"
   },
   {
     "quote": "You can be satisfied anytime your system is running. And a system can be successful in many different forms, not just the one you first envision.\" - James Clear.",
     "source": "James Clear",
     "spoken_script": {
-      "full_script": "The quiet ones in my class often surprised me.\nThey didn't shout or race to finish first.\nThey just kept their system running.\nTurning in work, day by day, steady and sure.\nAnd their success wasn't the one I expected.\nNot the loud victories or the bright headlines.\nBut something different, quiet and real.\nA steady rhythm that carried them through.\nI took years to learn this myself.\nSuccess doesn’t look just one way.\nIt looks like keeping things moving.\nEven if it’s not the plan you first made.\nSatisfaction comes from the system running.\nAnd that’s enough to last a lifetime."
+      "full_script": "You meant to start that. It’s been months.\nBut the days fill up with other things.\n\nAnd maybe those other things can be enough.\nA system doesn’t have to look like you thought.\n\nIt can be quiet and still moving forward.\nSometimes what you planned isn’t what you need.\n\nI watched my life change without much warning.\nI learned to find satisfaction in the small.\n\nYou don’t have to master one perfect way.\nThere are many forms that success can take.\n\nNot all of them shine like you imagined.\nBut they hold steady. They hold life.\n\nThat’s all I know. But it took me fifty years."
     },
     "on_screen_text": {
-      "quote_display": "You can be satisfied anytime your system is running.",
-      "caption": "Satisfaction in steady progress",
+      "quote_display": "A system can be successful in many forms",
+      "caption": "Success isn’t just one shape",
       "highlight_words": [
+        "months",
+        "enough",
         "quiet",
-        "system",
-        "success",
         "steady",
-        "satisfaction"
+        "life"
       ]
     },
-    "generated_at": "2026-03-13T14:35:56.175105"
-  },
-  {
-    "quote": "The body should be treated more rigorously, that it may not be disobedient to the mind.\" Is the correct quote.",
-    "source": "Seneca",
-    "spoken_script": {
-      "full_script": "One student I knew\nnever took care of himself.\n\nHe thought his mind\ncould carry the day alone.\n\nHis body gave out first.\nIt was slow, stubborn rebellion.\n\nI learned late how much\nbody listens to mind’s orders.\n\nIf you ignore aches and weariness,\nyou borrow pain you don’t repay.\n\nThe hardest lesson I faced:\nyour body won’t wait for your will."
-    },
-    "on_screen_text": {
-      "quote_display": "The body should be treated more rigorously",
-      "caption": "Mind and body must align",
-      "highlight_words": [
-        "student",
-        "body",
-        "mind",
-        "aches",
-        "lesson"
-      ]
-    },
-    "generated_at": "2026-03-13T14:36:15.572555"
-  },
-  {
-    "quote": "Progress is not achieved by luck or accident, but by working on yourself daily. ... Decide to be extraordinary and do what you need to do -- now.",
-    "source": "Epictetus",
-    "spoken_script": {
-      "full_script": "You've been carrying something for a long time now.\nNot the kind you can put down easily.\n\nIt’s like the weight grows heavier every morning.\nLike moving forward asks more than you can give.\n\nBut I learned something along the way.\nThat change doesn’t wait for a sign or a perfect day.\n\nIt’s the small work you choose to do each morning.\nThe quiet decisions nobody sees.\n\nYou don’t have to be extraordinary all at once.\nJust begin now, with what’s in your hands.\n\nShe never started. I still think about her."
-    },
-    "on_screen_text": {
-      "quote_display": "Decide to be extraordinary and do what you need to do -- now.",
-      "caption": "He sees you. Start now.",
-      "highlight_words": [
-        "carrying",
-        "weight",
-        "decisions",
-        "begin",
-        "extraordinary"
-      ]
-    },
-    "generated_at": "2026-03-13T14:47:28.712854"
-  },
-  {
-    "quote": "I think that Epictetus took freedom to mean something deeper than the political freedoms entailed by modern Libertarianism.",
-    "source": "Epictetus",
-    "spoken_script": {
-      "full_script": "I thought freedom was simply being left alone.\nThat was my mistake.\n\nIt isn't about what others allow you.\nOr the space they grant.\n\nReal freedom lives deeper.\nInside you.\nIn how you choose to meet each moment.\nNo one else owns that.\n\nYou hold it, even when life feels tight.\nWhen the world feels like a cage.\n\nIt's quieter than I expected.\nBut it's still yours.\n\nThat's all I know. But it took me fifty years."
-    },
-    "on_screen_text": {
-      "quote_display": "freedom to mean something deeper",
-      "caption": "Freedom lives inside you",
-      "highlight_words": [
-        "freedom",
-        "deeper",
-        "choose"
-      ]
-    },
-    "generated_at": "2026-03-13T14:47:43.435165"
-  },
-  {
-    "quote": "These Stoic quotes about self-control help us understand how we can control our own minds in order to lead a more virtuous and happy life.",
-    "source": "Seneca",
-    "spoken_script": {
-      "full_script": "You meant to start that. It's been months.\nBut the days filled with other things.\nSmall distractions that pile up like leaves.\nYou feel the tug — to take control.\nThe mind pulls harder, restless and loud.\nBut control isn’t about force or noise.\nIt’s the quiet choice to not react.\nTo meet the moment as it is —\nNot as the worries tell you it should be.\nYou don’t have to fix the whole world.\nJust this moment, this breath.\nThis stillness beneath the noise.\nI've fallen into the noise many times, love.\nThat's all I know. But it took me fifty years."
-    },
-    "on_screen_text": {
-      "quote_display": "control our own minds",
-      "caption": "Quiet choice amid the noise",
-      "highlight_words": [
-        "control",
-        "quiet",
-        "noise",
-        "stillness",
-        "choice"
-      ]
-    },
-    "generated_at": "2026-03-13T14:49:28.301367"
-  },
-  {
-    "quote": "The key to control is not in controlling external events, but in controlling your own mind. – Epictetus",
-    "source": "Seneca",
-    "spoken_script": {
-      "full_script": "You meant to start that.\nIt's been months now.\n\nThe days fill up with things\nthat don’t move you forward.\nAnd it’s hard to hold space\nfor what really matters.\n\nYou can’t control much out there.\nThe world doesn’t wait or pause.\nBut your mind—\nyour quiet, stubborn, restless mind—\nis yours to tend.\n\nIt’s where the door opens,\nif you’re willing to unlock it.\n\nThat's all I know. But it took me fifty years."
-    },
-    "on_screen_text": {
-      "quote_display": "The key to control is not in controlling external events",
-      "caption": "The door opens inside you",
-      "highlight_words": [
-        "control",
-        "mind",
-        "quiet",
-        "door",
-        "years"
-      ]
-    },
-    "generated_at": "2026-03-13T14:49:43.533817"
-  },
-  {
-    "quote": "Famous quotes by Jim Rohn",
-    "source": "Jim Rohn",
-    "spoken_script": {
-      "full_script": "After Margaret died, I stopped caring about being right.\nIt never brought her back.\n\nI learned to hold my thoughts gently.\nNot everything needed my answer.\n\nSometimes, the hardest part is waiting.\nWaiting without control.\n\nYou have power over your mind.\nYou do not need to carry every burden.\n\nI wish someone had sat me down and said this."
-    },
-    "on_screen_text": {
-      "quote_display": "You have power over your mind.",
-      "caption": "You don't have to carry it all",
-      "highlight_words": [
-        "right",
-        "waiting",
-        "power"
-      ]
-    },
-    "generated_at": "2026-03-13T14:50:19.223117"
-  },
-  {
-    "quote": "F. M. Alexander — 'People do not decide their futures, they decide their habits and their habits decide their futures.",
-    "source": "F. M. Alexander",
-    "spoken_script": {
-      "full_script": "I know you've been carrying that weight.\nThe one that sits heavy in your chest.\n\nIt’s not the future you imagined.\nNot the plans you once made.\n\nBut sometimes, it’s the small, steady things\nthat shape what’s to come.\n\nHabit. Quiet, slow choices.\nDay after day.\n\nThey’re not flashy.\nNot heroic.\n\nBut they build the room you live in tomorrow.\nThat’s all I know. But it took me fifty years."
-    },
-    "on_screen_text": {
-      "quote_display": "habits decide their futures",
-      "caption": "The weight is in your habits",
-      "highlight_words": [
-        "carrying",
-        "habit",
-        "steady",
-        "choices",
-        "futures"
-      ]
-    },
-    "generated_at": "2026-03-13T14:51:08.036707"
-  },
-  {
-    "quote": "People do not decide their futures, they decide their habits and their habits decide their futures.” — F. M. Alexander.",
-    "source": "F. M. Alexander",
-    "spoken_script": {
-      "full_script": "I spent years chasing big changes.\nThinking tomorrow held the answer.\n\nBut what I missed was quieter.\nSmall things done again and again.\n\nYour habits shape the life you wake to.\nNot the grand plans you make at night.\n\nI planted seeds in my garden little by little.\nSome days it felt like nothing was happening.\n\nStill, every morning I showed up.\nEvery habit built another day forward.\n\nYou're not behind, my friend.\nThe future is quietly decided today.\n\nThat's all I know. But it took me fifty years."
-    },
-    "on_screen_text": {
-      "quote_display": "habits decide their futures",
-      "caption": "The future is quietly decided",
-      "highlight_words": [
-        "habits",
-        "future",
-        "quietly"
-      ]
-    },
-    "generated_at": "2026-03-13T14:51:53.464283"
+    "generated_at": "2026-03-16T11:54:45.373805"
   },
   {
     "quote": "An easy & proven way to build good habits & break bad ones. You do not rise to the level of your goals. You fall to the level of your systems.",
     "source": "James Clear",
     "spoken_script": {
-      "full_script": "You've been carrying something for a long time now.\nNot the kind you say out loud.\n\nI was sitting out back, watching the garden slow down.\nThought about how we say we want things to change.\nBut the truth is, we don’t rise to those hopes.\nWe fall to what we do every day without thinking.\n\nThe small steps you take, or don’t.\nThey are the ones that shape you.\nThey build the habits you live with.\n\nI lost Margaret and learned this late.\nIt’s not the big moments that decide us.\nIt’s what we put in place when no one’s looking.\n\nThat’s all I know. But it took me fifty years."
+      "full_script": "My friend — you've been waiting for the right moment.\nSitting still, hoping it will come to you.\n\nBut the moment you want won't rise by itself.\nIt rides on the quiet habits you keep.\nThe small things you do each day.\nThe systems that catch you when you stumble.\n\nI wasted years chasing grand gestures.\nForgot that steady steps hold more weight.\nGood habits hold you up like old hands.\nBad ones pull you down without notice.\n\nYou fall to where your systems are.\nNot to some distant, shining goal.\nThe day you're waiting for — it's today. It always was."
     },
     "on_screen_text": {
-      "quote_display": "You fall to the level of your systems.",
-      "caption": "The weight of quiet habits",
+      "quote_display": "You fall to the level of your systems",
+      "caption": "You already know what to do",
+      "highlight_words": [
+        "waiting",
+        "habits",
+        "systems",
+        "fall",
+        "today"
+      ]
+    },
+    "generated_at": "2026-03-16T11:55:09.497807"
+  },
+  {
+    "quote": "Life ultimately means taking the responsibility to find the right answer to its problems and to fulfill the tasks which it constantly sets for each individual.",
+    "source": "Viktor Frankl",
+    "spoken_script": {
+      "full_script": "You've been carrying something for a long time now.\nNot the kind you can set down easily.\n\nIt weighs on you because it asks for an answer.\nNot a perfect one, just a true one.\n\nThe tasks you face — they don't pause or wait.\nThey keep coming, quiet and demanding.\n\nYou might feel lost or unsure sometimes.\nThat’s part of how we find our way.\n\nI lost Margaret and had to find my own answers.\nIt changed everything I thought I knew.\n\nThere’s no hero’s journey here, just steady steps.\nThe work is in showing up, even when tired.\n\nThat’s all I know. But it took me fifty years."
+    },
+    "on_screen_text": {
+      "quote_display": "Life ultimately means taking the responsibility",
+      "caption": "You already know what to do",
       "highlight_words": [
         "carrying",
-        "change",
-        "small",
+        "answer",
+        "tasks",
+        "showing",
+        "tired"
+      ]
+    },
+    "generated_at": "2026-03-16T11:56:17.565744"
+  },
+  {
+    "quote": "Life ultimately means taking the responsibility to find the right answer to its problems and to fulfill the tasks which it constantly sets for each individual.",
+    "source": "Viktor Frankl",
+    "spoken_script": {
+      "full_script": "I spent decades blaming others for my troubles.\nIt kept me from seeing what was mine to fix.\n\nLife doesn't pause while you decide what to do.\nIt keeps handing you questions, one after another.\n\nYou don't have to have all the answers yet.\nBut you do have to meet each day’s task.\n\nIt’s not about knowing the perfect path.\nIt’s about standing up and walking anyway.\n\nYou carry more than you think you can.\nBut only because you chose to carry it.\n\nThat’s all I know. But it took me fifty years."
+    },
+    "on_screen_text": {
+      "quote_display": "Life ultimately means taking the responsibility",
+      "caption": "You carry more than you think",
+      "highlight_words": [
+        "blaming",
+        "answers",
+        "task",
+        "carry",
+        "fifty"
+      ]
+    },
+    "generated_at": "2026-03-16T11:56:20.153991"
+  },
+  {
+    "quote": "There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.",
+    "source": "Seneca",
+    "spoken_script": {
+      "full_script": "My friend — you've been carrying something for a long time now.\n\nIt feels heavy, doesn't it?\nLike the days stretch thinner and the small things stop surprising you.\n\nI used to think miracles were big things — grand and loud.\nBut maybe it’s different.\nMaybe everything around you is quietly miraculous.\n\nThe way the morning light slips through your window.\nThe sigh of the earth when it rains.\nThe small kindnesses that visit without notice.\n\nI learned to see that after Margaret was gone.\nIt didn’t fix the emptiness.\nBut it found a place inside me to stand.\n\nThat’s all I know. But it took me fifty years."
+    },
+    "on_screen_text": {
+      "quote_display": "everything is a miracle",
+      "caption": "The quiet miracles around you",
+      "highlight_words": [
+        "carrying",
+        "miraculous",
+        "quiet",
+        "stand",
+        "empty"
+      ]
+    },
+    "generated_at": "2026-03-16T12:11:45.805165"
+  },
+  {
+    "quote": "There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.",
+    "source": "Seneca",
+    "spoken_script": {
+      "full_script": "I know you've been carrying that quiet ache.\nThe one that doesn’t show up in tears.\n\nSome days it feels like nothing’s changed.\nLike you’re just moving through the same heaviness.\n\nThere’s a way to live where nothing surprises you.\nWhere the world feels flat and ordinary.\n\nBut there’s another way.\nTo look at everything as if it’s a miracle.\nNot because it’s loud or grand.\nBut because it’s here.\n\nThe small moments—the breath, the light, the silence.\nThey don’t have to shout to be real.\n\nThat’s all I know. But it took me fifty years."
+    },
+    "on_screen_text": {
+      "quote_display": "One is as though everything is a miracle.",
+      "caption": "The quiet miracle of being here",
+      "highlight_words": [
+        "carrying",
+        "miracle",
+        "quiet",
+        "here"
+      ]
+    },
+    "generated_at": "2026-03-16T12:11:51.448321"
+  },
+  {
+    "quote": "There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.",
+    "source": "Seneca",
+    "spoken_script": {
+      "full_script": "My friend — you've been waiting for the right moment.\nHoping the world would stop turning long enough.\n\nI spent years thinking miracles were for others.\nFor those more lucky, or less tired.\n\nBut the truth settled in quietly, like rain.\nEvery breath, every small kindness, a miracle.\nThe way sunlight finds the edges of your window.\n\nYou don’t have to chase grand wonders.\nThey are here in the everyday, if you look.\n\nI wish someone had sat me down and said this."
+    },
+    "on_screen_text": {
+      "quote_display": "Everything is a miracle",
+      "caption": "The miracle is already here",
+      "highlight_words": [
+        "waiting",
+        "miracles",
+        "quietly",
+        "everyday",
+        "look"
+      ]
+    },
+    "generated_at": "2026-03-16T12:14:51.638454"
+  },
+  {
+    "quote": "F. M. Alexander — 'People do not decide their futures, they decide their habits and their habits decide their futures.",
+    "source": "F. M. Alexander",
+    "spoken_script": {
+      "full_script": "The years go faster than you expect them to.\nYou'll look up one day and find time gone.\n\nIt’s not the big moments that change you.\nIt’s what you do over and over again.\n\nHabits settle quietly into your days.\nThey shape what you become without asking.\n\nYou might not see it now.\nBut those small decisions are making your future.\n\nI spent long years chasing what felt urgent.\nMeanwhile, the future was being built in habits.\n\nYou don’t need to wait for a sign, my friend.\nThe day you’re waiting for — it’s today. It always was."
+    },
+    "on_screen_text": {
+      "quote_display": "habits decide their futures",
+      "caption": "The future lives in your habits",
+      "highlight_words": [
+        "years",
         "habits",
+        "future",
+        "decide"
+      ]
+    },
+    "generated_at": "2026-03-16T14:42:18.450539"
+  },
+  {
+    "quote": "F. M. Alexander — 'People do not decide their futures, they decide their habits and their habits decide their futures.",
+    "source": "F. M. Alexander",
+    "spoken_script": {
+      "full_script": "You meant to start that. It's been months.\nNot the doing, but the waiting that fills your days.\n\nWe don’t decide the grand future outright.\nWe decide the small, daily routines.\n\nThose habits settle in, quiet and steady.\nThey shape what tomorrow looks like without noise.\n\nI lost Margaret, and I saw how days without intention slip by.\nTaking care of the garden taught me more than I expected.\n\nSimple acts, repeated. Like breathing.\nThey gather weight over years.\n\nYou are choosing what comes next, even now.\nThat’s all I know. But it took me fifty years."
+    },
+    "on_screen_text": {
+      "quote_display": "habits decide their futures",
+      "caption": "What shapes tomorrow is small",
+      "highlight_words": [
+        "months",
+        "habits",
+        "steady",
+        "choosing",
+        "years"
+      ]
+    },
+    "generated_at": "2026-03-16T14:42:22.513907"
+  },
+  {
+    "quote": "- Seneca Live a life of restraint and respect for others. Avoid harm and wrongdoing. We should cultivate a peaceful mind and a clear conscience.",
+    "source": "Seneca",
+    "spoken_script": {
+      "full_script": "The years go faster than you expect them to.\nYou’ll look up one day and wonder where it went.\n\nIt’s easy to forget how much power you have.\nNot to change the world—just to keep your peace.\n\nI’ve seen harm come from quick words and quick hands.\nYou don’t have to add to that.\n\nA peaceful mind isn’t given, it’s made.\nA clear conscience is a quiet place to rest at night.\n\nYou can be gentle with yourself and others.\nIt’s a kind of strength that doesn’t shout.\n\nI lost my Margaret and found out what mattered.\nYou don’t have to wait so long.\n\nThat’s all I know. But it took me fifty years."
+    },
+    "on_screen_text": {
+      "quote_display": "cultivate a peaceful mind",
+      "caption": "A quiet place to rest",
+      "highlight_words": [
+        "peaceful",
+        "conscience",
+        "gentle",
+        "quiet",
+        "strength"
+      ]
+    },
+    "generated_at": "2026-03-16T14:58:12.868152"
+  },
+  {
+    "quote": "People do not decide their futures, they decide their habits and their habits decide their futures. F. M. Alexander. Archived post.",
+    "source": "F. M. Alexander",
+    "spoken_script": {
+      "full_script": "You've been carrying something for a long time now.\nNot always visible, but heavy just the same.\n\nI was sitting outside, resting my hands in the earth.\nThinking about how much we hold onto.\n\nIt's not the grand moments that shape you.\nIt's the small things you do again and again.\nThe habits that sneak in quietly.\n\nThey don't promise much.\nNo great fanfare.\n\nBut they decide the path you walk tomorrow.\nThe future isn’t some turning point.\nIt’s a slow folding of little choices.\n\nI lost Margaret and learned this too late.\nThat's all I know. But it took me fifty years."
+    },
+    "on_screen_text": {
+      "quote_display": "People do not decide their futures",
+      "caption": "The quiet weight you carry",
+      "highlight_words": [
+        "carrying",
+        "habits",
+        "choices",
+        "future",
         "late"
       ]
     },
-    "generated_at": "2026-03-13T15:12:15.477962"
+    "generated_at": "2026-03-16T17:45:04.302507"
+  },
+  {
+    "quote": "The wise man can safely control himself without becoming over-anxious; he can halt his tears and his pleasures at will.",
+    "source": "Seneca",
+    "spoken_script": {
+      "full_script": "She never cried in class.\nKept everything inside, always.\n\nI wondered why she held back.\nWhy the tears never came.\n\nSometimes, control isn’t strength.\nSometimes, it’s just quiet armor.\n\nYou don’t have to share every ache.\nNot today, not now.\n\nIt’s okay to stop the flood.\nTo halt your tears and your pleasures.\n\nThe weight you carry doesn’t have to show.\nYou can hold it gently, my friend.\n\nThat's all I know. But it took me fifty years."
+    },
+    "on_screen_text": {
+      "quote_display": "He can halt his tears and pleasures",
+      "caption": "Holding gently what you carry",
+      "highlight_words": [
+        "control",
+        "tears",
+        "quiet",
+        "armor",
+        "carry"
+      ]
+    },
+    "generated_at": "2026-03-16T17:46:14.965813"
+  },
+  {
+    "quote": "The wise man can safely control himself without becoming over-anxious; he can halt his tears and his pleasures at will.",
+    "source": "Seneca",
+    "spoken_script": {
+      "full_script": "The brightest students sometimes lost their way.\nNot from lack of talent.\nBut from letting their feelings run the day.\n\nI saw good people swallowed by their worry.\nOr caught chasing every fleeting joy.\nYou carry a quiet storm inside yourself.\nIt pulls you this way and that.\n\nBut you can pause it.\nNot by fighting it hard.\nBut by choosing to hold your tears and pleasures.\nTo keep your heart steady, even when it aches.\n\nIt took me years to trust this.\nI wish someone had sat me down and said this."
+    },
+    "on_screen_text": {
+      "quote_display": "He can halt his tears and his pleasures",
+      "caption": "You carry a quiet storm inside",
+      "highlight_words": [
+        "lost",
+        "worry",
+        "steady",
+        "pause",
+        "aches"
+      ]
+    },
+    "generated_at": "2026-03-16T17:46:18.227399"
   }
 ]
