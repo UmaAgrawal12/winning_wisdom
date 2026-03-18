@@ -3,14 +3,128 @@ import json
 import random
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
+from typing import Optional, List
 from dotenv import load_dotenv
+from pydantic import BaseModel
+
+try:
+    # When running from `winning_wisdom_ai/` as the working directory
+    from llm_client import topic_llm
+except ModuleNotFoundError:
+    # When importing as a package (e.g., `python -m winning_wisdom_ai...`)
+    from winning_wisdom_ai.llm_client import topic_llm
 
 load_dotenv()
 
 SERPAPI_API_KEY = os.getenv("SERPAPI_API_KEY")
 
 USED_QUOTES_FILE = Path("data/used_quotes.json")
+
+
+class TopicsResult(BaseModel):
+    topics: List[str]
+    generated_at: str
+
+
+def generate_topics(
+    theme: str = "Winning Wisdom: discipline, meaning, resilience, self-mastery",
+    n: Optional[int] = 8,
+    audience: str = "general_self_improver",
+) -> TopicsResult:
+    """
+    Generate short-form video topics aligned to the Winning Wisdom theme.
+
+    Returns a list of short, actionable topics (not quotes).
+    """
+    llm = topic_llm()
+
+    target_n = n or 8
+    prompt = (
+        "You are the editorial lead for 'Winning Wisdom' short videos.\n"
+        "Generate topic ideas that fit: stoic/winning wisdom, discipline, meaning, resilience, self-mastery.\n"
+        "Constraints:\n"
+        f"- Audience: {audience}\n"
+        f"- Theme: {theme}\n"
+        "- Each topic: 4–10 words, plain English, no quotes, no emojis.\n"
+        "- Avoid generic filler ('be better', 'success mindset'). Make them specific and human.\n"
+        f"- Return exactly {target_n} topics.\n\n"
+        "Return ONLY valid JSON with this shape:\n"
+        '{ "topics": ["...","..."] }\n'
+    )
+
+    try:
+        resp = llm.invoke(prompt)
+        raw = (resp.content or "").strip()
+        data = json.loads(raw)
+        topics = [t.strip() for t in data.get("topics", []) if isinstance(t, str) and t.strip()]
+        if len(topics) >= 2:
+            if n:
+                topics = topics[:n]
+            return TopicsResult(topics=topics, generated_at=datetime.now().isoformat())
+    except Exception:
+        # Fall through to fallback topics
+        pass
+
+    fallback = [
+        "Stop waiting for confidence",
+        "Discipline on the hard days",
+        "The cost of staying comfortable",
+        "What you can control today",
+        "How to face criticism calmly",
+        "When motivation disappears",
+        "Doing the right thing quietly",
+        "The difference between pain and suffering",
+    ]
+    random.shuffle(fallback)
+    topics = fallback[: (n or 8)]
+    return TopicsResult(topics=topics, generated_at=datetime.now().isoformat())
+
+
+def fetch_winning_wisdom_quote_for_topic(
+    topic: str,
+    avoid_used: bool = True,
+    location: str = "United States",
+) -> dict:
+    """
+    Fetch a quote aligned to a specific topic, still within the Winning Wisdom theme.
+
+    Strategy:
+    - Try SerpAPI searches that combine the topic with our author-specific configs
+    - Fall back to the generic Winning Wisdom quote picker
+    """
+    topic = (topic or "").strip()
+    if not topic:
+        return fetch_winning_wisdom_quote(avoid_used=avoid_used, location=location)
+
+    used_quotes = _load_used_quotes() if avoid_used else set()
+
+    if SERPAPI_API_KEY:
+        configs = WINNING_WISDOM_SEARCH_CONFIG.copy()
+        random.shuffle(configs)
+
+        # Try a few focused searches first
+        for cfg in configs:
+            author_source = cfg["source"]
+            query = f'{author_source} quote about {topic}'
+            candidates = _search_quotes(query=query, location=location)
+            for candidate in candidates:
+                quote_text = candidate.get("quote", "").strip()
+                if not quote_text:
+                    continue
+                if avoid_used and quote_text.lower() in used_quotes:
+                    continue
+                _save_used_quote(quote_text)
+                return {
+                    "topic": topic,
+                    "quote": quote_text,
+                    "source": author_source,
+                    "fetched_at": datetime.now().isoformat(),
+                }
+
+    # Fallback: generic Winning Wisdom quote selection
+    base = fetch_winning_wisdom_quote(avoid_used=avoid_used, location=location)
+    base["topic"] = topic
+    return base
 
 
 def _load_used_quotes() -> set:

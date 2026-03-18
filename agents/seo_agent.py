@@ -239,5 +239,4 @@ Return ONLY valid JSON. No preamble, no explanation, no markdown fences.
         }
 
     normalized_json = json.dumps(parsed)
-    data: Dict = SEOResult.model_validate_json(normalized_json).model_dump()
-    return SEOResult(**data)
+    return SEOResult.parse_raw(normalized_json)

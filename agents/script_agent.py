@@ -590,7 +590,7 @@ def generate_facebook_wisdom_script(
 def _save_script(script: DailyWisdomScript) -> None:
     SCRIPTS_FILE.parent.mkdir(parents=True, exist_ok=True)
     existing = _load_scripts()
-    existing.append(script.model_dump())
+    existing.append(script.dict())
     with open(SCRIPTS_FILE, "w", encoding="utf-8") as f:
         json.dump(existing, f, indent=2, ensure_ascii=False)
 

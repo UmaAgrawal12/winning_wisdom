@@ -7,614 +7,1365 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap"
     rel="stylesheet"
   />
   <style>
     :root {
-      --bg: #050816;
-      --bg-accent: #0b1220;
-      --panel: rgba(15,23,42,0.96);
-      --panel-soft: rgba(15,23,42,0.75);
-      --accent: #a855f7;
-      --accent-soft: rgba(168,85,247,0.16);
-      --accent-strong: #f97316;
-      --text: #e5e7eb;
-      --muted: #9ca3af;
-      --border: rgba(148,163,184,0.45);
-      --danger: #f97373;
-      --success: #4ade80;
-      --score-low: #f97373;
-      --score-mid: #facc15;
-      --score-high: #4ade80;
-      --shadow-soft: 0 20px 60px rgba(15,23,42,0.85);
-      --radius-lg: 28px;
-      --radius-md: 18px;
-      --transition-fast: 0.18s ease-out;
+      /* Dark theme colors */
+      --bg-dark: #0a0a0f;
+      --bg-darker: #050508;
+      --bg-card: #12121a;
+      --bg-card-hover: #16161f;
+      
+      /* Vibrant accent colors */
+      --accent-purple: #a855f7;
+      --accent-pink: #ec4899;
+      --accent-blue: #3b82f6;
+      --accent-cyan: #06b6d4;
+      --accent-orange: #f97316;
+      --accent-yellow: #eab308;
+      
+      /* Gradient combinations */
+      --gradient-primary: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+      --gradient-secondary: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+      --gradient-tertiary: linear-gradient(135deg, #f97316 0%, #eab308 100%);
+      --gradient-card: linear-gradient(135deg, rgba(168, 85, 247, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%);
+      
+      /* Text colors */
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #64748b;
+      
+      /* Status colors */
+      --success: #10b981;
+      --warning: #f59e0b;
+      --error: #ef4444;
+      
+      /* Borders & dividers */
+      --border: rgba(148, 163, 184, 0.1);
+      --border-bright: rgba(168, 85, 247, 0.3);
+      
+      /* Shadows with glow */
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+      --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
+      --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.6);
+      --shadow-glow: 0 0 40px rgba(168, 85, 247, 0.4);
+      --shadow-glow-blue: 0 0 40px rgba(59, 130, 246, 0.4);
+      
+      /* Radius */
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 20px;
+      
+      --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: "Plus Jakarta Sans", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
     body {
       min-height: 100vh;
-      display: flex;
-      align-items: stretch;
-      justify-content: center;
-      padding: 32px 16px;
-      color: var(--text);
-      background:
-        radial-gradient(circle at 0% 0%, rgba(248,250,252,0.06), transparent 55%),
-        radial-gradient(circle at 100% 0%, rgba(251,113,133,0.20), transparent 55%),
-        radial-gradient(circle at 0% 100%, rgba(56,189,248,0.25), transparent 55%),
-        radial-gradient(circle at 100% 100%, rgba(129,140,248,0.35), transparent 55%),
-        linear-gradient(135deg, #020617, #020617 40%, #020617 100%);
+      background: var(--bg-darker);
+      color: var(--text-primary);
+      padding: 20px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Animated background */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: 
+        radial-gradient(circle at 20% 30%, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 40% 70%, rgba(236, 72, 153, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 90% 80%, rgba(249, 115, 22, 0.1) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+      animation: gradientShift 20s ease infinite;
+    }
+
+    @keyframes gradientShift {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.8; }
+    }
+
+    /* Grid pattern overlay */
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(148, 163, 184, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(148, 163, 184, 0.03) 1px, transparent 1px);
+      background-size: 50px 50px;
+      pointer-events: none;
+      z-index: 0;
     }
 
     .app {
-      width: 100%;
-      max-width: 1160px;
-      background: radial-gradient(circle at top left, rgba(30,64,175,0.85), rgba(15,23,42,0.97));
-      border-radius: var(--radius-lg);
-      border: 1px solid rgba(148,163,184,0.5);
-      box-shadow: var(--shadow-soft);
+      max-width: 1600px;
+      margin: 0 auto;
+      background: var(--bg-dark);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-lg), var(--shadow-glow);
       overflow: hidden;
-      display: grid;
-      grid-template-columns: minmax(0, 2.5fr) minmax(0, 2fr);
       position: relative;
-      isolation: isolate;
+      z-index: 1;
+      min-height: calc(100vh - 40px);
+      display: grid;
+      grid-template-rows: auto 1fr;
+      grid-template-columns: minmax(0, 2.5fr) minmax(0, 1.8fr);
+      border: 1px solid var(--border);
+    }
+
+    /* Tab layout */
+    .app[data-step="1"] {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .app[data-step="1"] .right {
+      display: none;
+    }
+
+    .app[data-step="2"] {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .app[data-step="2"] .right {
+      display: none;
+    }
+
+    .app[data-step="3"] {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .app[data-step="3"] .left {
+      display: none;
+    }
+    .app[data-step="3"] .right {
+      grid-column: 1 / -1;
+      border-left: none;
+    }
+
+    .step-screen {
+      display: none;
+    }
+    .app[data-step="1"] .step-screen[data-screen="1"] {
+      display: block;
+    }
+    .app[data-step="2"] .step-screen[data-screen="2"] {
+      display: block;
+    }
+
+    .step3-screen {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    @media (max-width: 1100px) {
+      .results-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .results-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .results-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--gradient-secondary);
+      opacity: 0.9;
+    }
+
+    .results-card-header {
+      padding: 22px 24px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.08);
+    }
+
+    .results-card-title {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      color: var(--text-primary);
+      font-family: "Poppins", sans-serif;
+    }
+
+    .results-card-body {
+      padding: 18px 24px 24px;
+    }
+
+    .score-overview {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .score-badge-lg {
+      padding: 10px 14px;
+      border-radius: 14px;
+      background: rgba(168, 85, 247, 0.14);
+      border: 1px solid rgba(168, 85, 247, 0.35);
+      color: var(--text-primary);
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      box-shadow: 0 10px 28px rgba(168, 85, 247, 0.12);
+      white-space: nowrap;
+    }
+
+    .score-grid.results {
+      margin-bottom: 0;
+    }
+
+    .hashtags-block {
+      display: grid;
+      gap: 18px;
+    }
+
+    .platform-row {
+      padding: 14px 16px 16px;
+      border: 1px solid rgba(148, 163, 184, 0.08);
+      border-radius: var(--radius-md);
+      background: rgba(18, 18, 26, 0.55);
+    }
+
+    .platform-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .platform-title span {
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+    }
+
+    .app-header {
+      grid-column: 1 / -1;
+      grid-row: 1;
+      padding: 24px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      background: rgba(18, 18, 26, 0.8);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(20px);
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
 
     @media (max-width: 900px) {
+      body { padding: 12px; }
       .app {
-        grid-template-columns: minmax(0,1fr);
+        grid-template-columns: minmax(0, 1fr);
+        min-height: calc(100vh - 24px);
+      }
+      .app-header {
+        padding: 20px;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .header-right {
+        width: 100%;
       }
     }
 
     .left {
-      padding: 24px 28px 28px;
-      border-right: 1px solid rgba(30,64,175,0.6);
-      background: linear-gradient(155deg, rgba(15,23,42,0.96), rgba(15,23,42,0.9));
+      grid-row: 2;
+      padding: 32px;
+      background: var(--bg-dark);
+      overflow-y: auto;
+      position: relative;
+      z-index: 1;
     }
 
     .right {
-      padding: 24px 24px 24px 20px;
-      background:
-        radial-gradient(circle at top left, rgba(56,189,248,0.16), transparent 60%),
-        radial-gradient(circle at bottom right, rgba(251,113,133,0.14), transparent 60%),
-        linear-gradient(155deg, rgba(15,23,42,0.98), rgba(15,23,42,0.92));
+      grid-row: 2;
+      padding: 32px;
+      background: linear-gradient(180deg, var(--bg-dark) 0%, rgba(18, 18, 26, 0.95) 100%);
+      border-left: 1px solid var(--border);
+      overflow-y: auto;
+      position: relative;
+      z-index: 1;
     }
 
-    .header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 24px;
-      position: relative;
+    /* Custom scrollbar */
+    .left::-webkit-scrollbar,
+    .right::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .left::-webkit-scrollbar-track,
+    .right::-webkit-scrollbar-track {
+      background: var(--bg-darker);
+    }
+
+    .left::-webkit-scrollbar-thumb,
+    .right::-webkit-scrollbar-thumb {
+      background: var(--gradient-primary);
+      border-radius: 4px;
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 16px;
     }
 
     .logo {
-      width: 34px;
-      height: 34px;
-      border-radius: 999px;
-      background:
-        conic-gradient(from 210deg, #f97316, #facc15, #22c55e, #38bdf8, #a855f7, #f97316);
-      box-shadow: 0 0 30px rgba(248,250,252,0.35);
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: var(--gradient-primary);
+      box-shadow: var(--shadow-glow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      animation: logoGlow 3s ease-in-out infinite;
+    }
+
+    @keyframes logoGlow {
+      0%, 100% { box-shadow: 0 0 30px rgba(168, 85, 247, 0.6); }
+      50% { box-shadow: 0 0 50px rgba(168, 85, 247, 0.8); }
+    }
+
+    .logo::before {
+      content: "✨";
+      font-size: 24px;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-4px); }
     }
 
     .brand-text h1 {
-      font-size: 19px;
-      font-weight: 600;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: #e5e7eb;
+      font-size: 24px;
+      font-weight: 800;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.02em;
+      font-family: "Poppins", sans-serif;
     }
 
     .brand-text p {
-      font-size: 11px;
-      color: var(--muted);
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 2px;
+      font-weight: 500;
     }
 
-    .stepper {
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .tabs {
       display: flex;
       gap: 8px;
-      font-size: 11px;
       align-items: center;
+      background: rgba(18, 18, 26, 0.8);
+      padding: 6px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
     }
 
-    .step-pill {
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(148,163,184,0.9);
-      color: var(--muted);
+    .tab-btn {
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all var(--transition);
+      white-space: nowrap;
+      position: relative;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-primary);
+      background: rgba(168, 85, 247, 0.1);
+    }
+
+    .tab-btn.active {
+      background: var(--gradient-primary);
+      color: white;
+      box-shadow: 0 4px 12px rgba(168, 85, 247, 0.4);
+    }
+
+    .tab-btn.active::after {
+      content: "";
+      position: absolute;
+      bottom: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 4px;
+      height: 4px;
+      background: var(--accent-purple);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--accent-purple);
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .nav-btn {
+      padding: 10px 24px;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+
+    .nav-btn:hover:not(:disabled) {
+      border-color: var(--border-bright);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .nav-btn.primary {
+      background: var(--gradient-primary);
+      border: none;
+      color: white;
+      box-shadow: 0 4px 16px rgba(168, 85, 247, 0.4);
+    }
+
+    .nav-btn.primary:hover:not(:disabled) {
+      box-shadow: 0 6px 24px rgba(168, 85, 247, 0.6);
+      transform: translateY(-2px);
+    }
+
+    .step-screen {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .screen-hero {
+      margin-bottom: 32px;
+      position: relative;
+    }
+
+    .screen-title {
+      font-size: 36px;
+      font-weight: 800;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 12px;
+      font-family: "Poppins", sans-serif;
+      letter-spacing: -0.02em;
+    }
+
+    .screen-subtitle {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      max-width: 600px;
+    }
+
+    .pill {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
-      background: rgba(15,23,42,0.85);
-      backdrop-filter: blur(12px);
-      transition: background var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      background: rgba(168, 85, 247, 0.15);
+      color: var(--accent-purple);
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
 
-    .step-pill.active {
-      border-color: var(--accent);
-      background: linear-gradient(135deg, rgba(168,85,247,0.32), rgba(59,130,246,0.28));
-      color: #f9fafb;
-      box-shadow: 0 8px 22px rgba(15,23,42,0.85);
+    .workspace {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+
+    @media (max-width: 980px) {
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .work-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+      transition: all var(--transition);
+      position: relative;
+    }
+
+    .work-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--gradient-primary);
+      opacity: 0;
+      transition: opacity var(--transition);
+    }
+
+    .work-card:hover {
+      box-shadow: var(--shadow-lg), 0 0 30px rgba(168, 85, 247, 0.2);
+      transform: translateY(-4px);
+      border-color: var(--border-bright);
+    }
+
+    .work-card:hover::before {
+      opacity: 1;
+    }
+
+    .work-card-header {
+      padding: 20px 24px;
+      background: var(--gradient-card);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .work-card-title {
+      font-size: 14px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-primary);
+    }
+
+    .work-card-body {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .quote-preview {
+      background: linear-gradient(135deg, rgba(168, 85, 247, 0.08) 0%, rgba(59, 130, 246, 0.08) 100%);
+      border: 1px solid rgba(168, 85, 247, 0.2);
+      border-radius: var(--radius-md);
+      padding: 28px;
+      position: relative;
+      min-height: 200px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .quote-preview::before {
+      content: "“";
+      position: absolute;
+      top: 10px;
+      left: 16px;
+      font-size: 100px;
+      line-height: 1;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-family: "Poppins", sans-serif;
+      font-weight: 800;
+      opacity: 0.3;
+    }
+
+    .quote-big {
+      font-size: 20px;
+      line-height: 1.7;
+      color: var(--text-primary);
+      font-style: italic;
+      position: relative;
+      z-index: 1;
+      font-weight: 500;
+    }
+
+    .quote-meta {
+      margin-top: 16px;
+      font-size: 14px;
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+
+    .field-label {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-secondary);
+      margin-bottom: 10px;
+    }
+
+    input[type="text"],
+    textarea {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: rgba(18, 18, 26, 0.6);
+      color: var(--text-primary);
+      padding: 12px 16px;
+      font-size: 14px;
+      font-family: inherit;
+      transition: all var(--transition);
+      outline: none;
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    input[type="text"]:focus,
+    textarea:focus {
+      border-color: var(--accent-purple);
+      box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.2);
+      background: rgba(18, 18, 26, 0.9);
+    }
+
+    input[type="text"]::placeholder,
+    textarea::placeholder {
+      color: var(--text-muted);
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 16px;
+    }
+
+    .btn-row-left {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 10px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: all var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn:hover:not(:disabled) {
+      border-color: var(--border-bright);
+      background: var(--bg-card-hover);
       transform: translateY(-1px);
+      box-shadow: var(--shadow-sm);
     }
 
-    .badge-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 999px;
-      background: var(--muted);
+    .btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
     }
 
-    .step-pill.active .badge-dot {
-      background: #22c55e;
-      box-shadow: 0 0 0 4px rgba(34,197,94,0.25);
+    .btn-primary {
+      background: var(--gradient-primary);
+      border: none;
+      color: white;
+      box-shadow: 0 4px 16px rgba(168, 85, 247, 0.4);
+      font-weight: 700;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      box-shadow: 0 6px 24px rgba(168, 85, 247, 0.6);
+      transform: translateY(-2px);
+    }
+
+    .btn-outline {
+      position: relative;
+      border: 1px solid transparent;
+      color: var(--text-primary);
+      background:
+        linear-gradient(rgba(18, 18, 26, 0.88), rgba(18, 18, 26, 0.88)) padding-box,
+        var(--gradient-secondary) border-box;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+    }
+
+    .btn-outline:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 34px rgba(59, 130, 246, 0.25), 0 0 34px rgba(6, 182, 212, 0.18);
+      background:
+        linear-gradient(rgba(18, 18, 26, 0.82), rgba(18, 18, 26, 0.82)) padding-box,
+        linear-gradient(135deg, rgba(168, 85, 247, 1) 0%, rgba(6, 182, 212, 1) 55%, rgba(236, 72, 153, 1) 100%) border-box;
+    }
+
+    /* Make "Approve & score" feel like a CTA */
+    #btn-approve-script.btn-outline {
+      padding: 12px 20px;
+      font-weight: 800;
+      letter-spacing: 0.01em;
+    }
+
+    #btn-approve-script.btn-outline:disabled {
+      opacity: 0.55;
+      background:
+        linear-gradient(rgba(18, 18, 26, 0.55), rgba(18, 18, 26, 0.55)) padding-box,
+        rgba(148, 163, 184, 0.22) border-box;
+      box-shadow: none;
+      transform: none;
+      cursor: not-allowed;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 18px;
+      background: rgba(168, 85, 247, 0.1);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      color: var(--text-secondary);
+      border-left: 3px solid var(--accent-purple);
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent-purple);
+      box-shadow: 0 0 12px var(--accent-purple);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { 
+        opacity: 1;
+        transform: scale(1);
+      }
+      50% { 
+        opacity: 0.6;
+        transform: scale(0.95);
+      }
+    }
+
+    .status-dot.ok {
+      background: var(--success);
+      box-shadow: 0 0 12px var(--success);
+      animation: none;
+    }
+
+    .status-dot.error {
+      background: var(--error);
+      box-shadow: 0 0 12px var(--error);
+      animation: none;
+    }
+
+    .actions-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-top: 8px;
+    }
+
+    .script-view {
+      background: rgba(18, 18, 26, 0.6);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      font-size: 15px;
+      line-height: 1.8;
+      color: var(--text-primary);
+      max-height: 360px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+
+    .script-view::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .script-view::-webkit-scrollbar-track {
+      background: rgba(10, 10, 15, 0.5);
+      border-radius: 4px;
+    }
+
+    .script-view::-webkit-scrollbar-thumb {
+      background: var(--gradient-primary);
+      border-radius: 4px;
     }
 
     .panel {
-      background: radial-gradient(circle at top left, rgba(15,23,42,0.98), rgba(15,23,42,0.9));
-      border-radius: var(--radius-md);
-      border: 1px solid rgba(30,64,175,0.65);
-      padding: 16px 16px 14px;
-      margin-bottom: 16px;
-      box-shadow: 0 18px 40px rgba(15,23,42,0.85);
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-md);
       position: relative;
       overflow: hidden;
+    }
+
+    .panel::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--gradient-primary);
     }
 
     .panel-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 8px;
+      margin-bottom: 24px;
     }
 
     .panel-title {
-      font-size: 13px;
-      text-transform: uppercase;
-      letter-spacing: 0.09em;
-      color: #9ca3af;
-    }
-
-    .pill {
-      font-size: 11px;
-      padding: 4px 8px;
-      border-radius: 999px;
-      border: 1px solid rgba(148,163,184,0.9);
-      color: #e5e7eb;
-      background: radial-gradient(circle at top left, rgba(168,85,247,0.35), rgba(15,23,42,0.9));
-      box-shadow: 0 8px 22px rgba(15,23,42,0.9);
-    }
-
-    .quote-text {
-      font-size: 14px;
-      line-height: 1.6;
-      color: #e5e7eb;
-      margin-bottom: 4px;
-    }
-
-    .quote-source {
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    textarea {
-      width: 100%;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      background: radial-gradient(circle at top, #020617, #020617 40%, #020617 100%);
-      color: var(--text);
-      padding: 10px 11px;
-      font-size: 13px;
-      resize: vertical;
-      min-height: 80px;
-      outline: none;
-      transition: border-color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast), background var(--transition-fast);
-    }
-
-    textarea:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 1px rgba(168,85,247,0.8), 0 0 35px rgba(168,85,247,0.5);
-      transform: translateY(-1px);
-    }
-
-    .field-label {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      color: var(--muted);
-      margin-bottom: 6px;
-    }
-
-    .field-row {
-      display: grid;
-      grid-template-columns: 1.4fr 1fr;
-      gap: 10px;
-      margin-top: 8px;
-    }
-
-    input[type="text"] {
-      width: 100%;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: radial-gradient(circle at top, #020617, #020617 40%, #020617 100%);
-      color: var(--text);
-      padding: 7px 10px;
-      font-size: 13px;
-      outline: none;
-      transition: border-color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast), background var(--transition-fast);
-    }
-
-    input[type="text"]:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 1px rgba(168,85,247,0.8), 0 0 26px rgba(168,85,247,0.45);
-      transform: translateY(-0.5px);
-    }
-
-    .buttons {
-      display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-      margin-top: 10px;
-    }
-
-    .btn {
-      padding: 7px 14px;
-      font-size: 13px;
-      border-radius: 999px;
-      border: 1px solid rgba(209,213,219,0.9);
-      background: rgba(15,23,42,0.9);
-      color: var(--muted);
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: background var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast), border-color var(--transition-fast);
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, #a855f7, #f97316);
-      border-color: transparent;
-      color: #f9fafb;
-      box-shadow: 0 14px 30px rgba(15,23,42,0.9);
-    }
-
-    .btn-primary:hover:not(:disabled) {
-      transform: translateY(-1px);
-      box-shadow: 0 18px 40px rgba(15,23,42,0.95);
-    }
-
-    .btn:hover:not(:disabled) {
-      border-color: rgba(148,163,184,1);
-      background: rgba(15,23,42,0.96);
-      color: #e5e7eb;
-    }
-
-    .btn-primary:disabled,
-    .btn:disabled {
-      opacity: 0.5;
-      cursor: default;
-      box-shadow: none;
-    }
-
-    .btn-outline {
-      border-color: rgba(209,213,219,1);
-      color: #111827;
-      background: rgba(249,250,251,0.9);
-    }
-
-    .status {
-      margin-top: 6px;
-      font-size: 11px;
-      color: var(--muted);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .status-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 999px;
-      background: var(--accent);
-      box-shadow: 0 0 0 4px rgba(79,70,229,0.3);
-    }
-
-    .status-dot.error {
-      background: var(--danger);
-      box-shadow: 0 0 0 4px rgba(239,68,68,0.35);
-    }
-
-    .status-dot.ok {
-      background: var(--success);
-      box-shadow: 0 0 0 4px rgba(34,197,94,0.35);
-    }
-
-    .script-view {
-      font-size: 13px;
-      line-height: 1.8;
-      color: #111827;
-      white-space: pre-wrap;
-      background: #f9fafb;
-      border-radius: 12px;
-      border: 1px solid #e5e7eb;
-      padding: 12px 12px 10px;
-      max-height: 260px;
-      overflow: auto;
-      margin-top: 6px;
-    }
-
-    .pill-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 6px;
-    }
-
-    .small-pill {
-      font-size: 11px;
-      padding: 3px 8px;
-      border-radius: 999px;
-      border: 1px solid rgba(209,213,219,0.8);
-      color: var(--muted);
-      background: rgba(249,250,251,0.9);
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text-primary);
+      font-family: "Poppins", sans-serif;
     }
 
     .score-grid {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0,1fr));
-      gap: 6px;
-      margin-top: 6px;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
     }
 
     .score-card {
-      background: linear-gradient(135deg, rgba(15,23,42,0.98), rgba(30,64,175,0.9));
-      border-radius: 10px;
-      border: 1px solid rgba(30,64,175,0.8);
-      padding: 8px 8px 7px;
-      font-size: 11px;
+      background: var(--gradient-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      transition: all var(--transition);
       position: relative;
       overflow: hidden;
     }
 
+    .score-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: var(--gradient-primary);
+      opacity: 0;
+      transition: opacity var(--transition);
+    }
+
+    .score-card:hover {
+      border-color: var(--border-bright);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .score-card:hover::before {
+      opacity: 1;
+    }
+
     .score-label {
-      color: var(--muted);
-      margin-bottom: 2px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 10px;
     }
 
     .score-value {
-      font-weight: 600;
-      color: #e5e7eb;
-    }
-
-    .score-value[data-band="low"] {
-      color: var(--score-low);
-    }
-
-    .score-value[data-band="mid"] {
-      color: var(--score-mid);
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--text-primary);
+      font-family: "Poppins", sans-serif;
     }
 
     .score-value[data-band="high"] {
-      color: var(--score-high);
+      background: linear-gradient(135deg, #10b981, #34d399);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .score-value[data-band="mid"] {
+      background: linear-gradient(135deg, #f59e0b, #fbbf24);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .score-value[data-band="low"] {
+      background: linear-gradient(135deg, #ef4444, #f87171);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
     .hashtags {
       display: flex;
       flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 6px;
-      font-size: 11px;
+      gap: 10px;
+      margin-top: 14px;
     }
 
     .tag {
-      padding: 3px 8px;
-      border-radius: 999px;
-      background: rgba(249,250,251,0.9);
-      border: 1px solid rgba(209,213,219,0.9);
-      color: #111827;
+      padding: 8px 14px;
+      background: rgba(168, 85, 247, 0.12);
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent-purple);
+      transition: all var(--transition);
+      cursor: pointer;
+    }
+
+    .tag:hover {
+      background: var(--gradient-primary);
+      color: white;
+      border-color: transparent;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(168, 85, 247, 0.4);
+    }
+
+    .os-grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .os-row {
+      background: var(--gradient-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 18px;
+    }
+
+    .os-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+
+    .os-value {
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--text-primary);
+    }
+
+    .os-value.strong {
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    .os-highlight {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .os-pill {
+      padding: 8px 14px;
+      background: rgba(59, 130, 246, 0.12);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent-blue);
+    }
+
+    #score-summary {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      padding: 16px 20px;
+      background: rgba(168, 85, 247, 0.08);
+      border-radius: var(--radius-sm);
+      border-left: 3px solid var(--accent-purple);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .screen-title {
+        font-size: 28px;
+      }
+
+      .score-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .field-row {
+        grid-template-columns: 1fr;
+      }
+
+      .left, .right {
+        padding: 20px;
+      }
+    }
+
+    /* Loading shimmer effect */
+    @keyframes shimmer {
+      0% {
+        background-position: -1000px 0;
+      }
+      100% {
+        background-position: 1000px 0;
+      }
+    }
+
+    .loading {
+      background: linear-gradient(
+        90deg,
+        rgba(18, 18, 26, 0.4) 0%,
+        rgba(168, 85, 247, 0.1) 50%,
+        rgba(18, 18, 26, 0.4) 100%
+      );
+      background-size: 1000px 100%;
+      animation: shimmer 2s infinite;
     }
   </style>
 </head>
 <body>
-  <div class="app">
-    <div class="left">
-      <div class="header">
-        <div class="brand">
-          <div class="logo"></div>
-          <div class="brand-text">
-            <h1>Winning Wisdom Studio</h1>
-            <p>Two approvals. Zero writing.</p>
-          </div>
-        </div>
-        <div class="stepper">
-          <div id="step-pill-1" class="step-pill active">
-            <span class="badge-dot"></span> Quote
-          </div>
-          <div id="step-pill-2" class="step-pill">
-            <span class="badge-dot"></span> Script Review
-          </div>
+  <div class="app" id="app" data-step="1">
+    <div class="app-header">
+      <div class="brand">
+        <div class="logo"></div>
+        <div class="brand-text">
+          <h1>Winning Wisdom</h1>
         </div>
       </div>
+      <div class="header-right">
+        <div class="tabs">
+          <button id="tab-step-1" class="tab-btn active" type="button">Quote</button>
+          <button id="tab-step-2" class="tab-btn" type="button">Script</button>
+          <button id="tab-step-3" class="tab-btn" type="button">Score & SEO</button>
+        </div>
+        <div class="nav-actions">
+          <button id="btn-back" class="nav-btn" type="button">← Back</button>
+          <button id="btn-continue" class="nav-btn primary" type="button">Continue →</button>
+        </div>
+      </div>
+    </div>
 
-      <div class="panel">
-        <div class="panel-header">
-          <div>
-            <div class="panel-title">Step 1 · Quote</div>
+    <div class="left">
+      <div class="step-screen" data-screen="1">
+        <div class="screen-hero">
+          <div class="screen-title">Pick Your Quote</div>
+          <div class="screen-subtitle">
+            Start with a topic and quote. Tweak the wording if you want, then continue to generate Arthur's script.
           </div>
-          <div class="pill">Daily seed</div>
         </div>
 
-        <div id="quote-display">
-          <p class="quote-text" id="current-quote">Loading quote…</p>
-          <p class="quote-source" id="current-source"></p>
-        </div>
-
-        <div style="margin-top: 10px;">
-          <div class="field-label">Adjust if you like</div>
-          <textarea id="quote-input"></textarea>
-
-          <div class="field-row">
-            <div>
-              <div class="field-label">Source</div>
-              <input id="source-input" type="text" />
+        <div class="workspace">
+          <div class="work-card">
+            <div class="work-card-header">
+              <div class="work-card-title">Preview</div>
+              <div class="pill">● Live</div>
             </div>
-            <div>
-              <div class="field-label">Quick actions</div>
-              <div class="buttons" style="justify-content: flex-start; margin-top: 2px;">
-                <button id="btn-refresh" class="btn" type="button">New quote</button>
+            <div class="work-card-body">
+              <div class="quote-preview" id="quote-display">
+                <div class="quote-meta" id="current-topic"></div>
+                <div class="quote-big" id="current-quote">Loading quote…</div>
+                <div class="quote-meta" id="current-source"></div>
+              </div>
+
+              <div class="status" id="status-topic">
+                <div class="status-dot"></div>
+                <span>Waiting for your topic + quote.</span>
               </div>
             </div>
           </div>
 
-          <div class="buttons">
-            <button id="btn-generate-script" class="btn-primary" type="button">
-              Generate script
-            </button>
-          </div>
+          <div class="work-card">
+            <div class="work-card-header">
+              <div class="work-card-title">Customize</div>
+              <div class="pill">✏️ Edit</div>
+            </div>
+            <div class="work-card-body">
+              <div>
+                <div class="field-label">Topic</div>
+                <input id="topic-input" type="text" placeholder="e.g., Morning routines, Leadership, Creativity..." />
+              </div>
 
-          <div class="status" id="status-topic">
-            <div class="status-dot"></div>
-            <span>Waiting for your topic approval.</span>
+              <div>
+                <div class="field-label">Quote</div>
+                <textarea id="quote-input" placeholder="Adjust the quote if you like…"></textarea>
+              </div>
+
+              <div class="field-row">
+                <div>
+                  <div class="field-label">Source</div>
+                  <input id="source-input" type="text" placeholder="e.g., Maya Angelou" />
+                </div>
+                <div>
+                  <div class="field-label">Quick Actions</div>
+                  <div class="btn-row-left">
+                    <button id="btn-refresh" class="btn" type="button">🔄 New</button>
+                    <button id="btn-quote-for-topic" class="btn" type="button">💡 Match</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="actions-row">
+                <div style="font-size: 13px; color: var(--text-muted);">
+                  💡 Tip: Use "Match" after editing your topic
+                </div>
+                <button id="btn-generate-script" class="btn-primary" type="button">Generate Script →</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="panel">
-        <div class="panel-header">
-          <div>
-            <div class="panel-title">Step 2 · Script Review</div>
-
+      <div class="step-screen" data-screen="2">
+        <div class="screen-hero">
+          <div class="screen-title">Review The Script</div>
+          <div class="screen-subtitle">
+            Read Arthur's voice, adjust with a quick note, then approve to score the reel and generate SEO hashtags.
           </div>
-          <div class="pill">Arthur’s voice</div>
         </div>
 
-        <div>
-          <div class="field-label">Generated script</div>
-          <div id="script-view" class="script-view">No script yet. Approve a topic to generate one.</div>
+        <div class="workspace">
+          <div class="work-card">
+            <div class="work-card-header">
+              <div class="work-card-title">Spoken Script</div>
+              <div class="pill">📝 Draft</div>
+            </div>
+            <div class="work-card-body">
+              <div>
+                <div class="field-label">Generated Script</div>
+                <div id="script-view" class="script-view">No script yet. Approve a topic to generate one.</div>
+              </div>
 
-          <div style="margin-top: 10px;">
-            <div class="field-label">Tell Arthur what to change</div>
-            <textarea
-              id="script-suggestions"
-              placeholder="Example: Make the opening stronger and shorter. Mention mornings. Keep the ending softer."
-            ></textarea>
-            <div class="buttons">
-              <button id="btn-revise-script" class="btn" type="button">
-                Regenerate Script
-              </button>
+              <div>
+                <div class="field-label">Tell Arthur what to change</div>
+                <textarea
+                  id="script-suggestions"
+                  placeholder="Example: Make the opening stronger and shorter. Mention mornings. Keep the ending softer."
+                ></textarea>
+                <div style="margin-top: 12px;">
+                  <button id="btn-revise-script" class="btn" type="button">🔄 Regenerate</button>
+                </div>
+              </div>
+
+              <div class="status" id="status-script">
+                <div class="status-dot"></div>
+                <span>Script not generated yet.</span>
+              </div>
             </div>
           </div>
 
-          <div class="buttons">
-            <button id="btn-approve-script" class="btn-outline" type="button" disabled>
-              Approve script &amp; score
-            </button>
-          </div>
+          <div class="work-card">
+            <div class="work-card-header">
+              <div class="work-card-title">On-Screen Text</div>
+              <div class="pill">📱 Overlays</div>
+            </div>
+            <div class="work-card-body">
+              <div class="os-grid">
+                <div class="os-row">
+                  <div class="os-label">Quote Display</div>
+                  <div id="os-quote-display" class="os-value strong">–</div>
+                </div>
+                <div class="os-row">
+                  <div class="os-label">Caption</div>
+                  <div id="os-caption" class="os-value">–</div>
+                </div>
+                <div class="os-row">
+                  <div class="os-label">Highlight Words</div>
+                  <div id="os-highlight-words" class="os-highlight"></div>
+                </div>
+              </div>
 
-          <div class="status" id="status-script">
-            <div class="status-dot"></div>
-            <span>Script not generated yet.</span>
+              <div class="actions-row">
+                <div style="font-size: 13px; color: var(--text-muted);">
+                  ✓ When it reads right, approve to score
+                </div>
+                <button id="btn-approve-script" class="btn-outline" type="button" disabled>
+                  Approve & Score →
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
     <div class="right">
-      <div class="panel" style="margin-bottom: 16px;">
-        <div class="panel-header">
-          <div>
-            <div class="panel-title">Reel Score</div>
-          </div>
-          <div class="pill" id="score-badge">Waiting…</div>
-        </div>
-
-        <div class="score-grid" id="score-grid">
-          <div class="score-card">
-            <div class="score-label">Opening impact</div>
-            <div class="score-value" id="score-hook">–</div>
-          </div>
-          <div class="score-card">
-            <div class="score-label">Emotional impact</div>
-            <div class="score-value" id="score-emotion">–</div>
-          </div>
-          <div class="score-card">
-            <div class="score-label">Structure</div>
-            <div class="score-value" id="score-structure">–</div>
-          </div>
-          <div class="score-card">
-            <div class="score-label">Persona fit</div>
-            <div class="score-value" id="score-persona">–</div>
-          </div>
-          <div class="score-card">
-            <div class="score-label">Visual potential</div>
-            <div class="score-value" id="score-visual">–</div>
+      <div class="step3-screen">
+        <div class="screen-hero">
+          <div class="screen-title">Score &amp; SEO</div>
+          <div class="screen-subtitle">
+            Your reel is scored across the dimensions that matter — plus ready-to-use hashtags for each platform.
           </div>
         </div>
 
-        <div style="margin-top: 8px; font-size: 11px; color: var(--muted);" id="score-summary">
-          Approve a script to see a full score breakdown.
-        </div>
-      </div>
+        <div class="results-grid">
+          <div class="results-card">
+            <div class="results-card-header">
+              <div class="results-card-title">Reel Score</div>
+              <div id="score-badge" class="score-badge-lg">⏳ Waiting…</div>
+            </div>
+            <div class="results-card-body">
+              <div class="score-overview">
+                <div style="color: var(--text-secondary); font-size: 13px; line-height: 1.6; max-width: 60ch;">
+                  Higher scores mean stronger hook, clearer structure, and better on-screen potential.
+                </div>
+              </div>
 
-      <div class="panel">
-        <div class="panel-header">
-          <div>
-            <div class="panel-title">SEO Hashtags</div>
+              <div class="score-grid results">
+                <div class="score-card">
+                  <div class="score-label">Opening Impact</div>
+                  <div class="score-value" id="score-hook">–</div>
+                </div>
+                <div class="score-card">
+                  <div class="score-label">Emotional Impact</div>
+                  <div class="score-value" id="score-emotion">–</div>
+                </div>
+                <div class="score-card">
+                  <div class="score-label">Structure</div>
+                  <div class="score-value" id="score-structure">–</div>
+                </div>
+                <div class="score-card">
+                  <div class="score-label">Persona Fit</div>
+                  <div class="score-value" id="score-persona">–</div>
+                </div>
+                <div class="score-card">
+                  <div class="score-label">Visual Potential</div>
+                  <div class="score-value" id="score-visual">–</div>
+                </div>
+              </div>
 
+              <div id="score-summary" style="margin-top: 16px;">
+                Approve a script to see a full score breakdown.
+              </div>
+            </div>
           </div>
-          <div class="pill">AI-optimized</div>
-        </div>
 
-        <div>
-          <div class="field-label">YouTube</div>
-          <div id="tags-youtube" class="hashtags"></div>
+          <div class="results-card">
+            <div class="results-card-header">
+              <div class="results-card-title">SEO Hashtags</div>
+              <div class="pill">🤖 AI-Optimized</div>
+            </div>
+            <div class="results-card-body">
+              <div class="hashtags-block">
+                <div class="platform-row">
+                  <div class="platform-title"><span>YouTube</span></div>
+                  <div id="tags-youtube" class="hashtags"></div>
+                </div>
 
-          <div class="field-label" style="margin-top: 10px;">Instagram</div>
-          <div id="tags-instagram" class="hashtags"></div>
+                <div class="platform-row">
+                  <div class="platform-title"><span>Instagram</span></div>
+                  <div id="tags-instagram" class="hashtags"></div>
+                </div>
 
-          <div class="field-label" style="margin-top: 10px;">TikTok</div>
-          <div id="tags-tiktok" class="hashtags"></div>
+                <div class="platform-row">
+                  <div class="platform-title"><span>TikTok</span></div>
+                  <div id="tags-tiktok" class="hashtags"></div>
+                </div>
 
-          <div class="field-label" style="margin-top: 10px;">Facebook</div>
-          <div id="tags-facebook" class="hashtags"></div>
+                <div class="platform-row">
+                  <div class="platform-title"><span>Facebook</span></div>
+                  <div id="tags-facebook" class="hashtags"></div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
   <script>
-    // Point the frontend to the FastAPI backend.
-    // Backend should be running on: http://127.0.0.1:8000
     const API_BASE = "http://127.0.0.1:8000/api";
 
     const els = {
+      app: document.getElementById("app"),
+      topicText: document.getElementById("current-topic"),
+      topicInput: document.getElementById("topic-input"),
       quoteText: document.getElementById("current-quote"),
       quoteSource: document.getElementById("current-source"),
       quoteInput: document.getElementById("quote-input"),
       sourceInput: document.getElementById("source-input"),
       btnRefresh: document.getElementById("btn-refresh"),
+      btnQuoteForTopic: document.getElementById("btn-quote-for-topic"),
       btnGenerateScript: document.getElementById("btn-generate-script"),
       btnApproveScript: document.getElementById("btn-approve-script"),
+      btnBack: document.getElementById("btn-back"),
+      btnContinue: document.getElementById("btn-continue"),
       scriptView: document.getElementById("script-view"),
       statusTopic: document.getElementById("status-topic"),
       statusScript: document.getElementById("status-script"),
-      step1: document.getElementById("step-pill-1"),
-      step2: document.getElementById("step-pill-2"),
+      tab1: document.getElementById("tab-step-1"),
+      tab2: document.getElementById("tab-step-2"),
+      tab3: document.getElementById("tab-step-3"),
       scoreBadge: document.getElementById("score-badge"),
       scoreHook: document.getElementById("score-hook"),
       scoreEmotion: document.getElementById("score-emotion"),
@@ -628,11 +1379,15 @@
       tagsFacebook: document.getElementById("tags-facebook"),
       scriptSuggestions: document.getElementById("script-suggestions"),
       btnReviseScript: document.getElementById("btn-revise-script"),
+      osQuoteDisplay: document.getElementById("os-quote-display"),
+      osCaption: document.getElementById("os-caption"),
+      osHighlightWords: document.getElementById("os-highlight-words"),
     };
 
     let lastQuote = null;
     let lastSource = null;
     let lastScript = null;
+    let lastTopic = null;
 
     function setStatus(el, text, variant = "pending") {
       const dot = el.querySelector(".status-dot");
@@ -644,12 +1399,21 @@
     }
 
     function setStep(step) {
-      if (step === 1) {
-        els.step1.classList.add("active");
-        els.step2.classList.remove("active");
+      const s = Number(step) === 3 ? 3 : Number(step) === 2 ? 2 : 1;
+      els.app.dataset.step = String(s);
+      els.tab1.classList.toggle("active", s === 1);
+      els.tab2.classList.toggle("active", s === 2);
+      els.tab3.classList.toggle("active", s === 3);
+
+      if (s === 1) {
+        els.btnBack.disabled = true;
+        els.btnContinue.textContent = "Continue →";
+      } else if (s === 2) {
+        els.btnBack.disabled = false;
+        els.btnContinue.textContent = "Continue →";
       } else {
-        els.step1.classList.remove("active");
-        els.step2.classList.add("active");
+        els.btnBack.disabled = false;
+        els.btnContinue.textContent = "← Back to Script";
       }
     }
 
@@ -668,40 +1432,77 @@
     async function loadQuote() {
       try {
         els.btnRefresh.disabled = true;
+        els.btnQuoteForTopic.disabled = true;
         setStatus(els.statusTopic, "Fetching a fresh quote for you…");
+        setStep(1);
 
         const data = await fetchJSON(`${API_BASE}/topic`);
+        lastTopic = data.topic || null;
         lastQuote = data.quote;
         lastSource = data.source;
 
-        els.quoteText.textContent = `“${data.quote}”`;
+        els.topicText.textContent = data.topic ? `Topic: ${data.topic}` : "";
+        els.topicInput.value = data.topic || "";
+        els.quoteText.textContent = `"${data.quote}"`;
         els.quoteSource.textContent = `— ${data.source}`;
         els.quoteInput.value = data.quote;
         els.sourceInput.value = data.source;
 
-        setStatus(els.statusTopic, "Quote loaded. Adjust if needed, then generate the script.", "ok");
+        setStatus(els.statusTopic, "✓ Topic + quote loaded. Adjust if needed, then generate the script.", "ok");
       } catch (err) {
         console.error(err);
-        setStatus(els.statusTopic, "Couldn’t fetch a quote. Check backend logs.", "error");
+        setStatus(els.statusTopic, "✗ Couldn't fetch a quote. Check backend logs.", "error");
       } finally {
         els.btnRefresh.disabled = false;
+        els.btnQuoteForTopic.disabled = false;
       }
     }
 
-    // Full automatic flow: new quote → script → score + SEO
+    async function loadQuoteForTopic() {
+      try {
+        els.btnQuoteForTopic.disabled = true;
+        setStatus(els.statusTopic, "Fetching a quote for this topic…");
+
+        const topic = els.topicInput.value.trim();
+        if (!topic) {
+          setStatus(els.statusTopic, "✗ Please enter a topic first.", "error");
+          return;
+        }
+
+        const data = await fetchJSON(`${API_BASE}/topic/quote`, {
+          method: "POST",
+          body: JSON.stringify({ topic }),
+        });
+
+        lastTopic = data.topic || topic;
+        lastQuote = data.quote;
+        lastSource = data.source;
+
+        els.topicText.textContent = `Topic: ${lastTopic}`;
+        els.quoteText.textContent = `"${data.quote}"`;
+        els.quoteSource.textContent = `— ${data.source}`;
+        els.quoteInput.value = data.quote;
+        els.sourceInput.value = data.source;
+
+        setStatus(els.statusTopic, "✓ Quote updated for your topic. Generate the script when ready.", "ok");
+      } catch (err) {
+        console.error(err);
+        setStatus(els.statusTopic, "✗ Couldn't fetch a quote for that topic. Check backend logs.", "error");
+      } finally {
+        els.btnQuoteForTopic.disabled = false;
+      }
+    }
+
     async function autoGenerateAll() {
-      // 1) Get a fresh quote
       await loadQuote();
-      // 2) Generate script for that quote
       await onGenerateScript();
-      // 3) Immediately approve script as‑is to score + build SEO
       await onApproveScript();
     }
 
     async function onGenerateScript() {
       try {
         els.btnGenerateScript.disabled = true;
-        setStatus(els.statusTopic, "Generating Arthur’s script for this quote…");
+        setStatus(els.statusTopic, "Generating Arthur's script for this quote…");
         setStep(2);
 
         const quote = els.quoteInput.value.trim();
@@ -718,13 +1519,14 @@
         lastScript = full;
 
         els.scriptView.textContent = full;
+        renderOnScreenText(script.on_screen_text);
         els.btnApproveScript.disabled = false;
 
-        setStatus(els.statusTopic, "Topic locked in. You can tweak and approve the script next.", "ok");
-        setStatus(els.statusScript, "Script generated. Make any edits, then approve to score & build SEO.", "ok");
+        setStatus(els.statusTopic, "✓ Topic locked in. You can tweak and approve the script next.", "ok");
+        setStatus(els.statusScript, "✓ Script generated. Make any edits, then approve to score & build SEO.", "ok");
       } catch (err) {
         console.error(err);
-        setStatus(els.statusTopic, "Script generation failed. See backend logs.", "error");
+        setStatus(els.statusTopic, "✗ Script generation failed. See backend logs.", "error");
       } finally {
         els.btnGenerateScript.disabled = false;
       }
@@ -732,12 +1534,39 @@
 
     function renderTags(container, tags) {
       container.innerHTML = "";
-      if (!tags || !tags.length) return;
+      if (!tags || !tags.length) {
+        container.innerHTML = '<span style="color: var(--text-muted); font-size: 13px;">No tags yet</span>';
+        return;
+      }
       for (const t of tags) {
         const el = document.createElement("span");
         el.className = "tag";
         el.textContent = `#${t}`;
         container.appendChild(el);
+      }
+    }
+
+    function renderOnScreenText(onScreen) {
+      const quoteDisplay = onScreen?.quote_display || "–";
+      const caption = onScreen?.caption || "–";
+      const words = Array.isArray(onScreen?.highlight_words) ? onScreen.highlight_words : [];
+
+      els.osQuoteDisplay.textContent = quoteDisplay;
+      els.osCaption.textContent = caption;
+
+      els.osHighlightWords.innerHTML = "";
+      if (!words.length) {
+        const empty = document.createElement("span");
+        empty.className = "os-pill";
+        empty.textContent = "–";
+        els.osHighlightWords.appendChild(empty);
+        return;
+      }
+      for (const w of words) {
+        const pill = document.createElement("span");
+        pill.className = "os-pill";
+        pill.textContent = w;
+        els.osHighlightWords.appendChild(pill);
       }
     }
 
@@ -751,6 +1580,7 @@
         const result = await fetchJSON(`${API_BASE}/script/approve`, {
           method: "POST",
           body: JSON.stringify({
+            topic: lastTopic,
             quote: lastQuote,
             source: lastSource,
             approved_script: approvedText,
@@ -759,8 +1589,8 @@
 
         const score = result.score;
         els.scoreBadge.textContent = score.overall_score
-          ? `Overall ${score.overall_score}/10`
-          : "Scored";
+          ? `✓ ${score.overall_score}/10`
+          : "✓ Scored";
 
         function band(val) {
           if (typeof val !== "number") return "";
@@ -788,7 +1618,7 @@
 
         const verdict = score.verdict || "Score ready.";
         const priorityFix = score.priority_fix ? ` Priority fix: ${score.priority_fix}` : "";
-        els.scoreSummary.textContent = `${verdict}.${priorityFix}`;
+        els.scoreSummary.textContent = `${verdict}${priorityFix}`;
 
         const seo = result.seo;
         renderTags(els.tagsYoutube, seo.youtube?.hashtags || []);
@@ -796,28 +1626,14 @@
         renderTags(els.tagsTiktok, seo.tiktok?.hashtags || []);
         renderTags(els.tagsFacebook, seo.facebook?.hashtags || []);
 
-        setStatus(els.statusScript, "Script approved, scored, and SEO hashtags ready.", "ok");
+        setStatus(els.statusScript, "✓ Script approved, scored, and SEO hashtags ready.", "ok");
+        setStep(3);
       } catch (err) {
         console.error(err);
-        setStatus(els.statusScript, "Script approval or scoring failed. See backend logs.", "error");
+        setStatus(els.statusScript, "✗ Script approval or scoring failed. See backend logs.", "error");
       } finally {
         els.btnApproveScript.disabled = false;
       }
-    }
-
-    async function onGenerateScriptFromKeyword() {
-      try {
-        // Keyword-based generation is no longer exposed in the UI.
-        // This function is kept as a no-op placeholder for compatibility.
-        console.warn("Keyword-based script generation is disabled in this version.");
-      } catch (err) {
-        console.error(err);
-        setStatus(
-          els.statusScript,
-          "Keyword-based script generation failed. See backend logs.",
-          "error"
-        );
-      } finally {}
     }
 
     async function onReviseScript() {
@@ -826,21 +1642,21 @@
         const current = els.scriptView.textContent.trim();
 
         if (!current) {
-          setStatus(els.statusScript, "No script to revise yet. Generate one first.", "error");
+          setStatus(els.statusScript, "✗ No script to revise yet. Generate one first.", "error");
           return;
         }
         if (!suggestions) {
-          setStatus(els.statusScript, "Please tell Arthur what to change.", "error");
+          setStatus(els.statusScript, "✗ Please tell Arthur what to change.", "error");
           return;
         }
 
         els.btnReviseScript.disabled = true;
         setStatus(els.statusScript, "Regenerating script from your suggestions…");
-        setStep(2);
 
         const script = await fetchJSON(`${API_BASE}/script/revise`, {
           method: "POST",
           body: JSON.stringify({
+            topic: lastTopic,
             quote: lastQuote,
             source: lastSource,
             current_script: current,
@@ -854,29 +1670,26 @@
         lastScript = full;
 
         els.scriptView.textContent = full;
-        els.scriptEdit.value = full;
+        renderOnScreenText(script.on_screen_text);
 
         setStatus(
           els.statusScript,
-          "New script generated from your suggestions. You can tweak further or approve.",
+          "✓ New script generated from your suggestions. You can tweak further or approve.",
           "ok"
         );
       } catch (err) {
         console.error(err);
-        setStatus(
-          els.statusScript,
-          "Script revision failed. See backend logs.",
-          "error"
-        );
+        setStatus(els.statusScript, "✗ Script revision failed. See backend logs.", "error");
       } finally {
         els.btnReviseScript.disabled = false;
       }
     }
 
-    // When you click "New quote", automatically:
-    // 1) fetch quote, 2) generate script, 3) score + SEO
     els.btnRefresh.addEventListener("click", () => {
       autoGenerateAll().catch(err => console.error(err));
+    });
+    els.btnQuoteForTopic.addEventListener("click", () => {
+      loadQuoteForTopic().catch(err => console.error(err));
     });
     els.btnGenerateScript.addEventListener("click", onGenerateScript);
     els.btnApproveScript.addEventListener("click", onApproveScript);
@@ -884,9 +1697,30 @@
       onReviseScript().catch(err => console.error(err));
     });
 
+    els.tab1.addEventListener("click", () => setStep(1));
+    els.tab2.addEventListener("click", () => setStep(2));
+    els.tab3.addEventListener("click", () => setStep(3));
+
+    els.btnBack.addEventListener("click", () => {
+      const s = Number(els.app.dataset.step || "1");
+      if (s <= 1) return;
+      setStep(s - 1);
+    });
+
+    els.btnContinue.addEventListener("click", () => {
+      const s = Number(els.app.dataset.step || "1");
+      if (s === 1) {
+        onGenerateScript().catch(err => console.error(err));
+        return;
+      }
+      if (s === 2) {
+        onApproveScript().catch(err => console.error(err));
+        return;
+      }
+      setStep(2);
+    });
+
     loadQuote();
   </script>
 </body>
 </html>
-
-
