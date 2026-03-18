@@ -40,8 +40,9 @@ class ScriptWeaknesses(BaseModel):
 class ReelScriptScore(BaseModel):
     """Complete scoring breakdown for a reel script"""
     # Dimension scores (1-10)
-    hook_strength: DimensionScore = Field(description="First 3 seconds - scroll-stopping power")
-    scroll_stopping: DimensionScore = Field(description="Does it grab attention immediately?")
+    hook_strength: DimensionScore = Field(
+        description="Opening impact: combined hook strength and scroll-stopping power in the first 2-3 seconds"
+    )
     pacing: DimensionScore = Field(description="Appropriate for 30-60 second reel format")
     emotional_impact: DimensionScore = Field(description="Does it resonate and connect?")
     structure: DimensionScore = Field(description="Clear flow, beginning-middle-end")
@@ -66,8 +67,7 @@ def score_reel_script(script: DailyWisdomScript) -> ReelScriptScore:
     Score a reel script across multiple dimensions critical for short-form video.
     
     Evaluates:
-    - Hook strength (first 3 seconds)
-    - Scroll-stopping power
+    - Opening impact / hook strength (first 3 seconds)
     - Pacing for 30-60 second format
     - Emotional impact
     - Structure and flow
@@ -112,23 +112,19 @@ THE PERSONA — "Arthur"
 SCORING CRITERIA
 =============================
 
-1. HOOK STRENGTH (1-10):
-   - First 2-3 lines must stop scrolling
-   - Must feel immediately personal and specific
-   - Not philosophical or abstract
-   - Examples of strong hooks:
+1. OPENING IMPACT / HOOK STRENGTH (1-10):
+   - Measures the combined power of the first 2-3 seconds:
+     · How strong and specific the hook is
+     · How likely it is to stop scrolling
+   - Must feel immediately personal and concrete, not abstract philosophy
+   - Creates tension, curiosity, or clear recognition of a real problem
+   - Examples of strong openings:
      · "Most people I knew never did the thing they kept talking about."
      · "There's a kind of tired that has nothing to do with sleep."
-   - Score 9-10: Irresistible, makes you stop mid-scroll
-   - Score 7-8: Strong, but could be sharper
-   - Score 5-6: Generic or too abstract
-   - Score 1-4: Weak hook, won't stop scrolling
-
-2. SCROLL-STOPPING POWER (1-10):
-   - Does the opening make someone pause?
-   - Is it specific enough to feel personal?
-   - Does it create curiosity or recognition?
-   - Score based on how likely someone is to watch past 3 seconds
+   - Score 9-10: Irresistible; very likely to stop scrolling
+   - Score 7-8: Strong but could be sharper or more specific
+   - Score 5-6: Somewhat generic or soft; may not consistently stop scrolling
+   - Score 1-4: Weak opening; unlikely to stop scrolling
 
 3. PACING (1-10):
    - Appropriate for 30-60 second reel format
@@ -181,7 +177,7 @@ SCORING CRITERIA
 CRITICAL RULES
 =============================
 
-- The first 2 lines MUST stop scrolling. If they don't, hook_strength and scroll_stopping should be 6 or lower.
+- The first 2 lines MUST create strong opening impact (hook). If they don't, hook_strength should be 6 or lower.
 - Arthur NEVER uses motivational speaker language. If you see phrases like "level up", "crush it", "hustle", persona_consistency should be penalized.
 - The ending MUST hit hard. If it's soft, summary-like, or uplifting in a generic way, structure score should be penalized.
 - Sentences should be SHORT (5-8 words). If sentences are too long, pacing should be penalized.
@@ -195,11 +191,7 @@ Return valid JSON only, no markdown, no preamble:
 {{
   "hook_strength": {{
     "score": 8,
-    "reasoning": "Strong opening that feels personal, but could be slightly sharper"
-  }},
-  "scroll_stopping": {{
-    "score": 9,
-    "reasoning": "Highly likely to stop scrolling - specific and relatable"
+    "reasoning": "Strong, specific opening that feels personal and is likely to stop scrolling"
   }},
   "pacing": {{
     "score": 7,
@@ -244,13 +236,12 @@ Return valid JSON only, no markdown, no preamble:
 }}
 
 Calculate overall_score as a weighted average:
-- hook_strength: 20%
-- scroll_stopping: 20%
+- hook_strength (opening impact): 35%
 - emotional_impact: 15%
 - structure: 15%
 - pacing: 10%
 - persona_consistency: 10%
-- visual_potential: 10%
+- visual_potential: 15%
 
 Verdict rules:
 - overall_score >= 8.5: "Ready to post"
@@ -297,7 +288,6 @@ Priority fix: Only include if overall_score < 8.0. Pick the single most impactfu
     # Build the score object
     score = ReelScriptScore(
         hook_strength=DimensionScore(**parsed["hook_strength"]),
-        scroll_stopping=DimensionScore(**parsed["scroll_stopping"]),
         pacing=DimensionScore(**parsed["pacing"]),
         emotional_impact=DimensionScore(**parsed["emotional_impact"]),
         structure=DimensionScore(**parsed["structure"]),
@@ -332,8 +322,7 @@ def print_score(score: ReelScriptScore) -> None:
     
     # Dimension scores
     print("\n📊  DIMENSION SCORES:")
-    print(f"   Hook Strength:        {score.hook_strength.score}/10 — {score.hook_strength.reasoning}")
-    print(f"   Scroll-Stopping:      {score.scroll_stopping.score}/10 — {score.scroll_stopping.reasoning}")
+    print(f"   Opening Impact:       {score.hook_strength.score}/10 — {score.hook_strength.reasoning}")
     print(f"   Pacing:               {score.pacing.score}/10 — {score.pacing.reasoning}")
     print(f"   Emotional Impact:     {score.emotional_impact.score}/10 — {score.emotional_impact.reasoning}")
     print(f"   Structure:            {score.structure.score}/10 — {score.structure.reasoning}")

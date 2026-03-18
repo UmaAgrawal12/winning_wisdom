@@ -3,9 +3,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from agents.topic_agent import fetch_winning_wisdom_quote
-from agents.script_agent import generate_daily_wisdom_script, DailyWisdomScript
+from agents.script_agent import generate_daily_wisdom_script, DailyWisdomScript, revise_wisdom_script
 from agents.score_agent import score_reel_script
 from agents.seo_agent import generate_seo_metadata, SEOResult
+
 
 
 class TopicApproval(BaseModel):
@@ -17,6 +18,17 @@ class ScriptApproval(BaseModel):
     quote: str
     source: str
     approved_script: str
+
+
+class KeywordRequest(BaseModel):
+    keyword: str
+
+
+class ScriptRevision(BaseModel):
+    quote: str
+    source: str
+    current_script: str
+    suggestions: str
 
 
 class DailyFlowResponse(BaseModel):
@@ -81,6 +93,41 @@ def approve_script(payload: ScriptApproval):
         "score": score.model_dump(),
         "seo": seo,
     }
+
+
+@app.post("/api/script/from-keyword")
+def script_from_keyword(payload: KeywordRequest) -> DailyWisdomScript:
+    """
+    Generate a fresh script starting from a client-provided keyword.
+
+    The keyword is treated as the core idea or "quote seed" for the day.
+    We plug it into the existing daily wisdom generator so the rest of the
+    flow (scoring + SEO) can run unchanged.
+    """
+    # Use the keyword as the quote text so the rest of the pipeline
+    # (Arthur persona, scoring, SEO) continues to work without changes.
+    script = generate_daily_wisdom_script(
+        quote_override=payload.keyword,
+        source_override="Client keyword",
+    )
+    return script
+
+
+@app.post("/api/script/revise")
+def revise_script(payload: ScriptRevision) -> DailyWisdomScript:
+    """
+    Regenerate the script based on client suggestions.
+
+    The quote and source stay the same, but the spoken script is rewritten
+    in Arthur's voice, applying the requested edits.
+    """
+    script = revise_wisdom_script(
+        quote=payload.quote,
+        source=payload.source,
+        current_script=payload.current_script,
+        suggestions=payload.suggestions,
+    )
+    return script
 
 
 

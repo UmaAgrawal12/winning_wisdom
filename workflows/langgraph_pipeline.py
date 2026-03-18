@@ -19,7 +19,7 @@ class PipelineState(TypedDict, total=False):
     seo_result: SEOResult
     quality_report: str
     quality_passed: bool
-
+    
 
 def topic_node(state: PipelineState) -> PipelineState:
     """

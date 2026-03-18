@@ -417,6 +417,143 @@ OUTPUT — valid JSON only, no markdown, no extra text
     return script
 
 
+def revise_wisdom_script(
+    quote: str,
+    source: str,
+    current_script: str,
+    suggestions: str,
+) -> DailyWisdomScript:
+    """
+    Regenerate an Arthur script given client suggestions.
+
+    Keeps the same quote + source, but asks the model to rewrite the
+    spoken script in Arthur's voice, applying the requested changes.
+    """
+    # Reuse a random entry angle to keep variety
+    entry_angle = random.choice(ENTRY_ANGLES)
+
+    prompt = f"""
+You are revising an existing short daily wisdom video script for an elderly gentleman named {PERSONA["name"]}, age {PERSONA["age"]}.
+
+=============================
+WHO ARTHUR IS
+=============================
+{PERSONA["backstory"]}
+
+HOW ARTHUR SPEAKS:
+{PERSONA["voice"]}
+
+WORDS AND PHRASES ARTHUR NEVER USES:
+{", ".join(PERSONA["banned_phrases"])}
+
+=============================
+TODAY'S QUOTE (STAYS THE SAME)
+=============================
+"{quote}"
+— {source}
+
+=============================
+CURRENT SPOKEN SCRIPT (FOR REFERENCE ONLY)
+=============================
+{current_script}
+
+=============================
+CLIENT SUGGESTIONS (MUST APPLY)
+=============================
+{suggestions}
+
+Examples of the kind of changes the client might want:
+- "Make the opening stronger and more direct."
+- "Shorten the middle section."
+- "Make it a bit gentler, less harsh."
+- "Mention time passing more clearly."
+
+Your job is to write a NEW script in Arthur's voice that:
+- Keeps the same emotional idea as the quote
+- Applies the client's suggestions clearly
+- Respects all the structural rules below
+
+=============================
+ENTRY ANGLE for this revision
+=============================
+{entry_angle}
+
+=============================
+STRUCTURE & TONE RULES (MUST FOLLOW)
+=============================
+- No intro. No greeting. Arthur starts mid-thought.
+- He weaves the quote's wisdom into his own words naturally.
+- Each sentence: 5–8 words. Its own line.
+- Blank line between thought-groups (natural pause).
+- 8–14 lines total (30–60 seconds of natural speech).
+- No summary. No conclusion. No uplifting sign-off.
+- Use "you" often. Speak to ONE viewer.
+- Optional single term of address ("my friend", "dear one", "son", "love") at most once.
+
+=============================
+ON-SCREEN TEXT (UPDATE IF NEEDED)
+=============================
+- quote_display: the sharpest 4–8 words from the Marcus Aurelius quote
+- caption: 4–7 word emotional core line
+- highlight_words: 3–5 single emotionally loaded words from the NEW script
+
+=============================
+OUTPUT — valid JSON only, no markdown, no extra text
+=============================
+{{
+  "spoken_script": {{
+    "full_script": "line 1\\nline 2\\n\\nline 3\\nline 4"
+  }},
+  "on_screen_text": {{
+    "quote_display": "...",
+    "caption": "...",
+    "highlight_words": ["word1", "word2", "word3"]
+  }}
+}}
+"""
+
+    response = client.chat.completions.create(
+        model=OPENAI_MODEL_TOPIC,
+        messages=[
+            {
+                "role": "system",
+                "content": (
+                    "You revise short daily wisdom video scripts for Arthur — "
+                    "a 78-year-old retired schoolteacher and widower who lost his wife Margaret. "
+                    "Arthur speaks the way a loving grandfather writes a letter: "
+                    "warm, direct, personal, and completely without performance. "
+                    "You MUST apply the client's suggestions while keeping Arthur's voice. "
+                    "Respond with valid JSON only. No markdown. No preamble. No explanation."
+                ),
+            },
+            {"role": "user", "content": prompt},
+        ],
+        temperature=0.9,
+    )
+
+    raw = response.choices[0].message.content.strip()
+
+    # Strip markdown fences if present
+    if raw.startswith("```"):
+        raw = raw.split("```")[1]
+        if raw.startswith("json"):
+            raw = raw[4:]
+    raw = raw.strip()
+
+    parsed = json.loads(raw)
+
+    script = DailyWisdomScript(
+        quote=quote,
+        source=source,
+        spoken_script=SpokenScript(**parsed["spoken_script"]),
+        on_screen_text=OnScreenText(**parsed["on_screen_text"]),
+        generated_at=datetime.now().isoformat(),
+    )
+
+    _save_script(script)
+    return script
+
+
 def generate_youtube_wisdom_script(
     quote_override: Optional[str] = None,
     source_override: Optional[str] = None,
