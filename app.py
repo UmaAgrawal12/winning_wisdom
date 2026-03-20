@@ -1,12 +1,35 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, Any
+from pathlib import Path
+import json
+import random
+import concurrent.futures
 
-from agents.topic_agent import fetch_winning_wisdom_quote, fetch_winning_wisdom_quote_for_topic, generate_topics
-from agents.script_agent import generate_daily_wisdom_script, DailyWisdomScript, revise_wisdom_script
-from agents.score_agent import score_reel_script
-from agents.seo_agent import generate_seo_metadata, SEOResult
+# Supabase (optional; falls back to local JSON file if not configured)
+from winning_wisdom_ai.supabase_db import (
+    is_supabase_configured,
+    list_pipeline_runs as sb_list_pipeline_runs,
+    list_approved_pipeline_runs as sb_list_approved_pipeline_runs,
+    patch_pipeline_run_approvals as sb_patch_pipeline_run_approvals,
+    insert_pipeline_run,
+)
+
+# Prefer package imports (works when running from project root)
+from winning_wisdom_ai.agents.topic_agent import (
+    fetch_winning_wisdom_quote,
+    fetch_winning_wisdom_quote_for_topic,
+    generate_topics,
+    generate_topics_serpapi,
+)
+from winning_wisdom_ai.agents.script_agent import (
+    generate_daily_wisdom_script,
+    DailyWisdomScript,
+    revise_wisdom_script,
+)
+from winning_wisdom_ai.agents.score_agent import score_reel_script
+from winning_wisdom_ai.agents.seo_agent import generate_seo_metadata, SEOResult
 
 
 
@@ -59,6 +82,86 @@ class DailyFlowResponse(BaseModel):
     seo: SEOResult
 
 
+def _seo_for_storage(seo: SEOResult) -> dict:
+    """
+    Normalize SEO payload so captions are explicitly available in Supabase.
+    We keep `description` and also add `caption` for convenience.
+    """
+    raw = seo.model_dump()
+    for platform in ("youtube", "instagram", "tiktok", "facebook"):
+        block = raw.get(platform)
+        if isinstance(block, dict):
+            block["caption"] = block.get("description", "")
+    return raw
+
+
+# Stored pipeline runs live at project root /data
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+PIPELINE_RUNS_FILE = PROJECT_ROOT / "data" / "pipeline_runs.json"
+
+FALLBACK_TOPICS = [
+    "Discipline on the hard days",
+    "Stop waiting for confidence",
+    "What you can control today",
+    "When motivation disappears",
+    "The cost of staying comfortable",
+    "Doing the right thing quietly",
+    "How to face criticism calmly",
+    "The difference between pain and suffering",
+]
+
+
+def _generate_topics_with_timeout(timeout_s: float = 8.0) -> list[str]:
+    """
+    Try LLM-based topic generation, but never block the UI.
+    Falls back to a curated topic list on timeout/error.
+    """
+    try:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
+            fut = pool.submit(
+                generate_topics,
+                theme="Winning Wisdom: discipline, meaning, resilience, self-mastery",
+                n=8,
+                audience="general_self_improver",
+            )
+            result = fut.result(timeout=timeout_s)
+        topics = getattr(result, "topics", None)
+        if isinstance(topics, list) and topics:
+            cleaned = [t.strip() for t in topics if isinstance(t, str) and t.strip()]
+            if cleaned:
+                return cleaned
+    except Exception:
+        pass
+
+    fallback = FALLBACK_TOPICS.copy()
+    random.shuffle(fallback)
+    return fallback[:8]
+
+
+
+def _load_pipeline_runs() -> list[dict[str, Any]]:
+    if not PIPELINE_RUNS_FILE.exists():
+        return []
+    try:
+        with PIPELINE_RUNS_FILE.open("r", encoding="utf-8") as f:
+            data = json.load(f)
+        return data if isinstance(data, list) else []
+    except (json.JSONDecodeError, ValueError):
+        return []
+
+
+def _save_pipeline_runs(runs: list[dict[str, Any]]) -> None:
+    PIPELINE_RUNS_FILE.parent.mkdir(parents=True, exist_ok=True)
+    with PIPELINE_RUNS_FILE.open("w", encoding="utf-8") as f:
+        json.dump(runs, f, indent=2, ensure_ascii=False)
+
+
+class RunApprovalPatch(BaseModel):
+    topic_approved: Optional[bool] = None
+    script_approved: Optional[bool] = None
+    final_approved: Optional[bool] = None
+
+
 app = FastAPI(title="Winning Wisdom Frontend API")
 
 app.add_middleware(
@@ -75,14 +178,21 @@ def get_topic():
     """
     Step 1: Generate a topic, then a quote for that topic.
     """
-    topics_result = generate_topics(
-        theme="Winning Wisdom: discipline, meaning, resilience, self-mastery",
-        n=8,
-        audience="general_self_improver",
-    )
-    topic = topics_result.topics[0] if topics_result.topics else "Discipline on the hard days"
-    quote_data = fetch_winning_wisdom_quote_for_topic(topic=topic)
-    return {"topic": topic, "quote": quote_data["quote"], "source": quote_data["source"]}
+    try:
+        topics_result = generate_topics_serpapi(
+            theme="Winning Wisdom: discipline, meaning, resilience, self-mastery",
+            n=8,
+            location="United States",
+        )
+        topic = random.choice(topics_result.topics) if topics_result.topics else "Discipline on the hard days"
+        quote_data = fetch_winning_wisdom_quote_for_topic(
+            topic=topic,
+            use_serpapi=True,
+            require_serpapi=True,
+        )
+        return {"topic": topic, "quote": quote_data["quote"], "source": quote_data["source"]}
+    except Exception as e:
+        raise HTTPException(status_code=503, detail=f"SerpAPI topic/quote generation failed: {e}")
 
 
 @app.post("/api/topic/quote")
@@ -91,7 +201,14 @@ def get_quote_for_topic(payload: TopicQuoteRequest) -> TopicProposal:
     Given a topic, fetch a quote aligned to that topic.
     """
     topic = (payload.topic or "").strip()
-    quote_data = fetch_winning_wisdom_quote_for_topic(topic=topic)
+    try:
+        quote_data = fetch_winning_wisdom_quote_for_topic(
+            topic=topic,
+            use_serpapi=True,
+            require_serpapi=True,
+        )
+    except Exception as e:
+        raise HTTPException(status_code=503, detail=f"SerpAPI quote generation failed: {e}")
     return TopicProposal(topic=topic, quote=quote_data["quote"], source=quote_data["source"])
 
 
@@ -113,13 +230,20 @@ def daily_flow() -> DailyFullFlowResponse:
     End-to-end flow:
     topic -> quote -> script -> SEO
     """
-    topics_result = generate_topics(
-        theme="Winning Wisdom: discipline, meaning, resilience, self-mastery",
-        n=8,
-        audience="general_self_improver",
-    )
-    topic = topics_result.topics[0] if topics_result.topics else "Discipline on the hard days"
-    quote_data = fetch_winning_wisdom_quote_for_topic(topic=topic)
+    try:
+        topics_result = generate_topics_serpapi(
+            theme="Winning Wisdom: discipline, meaning, resilience, self-mastery",
+            n=8,
+            location="United States",
+        )
+        topic = random.choice(topics_result.topics) if topics_result.topics else "Discipline on the hard days"
+        quote_data = fetch_winning_wisdom_quote_for_topic(
+            topic=topic,
+            use_serpapi=True,
+            require_serpapi=True,
+        )
+    except Exception as e:
+        raise HTTPException(status_code=503, detail=f"SerpAPI topic/quote generation failed: {e}")
 
     script = generate_daily_wisdom_script(
         quote_override=quote_data["quote"],
@@ -159,6 +283,35 @@ def approve_script(payload: ScriptApproval):
         script_text=payload.approved_script,
         audience="general_self_improver",
     )
+
+    # If Supabase is configured, persist the approved/scored run so the
+    # media generation pipeline can consume it from the DB queue.
+    if is_supabase_configured():
+        try:
+            chosen_topic = (payload.topic or payload.quote or "").strip()
+            quality_passed = bool(getattr(score, "overall_score", 0) >= 7)
+            priority_fix = getattr(score, "priority_fix", None)
+            quality_report = (
+                f"Overall {getattr(score, 'overall_score', '')}/10 - {getattr(score, 'verdict', '')}"
+            )
+            if priority_fix:
+                quality_report += f" | Priority fix: {priority_fix}"
+
+            insert_pipeline_run(
+                {
+                    "chosen_topic": chosen_topic,
+                    "script": payload.approved_script,
+                    "quality_report": quality_report,
+                    "quality_passed": quality_passed,
+                    "topic_approved": True,
+                    "script_approved": True,
+                    "final_approved": True,
+                    "seo_result": _seo_for_storage(seo),
+                }
+            )
+        except Exception:
+            # Don't block the UI flow if Supabase write fails; backend will still return script/score/SEO.
+            pass
 
     return {
         "script": base_script,
@@ -200,6 +353,64 @@ def revise_script(payload: ScriptRevision) -> DailyWisdomScript:
         suggestions=payload.suggestions,
     )
     return script
+
+
+@app.get("/api/pipeline-runs")
+def list_pipeline_runs(limit: int = 50):
+    """
+    List the most recent stored pipeline runs (text-only pipeline).
+    """
+    if is_supabase_configured():
+        items = sb_list_pipeline_runs(limit=limit)
+        return {"source": "supabase", "count": len(items), "items": items}
+
+    runs = _load_pipeline_runs()
+    runs = list(reversed(runs))  # newest first
+    return {"source": "local_json", "file": str(PIPELINE_RUNS_FILE), "count": len(runs), "items": runs[:limit]}
+
+
+@app.get("/api/pipeline-runs/approved")
+def list_approved_pipeline_runs(limit: int = 50):
+    """
+    Return runs that are ready for production (final_approved == true).
+    """
+    if is_supabase_configured():
+        items = sb_list_approved_pipeline_runs(limit=limit)
+        return {"source": "supabase", "count": len(items), "items": items}
+
+    runs = _load_pipeline_runs()
+    approved = [r for r in runs if bool(r.get("final_approved"))]
+    approved = list(reversed(approved))
+    return {"source": "local_json", "file": str(PIPELINE_RUNS_FILE), "count": len(approved), "items": approved[:limit]}
+
+
+@app.patch("/api/pipeline-runs/{run_id}/approve")
+def approve_pipeline_run(run_id: str, patch: RunApprovalPatch):
+    """
+    Patch approval booleans on a stored pipeline run by ID.
+    """
+    if is_supabase_configured():
+        item = sb_patch_pipeline_run_approvals(
+            run_id,
+            topic_approved=patch.topic_approved,
+            script_approved=patch.script_approved,
+            final_approved=patch.final_approved,
+        )
+        return {"ok": True, "source": "supabase", "item": item}
+
+    runs = _load_pipeline_runs()
+    for r in runs:
+        if str(r.get("id")) == run_id:
+            if patch.topic_approved is not None:
+                r["topic_approved"] = bool(patch.topic_approved)
+            if patch.script_approved is not None:
+                r["script_approved"] = bool(patch.script_approved)
+            if patch.final_approved is not None:
+                r["final_approved"] = bool(patch.final_approved)
+            _save_pipeline_runs(runs)
+            return {"ok": True, "source": "local_json", "item": r}
+
+    raise HTTPException(status_code=404, detail=f"Run id not found: {run_id}")
 
 
 

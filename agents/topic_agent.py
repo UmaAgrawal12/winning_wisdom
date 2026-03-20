@@ -4,6 +4,8 @@ import random
 from datetime import datetime
 from pathlib import Path
 from typing import Optional, List
+import re
+
 from dotenv import load_dotenv
 from pydantic import BaseModel
 
@@ -14,9 +16,11 @@ except ModuleNotFoundError:
     # When importing as a package (e.g., `python -m winning_wisdom_ai...`)
     from winning_wisdom_ai.llm_client import topic_llm
 
-load_dotenv()
+_ENV_PATH = Path(__file__).resolve().parents[1] / ".env"
+load_dotenv(dotenv_path=_ENV_PATH)
 
 SERPAPI_API_KEY = os.getenv("SERPAPI_API_KEY")
+SERPAPI_TIMEOUT_S = float(os.getenv("SERPAPI_TIMEOUT_S", "8"))
 
 USED_QUOTES_FILE = Path("data/used_quotes.json")
 
@@ -24,6 +28,82 @@ USED_QUOTES_FILE = Path("data/used_quotes.json")
 class TopicsResult(BaseModel):
     topics: List[str]
     generated_at: str
+
+
+def _serpapi_get(params: dict) -> dict:
+    """
+    Call SerpAPI with an explicit timeout so the API never hangs requests.
+    """
+    if not SERPAPI_API_KEY:
+        raise ValueError("SERPAPI_API_KEY is REQUIRED. Add SERPAPI_API_KEY to your .env file.")
+
+    import requests
+
+    url = "https://serpapi.com/search.json"
+    q = {**params, "api_key": SERPAPI_API_KEY}
+    resp = requests.get(url, params=q, timeout=SERPAPI_TIMEOUT_S)
+    resp.raise_for_status()
+    return resp.json()
+
+
+def _normalize_topic(text: str) -> str:
+    text = (text or "").strip()
+    if not text:
+        return ""
+    text = re.sub(r"\s+", " ", text)
+    # Remove obvious suffixes frequently found in titles
+    text = re.sub(r"\s*[-–|:]\s*(youtube|tiktok|reels|shorts|quotes|quote|meaning|explained)\s*$", "", text, flags=re.I)
+    text = text.strip(" .-–|:")
+    # Keep short topics only
+    words = text.split()
+    if len(words) < 3 or len(words) > 10:
+        return ""
+    return text
+
+
+def generate_topics_serpapi(
+    theme: str = "Winning Wisdom: discipline, meaning, resilience, self-mastery",
+    n: int = 8,
+    location: str = "United States",
+) -> TopicsResult:
+    """
+    SerpAPI-only topic discovery.
+
+    Strategy: search for trending discussions/articles around the theme and
+    derive short, actionable topics from result titles.
+    """
+    query = f"{theme} discipline habits resilience stoicism"
+    results = _serpapi_get(
+        {
+            "engine": "google",
+            "q": query,
+            "location": location,
+            "hl": "en",
+            "num": 10,
+        }
+    )
+
+    topics: list[str] = []
+    seen = set()
+    organic = list(results.get("organic_results", []) or [])
+    random.shuffle(organic)  # avoid always returning the same first Google result
+    for item in organic:
+        title = (item.get("title") or "").strip()
+        t = _normalize_topic(title)
+        if not t:
+            continue
+        key = t.lower()
+        if key in seen:
+            continue
+        seen.add(key)
+        topics.append(t)
+        if len(topics) >= n:
+            break
+
+    if len(topics) < 2:
+        raise RuntimeError("SerpAPI returned insufficient topics. Try again or adjust the query.")
+
+    return TopicsResult(topics=topics, generated_at=datetime.now().isoformat())
 
 
 def generate_topics(
@@ -84,6 +164,8 @@ def fetch_winning_wisdom_quote_for_topic(
     topic: str,
     avoid_used: bool = True,
     location: str = "United States",
+    use_serpapi: bool = True,
+    require_serpapi: bool = False,
 ) -> dict:
     """
     Fetch a quote aligned to a specific topic, still within the Winning Wisdom theme.
@@ -94,32 +176,46 @@ def fetch_winning_wisdom_quote_for_topic(
     """
     topic = (topic or "").strip()
     if not topic:
-        return fetch_winning_wisdom_quote(avoid_used=avoid_used, location=location)
+        return fetch_winning_wisdom_quote(
+            avoid_used=avoid_used,
+            location=location,
+            use_serpapi=use_serpapi,
+            require_serpapi=require_serpapi,
+        )
 
     used_quotes = _load_used_quotes() if avoid_used else set()
 
-    if SERPAPI_API_KEY:
-        configs = WINNING_WISDOM_SEARCH_CONFIG.copy()
-        random.shuffle(configs)
+    if use_serpapi:
+        if not SERPAPI_API_KEY:
+            if require_serpapi:
+                raise ValueError(
+                    "SERPAPI_API_KEY is REQUIRED. Add SERPAPI_API_KEY to your .env file."
+                )
+        else:
+            configs = WINNING_WISDOM_SEARCH_CONFIG.copy()
+            random.shuffle(configs)
 
-        # Try a few focused searches first
-        for cfg in configs:
-            author_source = cfg["source"]
-            query = f'{author_source} quote about {topic}'
-            candidates = _search_quotes(query=query, location=location)
-            for candidate in candidates:
-                quote_text = candidate.get("quote", "").strip()
-                if not quote_text:
-                    continue
-                if avoid_used and quote_text.lower() in used_quotes:
-                    continue
-                _save_used_quote(quote_text)
-                return {
-                    "topic": topic,
-                    "quote": quote_text,
-                    "source": author_source,
-                    "fetched_at": datetime.now().isoformat(),
-                }
+            # Try a few focused searches first
+            for cfg in configs:
+                author_source = cfg["source"]
+                query = f'{author_source} quote about {topic}'
+                candidates = _search_quotes(query=query, location=location)
+                for candidate in candidates:
+                    quote_text = candidate.get("quote", "").strip()
+                    if not quote_text:
+                        continue
+                    if avoid_used and quote_text.lower() in used_quotes:
+                        continue
+                    _save_used_quote(quote_text)
+                    return {
+                        "topic": topic,
+                        "quote": quote_text,
+                        "source": author_source,
+                        "fetched_at": datetime.now().isoformat(),
+                    }
+
+            if require_serpapi:
+                raise RuntimeError("SerpAPI returned no clean quote aligned to the topic.")
 
     # Fallback: generic Winning Wisdom quote selection
     base = fetch_winning_wisdom_quote(avoid_used=avoid_used, location=location)
@@ -306,6 +402,8 @@ def fetch_marcus_aurelius_quote(
 def fetch_winning_wisdom_quote(
     avoid_used: bool = True,
     location: str = "United States",
+    use_serpapi: bool = True,
+    require_serpapi: bool = False,
 ) -> dict:
     """
     Fetch a quote for the Winning Wisdom theme.
@@ -321,32 +419,38 @@ def fetch_winning_wisdom_quote(
     used_quotes = _load_used_quotes() if avoid_used else set()
 
     # ── 1. Try SerpAPI first (multi-author) ───────────────────────────
-    if SERPAPI_API_KEY:
-        configs = WINNING_WISDOM_SEARCH_CONFIG.copy()
-        random.shuffle(configs)
+    if use_serpapi:
+        if not SERPAPI_API_KEY:
+            if require_serpapi:
+                raise ValueError(
+                    "SERPAPI_API_KEY is REQUIRED. Add SERPAPI_API_KEY to your .env file."
+                )
+        else:
+            configs = WINNING_WISDOM_SEARCH_CONFIG.copy()
+            random.shuffle(configs)
 
-        for cfg in configs:
-            query = cfg["query"]
-            author_source = cfg["source"]
-            candidates = _search_quotes(query=query, location=location)
-            for candidate in candidates:
-                quote_text = candidate.get("quote", "").strip()
-                if not quote_text:
-                    continue
-                if avoid_used and quote_text.lower() in used_quotes:
-                    continue
-                _save_used_quote(quote_text)
-                # Use the configured author-style source instead of
-                # noisy page titles like "41 Quotes to Change Your Habits..."
-                source = author_source
-                return {
-                    "quote": quote_text,
-                    "source": source,
-                    "fetched_at": datetime.now().isoformat(),
-                }
-        print("SerpAPI returned no clean Winning Wisdom quotes — using curated bank.")
-    else:
-        print("No SERPAPI_API_KEY found for Winning Wisdom — using curated bank.")
+            for cfg in configs:
+                query = cfg["query"]
+                author_source = cfg["source"]
+                candidates = _search_quotes(query=query, location=location)
+                for candidate in candidates:
+                    quote_text = candidate.get("quote", "").strip()
+                    if not quote_text:
+                        continue
+                    if avoid_used and quote_text.lower() in used_quotes:
+                        continue
+                    _save_used_quote(quote_text)
+                    # Use the configured author-style source instead of
+                    # noisy page titles like "41 Quotes to Change Your Habits..."
+                    source = author_source
+                    return {
+                        "quote": quote_text,
+                        "source": source,
+                        "fetched_at": datetime.now().isoformat(),
+                    }
+
+            if require_serpapi:
+                raise RuntimeError("SerpAPI returned no clean Winning Wisdom quotes.")
 
     # ── 2. Fallback: hardcoded multi-author bank ──────────────────────
     candidates = WINNING_WISDOM_QUOTES.copy()
@@ -373,57 +477,48 @@ def _search_quotes(query: str, location: str) -> list[dict]:
     Run a SerpAPI Google search and extract CLEAN quotes only.
     """
     try:
-        from serpapi import GoogleSearch
-
-        params = {
-            "q": query,
-            "api_key": SERPAPI_API_KEY,
-            "location": location,
-            "hl": "en",
-            "num": 10,
-        }
-
-        search = GoogleSearch(params)
-        results = search.get_dict()
-        candidates = []
+        results = _serpapi_get(
+            {
+                "engine": "google",
+                "q": query,
+                "location": location,
+                "hl": "en",
+                "num": 10,
+            }
+        )
+        candidates: list[dict] = []
 
         # 1. Answer box — highest quality, often a clean quote
-        answer_box = results.get("answer_box", {})
-        if answer_box:
-            text = (
-                answer_box.get("answer")
-                or answer_box.get("snippet")
-                or ""
-            ).strip()
+        answer_box = results.get("answer_box", {}) or {}
+        if isinstance(answer_box, dict) and answer_box:
+            text = (answer_box.get("answer") or answer_box.get("snippet") or "").strip()
             cleaned = _clean_quote(text)
             if cleaned and _is_clean_quote(cleaned):
                 source = answer_box.get("title") or "Winning Wisdom"
                 candidates.append({"quote": cleaned, "source": source})
 
         # 2. Organic snippets — check full snippet text
-        for result in results.get("organic_results", []):
-            snippet = result.get("snippet", "").strip()
+        for result in results.get("organic_results", []) or []:
+            if not isinstance(result, dict):
+                continue
+            snippet = (result.get("snippet") or "").strip()
             cleaned = _clean_quote(snippet)
             if cleaned and _is_clean_quote(cleaned):
-                title = result.get("title") or ""
+                title = (result.get("title") or "").strip()
                 source = title or "Winning Wisdom"
                 candidates.append({"quote": cleaned, "source": source})
 
             # 3. Rich snippet extensions — often contain standalone quotes
-            for item in result.get("rich_snippet", {}).get("top", {}).get("extensions", []):
-                cleaned = _clean_quote(item)
+            rich = result.get("rich_snippet") or {}
+            top = rich.get("top") or {}
+            for item in (top.get("extensions") or []) if isinstance(top, dict) else []:
+                cleaned = _clean_quote(str(item))
                 if cleaned and _is_clean_quote(cleaned):
-                    title = result.get("title") or ""
+                    title = (result.get("title") or "").strip()
                     source = title or "Winning Wisdom"
                     candidates.append({"quote": cleaned, "source": source})
 
         return candidates
-
-    except ImportError:
-        raise ImportError(
-            "google-search-results package not installed. "
-            "Install with: pip install google-search-results"
-        )
     except Exception as e:
         print(f"SerpAPI error for query={query!r}: {e}")
         return []

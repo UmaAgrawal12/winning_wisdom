@@ -10,7 +10,7 @@ import json
 from typing import Optional
 from pydantic import BaseModel, Field
 from openai import OpenAI
-from config.system_config import OPENAI_API_KEY, OPENAI_MODEL_TOPIC
+from winning_wisdom_ai.config.system_config import OPENAI_API_KEY, OPENAI_MODEL_TOPIC
 from .script_agent import DailyWisdomScript, PERSONA
 
 
@@ -56,7 +56,7 @@ class ReelScriptScore(BaseModel):
     
     # Quick verdict
     verdict: str = Field(description="One-line verdict: 'Ready to post', 'Needs minor tweaks', 'Needs revision', or 'Regenerate'")
-    priority_fix: Optional[str] = Field(default=None, description="The single most important thing to fix if score < 8")
+    priority_fix: Optional[str] = Field(default=None, description="The single most important thing to fix if score < 7")
 
 
 # ─────────────────────────────────────────────────────────────────────
@@ -116,7 +116,8 @@ SCORING CRITERIA
    - Measures the combined power of the first 2-3 seconds:
      · How strong and specific the hook is
      · How likely it is to stop scrolling
-   - Must feel immediately personal and concrete, not abstract philosophy
+   - A quiet, intimate Arthur-style opening can still score high if it feels deeply personal.
+   - Do NOT over-penalize calm openings that are specific and emotionally direct.
    - Creates tension, curiosity, or clear recognition of a real problem
    - Examples of strong openings:
      · "Most people I knew never did the thing they kept talking about."
@@ -177,7 +178,8 @@ SCORING CRITERIA
 CRITICAL RULES
 =============================
 
-- The first 2 lines MUST create strong opening impact (hook). If they don't, hook_strength should be 6 or lower.
+- The first 2 lines should create opening impact, but Arthur's calm/intimate voice is valid.
+  If the opening is specific + personal, hook_strength can be 7-9 even without aggressive phrasing.
 - Arthur NEVER uses motivational speaker language. If you see phrases like "level up", "crush it", "hustle", persona_consistency should be penalized.
 - The ending MUST hit hard. If it's soft, summary-like, or uplifting in a generic way, structure score should be penalized.
 - Sentences should be SHORT (5-8 words). If sentences are too long, pacing should be penalized.
@@ -244,12 +246,12 @@ Calculate overall_score as a weighted average:
 - visual_potential: 15%
 
 Verdict rules:
-- overall_score >= 8.5: "Ready to post"
+- overall_score >= 8.0: "Ready to post"
 - overall_score >= 7.0: "Needs minor tweaks"
 - overall_score >= 5.0: "Needs revision"
 - overall_score < 5.0: "Regenerate"
 
-Priority fix: Only include if overall_score < 8.0. Pick the single most impactful fix.
+Priority fix: Only include if overall_score < 7.0. Pick the single most impactful fix.
 """
 
     response = client.chat.completions.create(

@@ -1,5 +1,5 @@
 from langchain_openai import ChatOpenAI
-from config.system_config import (
+from winning_wisdom_ai.config.system_config import (
     OPENAI_API_KEY,
     OPENAI_MODEL_TOPIC,
     OPENAI_MODEL_SCRIPT,

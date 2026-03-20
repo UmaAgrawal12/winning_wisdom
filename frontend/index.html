@@ -62,6 +62,33 @@
       --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
+    :root[data-theme="light"] {
+      /* Light theme colors */
+      --bg-dark: #f7f7ff;
+      --bg-darker: #eef2ff;
+      --bg-card: rgba(255, 255, 255, 0.78);
+      --bg-card-hover: rgba(255, 255, 255, 0.92);
+
+      /* Text colors */
+      --text-primary: #0f172a;
+      --text-secondary: #334155;
+      --text-muted: #64748b;
+
+      /* Borders & dividers */
+      --border: rgba(15, 23, 42, 0.12);
+      --border-bright: rgba(168, 85, 247, 0.35);
+
+      /* Softer shadows for light mode */
+      --shadow-sm: 0 2px 10px rgba(15, 23, 42, 0.10);
+      --shadow-md: 0 6px 20px rgba(15, 23, 42, 0.12);
+      --shadow-lg: 0 18px 60px rgba(15, 23, 42, 0.14);
+      --shadow-glow: 0 0 38px rgba(168, 85, 247, 0.18);
+      --shadow-glow-blue: 0 0 38px rgba(59, 130, 246, 0.16);
+
+      /* Card gradient for light mode */
+      --gradient-card: linear-gradient(135deg, rgba(168, 85, 247, 0.08) 0%, rgba(59, 130, 246, 0.06) 100%);
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -91,6 +118,14 @@
       pointer-events: none;
       z-index: 0;
       animation: gradientShift 20s ease infinite;
+    }
+
+    :root[data-theme="light"] body::before {
+      background:
+        radial-gradient(circle at 20% 30%, rgba(168, 85, 247, 0.10) 0%, transparent 55%),
+        radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.10) 0%, transparent 55%),
+        radial-gradient(circle at 40% 70%, rgba(236, 72, 153, 0.06) 0%, transparent 55%),
+        radial-gradient(circle at 90% 80%, rgba(249, 115, 22, 0.06) 0%, transparent 55%);
     }
 
     @keyframes gradientShift {
@@ -125,6 +160,37 @@
       grid-template-rows: auto 1fr;
       grid-template-columns: minmax(0, 2.5fr) minmax(0, 1.8fr);
       border: 1px solid var(--border);
+    }
+
+    :root[data-theme="light"] .app {
+      box-shadow: var(--shadow-lg), var(--shadow-glow);
+    }
+
+    :root[data-theme="light"] .app-header {
+      background: rgba(255, 255, 255, 0.82);
+      border-bottom-color: rgba(15, 23, 42, 0.10);
+    }
+
+    :root[data-theme="light"] .tab-btn {
+      background: rgba(255, 255, 255, 0.78);
+      color: rgba(51, 65, 85, 0.90);
+      border-color: rgba(15, 23, 42, 0.12);
+    }
+
+    :root[data-theme="light"] .tab-btn:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.92);
+      color: rgba(15, 23, 42, 0.92);
+      box-shadow: var(--shadow-sm);
+    }
+
+    :root[data-theme="light"] .nav-btn {
+      background: rgba(255, 255, 255, 0.80);
+      border-color: rgba(15, 23, 42, 0.12);
+      color: rgba(15, 23, 42, 0.92);
+    }
+
+    :root[data-theme="light"] .nav-btn:hover:not(:disabled) {
+      box-shadow: var(--shadow-md);
     }
 
     /* Tab layout */
@@ -259,6 +325,11 @@
       background: rgba(18, 18, 26, 0.55);
     }
 
+    :root[data-theme="light"] .platform-row {
+      background: rgba(255, 255, 255, 0.82);
+      border-color: rgba(15, 23, 42, 0.10);
+    }
+
     .platform-title {
       display: flex;
       align-items: center;
@@ -273,6 +344,10 @@
       letter-spacing: 0.10em;
       text-transform: uppercase;
       color: var(--text-secondary);
+    }
+
+    :root[data-theme="light"] .platform-title span {
+      color: rgba(30, 41, 59, 0.80);
     }
 
     .app-header {
@@ -456,6 +531,79 @@
     .nav-actions {
       display: flex;
       gap: 12px;
+    }
+
+    .theme-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(18, 18, 26, 0.55);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all var(--transition);
+      user-select: none;
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--border-bright);
+      box-shadow: var(--shadow-sm);
+      transform: translateY(-1px);
+      color: var(--text-primary);
+    }
+
+    .theme-toggle-track {
+      width: 42px;
+      height: 22px;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.12);
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      position: relative;
+      flex: 0 0 auto;
+      overflow: hidden;
+    }
+
+    .theme-toggle-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      position: absolute;
+      top: 1px;
+      left: 1px;
+      background: var(--gradient-secondary);
+      box-shadow: 0 6px 16px rgba(59, 130, 246, 0.25);
+      transition: transform var(--transition), background var(--transition);
+    }
+
+    :root[data-theme="light"] .theme-toggle {
+      background: rgba(255, 255, 255, 0.72);
+      color: var(--text-secondary);
+    }
+
+    :root[data-theme="light"] .theme-toggle-track {
+      background: rgba(15, 23, 42, 0.06);
+      border-color: rgba(15, 23, 42, 0.10);
+    }
+
+    :root[data-theme="light"] .theme-toggle-thumb {
+      transform: translateX(20px);
+      background: var(--gradient-tertiary);
+      box-shadow: 0 6px 16px rgba(249, 115, 22, 0.22);
+    }
+
+    .theme-toggle-label {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 900px) {
+      .theme-toggle-label {
+        display: none;
+      }
     }
 
     .nav-btn {
@@ -673,6 +821,26 @@
       outline: none;
     }
 
+    :root[data-theme="light"] input[type="text"],
+    :root[data-theme="light"] textarea {
+      background: rgba(255, 255, 255, 0.92);
+      border-color: rgba(15, 23, 42, 0.12);
+      color: rgba(15, 23, 42, 0.92);
+      box-shadow: inset 0 1px 0 rgba(15, 23, 42, 0.03);
+    }
+
+    :root[data-theme="light"] input[type="text"]:focus,
+    :root[data-theme="light"] textarea:focus {
+      border-color: rgba(124, 58, 237, 0.55);
+      box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.16);
+      background: rgba(255, 255, 255, 0.98);
+    }
+
+    :root[data-theme="light"] input[type="text"]::placeholder,
+    :root[data-theme="light"] textarea::placeholder {
+      color: rgba(100, 116, 139, 0.85);
+    }
+
     textarea {
       min-height: 120px;
       resize: vertical;
@@ -697,9 +865,10 @@
     }
 
     .btn-row-left {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      align-items: stretch;
     }
 
     .btn {
@@ -714,7 +883,21 @@
       transition: all var(--transition);
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 8px;
+      min-height: 40px;
+      white-space: nowrap;
+    }
+
+    :root[data-theme="light"] .btn {
+      background: rgba(255, 255, 255, 0.86);
+      border-color: rgba(15, 23, 42, 0.12);
+      color: rgba(15, 23, 42, 0.92);
+    }
+
+    :root[data-theme="light"] .btn:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.98);
+      box-shadow: var(--shadow-sm);
     }
 
     .btn:hover:not(:disabled) {
@@ -730,6 +913,16 @@
     }
 
     .btn-primary {
+      padding: 10px 18px;
+      font-size: 13px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all var(--transition);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 40px;
       background: var(--gradient-primary);
       border: none;
       color: white;
@@ -740,6 +933,13 @@
     .btn-primary:hover:not(:disabled) {
       box-shadow: 0 6px 24px rgba(168, 85, 247, 0.6);
       transform: translateY(-2px);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: 0 4px 16px rgba(168, 85, 247, 0.25);
     }
 
     .btn-outline {
@@ -775,6 +975,30 @@
       box-shadow: none;
       transform: none;
       cursor: not-allowed;
+    }
+
+    /* Light theme: keep approve button visible */
+    :root[data-theme="light"] .btn-outline {
+      color: rgba(15, 23, 42, 0.92);
+      background:
+        linear-gradient(rgba(255, 255, 255, 0.94), rgba(255, 255, 255, 0.94)) padding-box,
+        var(--gradient-secondary) border-box;
+      box-shadow: 0 12px 26px rgba(15, 23, 42, 0.12);
+    }
+
+    :root[data-theme="light"] .btn-outline:hover:not(:disabled) {
+      box-shadow: 0 16px 36px rgba(59, 130, 246, 0.18), 0 0 34px rgba(6, 182, 212, 0.14);
+      background:
+        linear-gradient(rgba(255, 255, 255, 0.90), rgba(255, 255, 255, 0.90)) padding-box,
+        linear-gradient(135deg, rgba(168, 85, 247, 1) 0%, rgba(6, 182, 212, 1) 55%, rgba(236, 72, 153, 1) 100%) border-box;
+    }
+
+    :root[data-theme="light"] #btn-approve-script.btn-outline:disabled {
+      opacity: 0.55;
+      background:
+        linear-gradient(rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.72)) padding-box,
+        rgba(15, 23, 42, 0.14) border-box;
+      box-shadow: none;
     }
 
     .status {
@@ -842,6 +1066,15 @@
       white-space: pre-wrap;
     }
 
+    :root[data-theme="light"] .script-view {
+      background: rgba(255, 255, 255, 0.92);
+      border-color: rgba(15, 23, 42, 0.12);
+      color: rgba(15, 23, 42, 0.92);
+      box-shadow:
+        inset 0 1px 0 rgba(15, 23, 42, 0.03),
+        0 8px 24px rgba(15, 23, 42, 0.08);
+    }
+
     .script-view::-webkit-scrollbar {
       width: 8px;
     }
@@ -849,6 +1082,10 @@
     .script-view::-webkit-scrollbar-track {
       background: rgba(10, 10, 15, 0.5);
       border-radius: 4px;
+    }
+
+    :root[data-theme="light"] .script-view::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.06);
     }
 
     .script-view::-webkit-scrollbar-thumb {
@@ -986,6 +1223,16 @@
       cursor: pointer;
     }
 
+    :root[data-theme="light"] .tag {
+      background: rgba(124, 58, 237, 0.12);
+      border-color: rgba(124, 58, 237, 0.24);
+      color: #4c1d95;
+    }
+
+    :root[data-theme="light"] .tag:hover {
+      box-shadow: 0 10px 22px rgba(124, 58, 237, 0.18);
+    }
+
     .tag:hover {
       background: var(--gradient-primary);
       color: white;
@@ -1109,6 +1356,12 @@
           <button id="tab-step-3" class="tab-btn" type="button">Score & SEO</button>
         </div>
         <div class="nav-actions">
+          <button id="btn-theme" class="theme-toggle" type="button" aria-label="Toggle light/dark theme">
+            <span class="theme-toggle-track" aria-hidden="true">
+              <span class="theme-toggle-thumb"></span>
+            </span>
+            <span id="theme-label" class="theme-toggle-label">Dark</span>
+          </button>
           <button id="btn-back" class="nav-btn" type="button">← Back</button>
           <button id="btn-continue" class="nav-btn primary" type="button">Continue →</button>
         </div>
@@ -1135,6 +1388,10 @@
                 <div class="quote-meta" id="current-topic"></div>
                 <div class="quote-big" id="current-quote">Loading quote…</div>
                 <div class="quote-meta" id="current-source"></div>
+              </div>
+
+              <div style="margin-top: 14px; display: flex; justify-content: flex-end;">
+                <button id="btn-start" class="btn-primary" type="button">Start →</button>
               </div>
 
               <div class="status" id="status-topic">
@@ -1168,8 +1425,8 @@
                 <div>
                   <div class="field-label">Quick Actions</div>
                   <div class="btn-row-left">
-                    <button id="btn-refresh" class="btn" type="button">🔄 New</button>
-                    <button id="btn-quote-for-topic" class="btn" type="button">💡 Match</button>
+                    <button id="btn-refresh" class="btn" type="button">🔄 New Topic + Quote</button>
+                    <button id="btn-quote-for-topic" class="btn" type="button">💡 New Quote</button>
                   </div>
                 </div>
               </div>
@@ -1344,10 +1601,20 @@
   </div>
 
   <script>
+    // Theme (persisted)
+    (function initTheme() {
+      const saved = localStorage.getItem("ww_theme");
+      const prefersLight = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches;
+      const initial = saved || (prefersLight ? "light" : "dark");
+      document.documentElement.dataset.theme = initial;
+    })();
+
     const API_BASE = "http://127.0.0.1:8000/api";
 
     const els = {
       app: document.getElementById("app"),
+      btnTheme: document.getElementById("btn-theme"),
+      themeLabel: document.getElementById("theme-label"),
       topicText: document.getElementById("current-topic"),
       topicInput: document.getElementById("topic-input"),
       quoteText: document.getElementById("current-quote"),
@@ -1357,6 +1624,7 @@
       btnRefresh: document.getElementById("btn-refresh"),
       btnQuoteForTopic: document.getElementById("btn-quote-for-topic"),
       btnGenerateScript: document.getElementById("btn-generate-script"),
+      btnStart: document.getElementById("btn-start"),
       btnApproveScript: document.getElementById("btn-approve-script"),
       btnBack: document.getElementById("btn-back"),
       btnContinue: document.getElementById("btn-continue"),
@@ -1384,10 +1652,22 @@
       osHighlightWords: document.getElementById("os-highlight-words"),
     };
 
+    function applyTheme(theme) {
+      const t = theme === "light" ? "light" : "dark";
+      document.documentElement.dataset.theme = t;
+      localStorage.setItem("ww_theme", t);
+      if (els.themeLabel) els.themeLabel.textContent = t === "light" ? "Light" : "Dark";
+      if (els.btnTheme) els.btnTheme.setAttribute("aria-pressed", String(t === "light"));
+    }
+
+    // Sync label with initial theme
+    applyTheme(document.documentElement.dataset.theme || "dark");
+
     let lastQuote = null;
     let lastSource = null;
     let lastScript = null;
     let lastTopic = null;
+    let started = false;
 
     function setStatus(el, text, variant = "pending") {
       const dot = el.querySelector(".status-dot");
@@ -1686,7 +1966,15 @@
     }
 
     els.btnRefresh.addEventListener("click", () => {
-      autoGenerateAll().catch(err => console.error(err));
+      // "New" should only refresh topic + quote (stay on step 1)
+      setStep(1);
+      els.scriptView.textContent = "No script yet. Approve a topic to generate one.";
+      els.osQuoteDisplay.textContent = "–";
+      els.osCaption.textContent = "–";
+      els.osHighlightWords.innerHTML = "";
+      els.btnApproveScript.disabled = true;
+      setStatus(els.statusScript, "Script not generated yet.");
+      loadQuote().catch(err => console.error(err));
     });
     els.btnQuoteForTopic.addEventListener("click", () => {
       loadQuoteForTopic().catch(err => console.error(err));
@@ -1697,9 +1985,31 @@
       onReviseScript().catch(err => console.error(err));
     });
 
+    function setStarted(on) {
+      started = Boolean(on);
+      // Only allow actions after start
+      els.btnRefresh.disabled = !started;
+      els.btnQuoteForTopic.disabled = !started;
+      els.btnGenerateScript.disabled = !started;
+      els.btnContinue.disabled = !started;
+      if (els.btnStart) els.btnStart.style.display = started ? "none" : "inline-flex";
+    }
+
+    if (els.btnStart) {
+      els.btnStart.addEventListener("click", () => {
+        setStarted(true);
+        loadQuote().catch(err => console.error(err));
+      });
+    }
+
     els.tab1.addEventListener("click", () => setStep(1));
     els.tab2.addEventListener("click", () => setStep(2));
     els.tab3.addEventListener("click", () => setStep(3));
+
+    els.btnTheme.addEventListener("click", () => {
+      const current = document.documentElement.dataset.theme || "dark";
+      applyTheme(current === "light" ? "dark" : "light");
+    });
 
     els.btnBack.addEventListener("click", () => {
       const s = Number(els.app.dataset.step || "1");
@@ -1720,7 +2030,8 @@
       setStep(2);
     });
 
-    loadQuote();
+    // Start is user-driven now
+    setStarted(false);
   </script>
 </body>
 </html>

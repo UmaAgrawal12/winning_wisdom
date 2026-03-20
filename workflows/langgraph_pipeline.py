@@ -1,57 +1,51 @@
-from typing import TypedDict, List
-import random
+from __future__ import annotations
+
+from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, TypedDict
 import json
 import logging
 
 from langchain_core.prompts import ChatPromptTemplate
-from langgraph.graph import StateGraph, END
+from langgraph.graph import END, StateGraph
 
-from llm_client import topic_llm, script_llm
-from agents.seo_agent import generate_seo_metadata, SEOResult
-from agents.script_agent import generate_script
-from agents.topic_agent import generate_topics
+from winning_wisdom_ai.llm_client import script_llm
+from winning_wisdom_ai.agents.script_agent import generate_daily_wisdom_script
+from winning_wisdom_ai.agents.seo_agent import SEOResult, generate_seo_metadata
+from winning_wisdom_ai.supabase_db import insert_pipeline_run, is_supabase_configured
+
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+PIPELINE_RUNS_FILE = PROJECT_ROOT / "data" / "pipeline_runs.json"
 
 
 class PipelineState(TypedDict, total=False):
-    topics: List[str]
     chosen_topic: str
     script: str
     seo_result: SEOResult
     quality_report: str
     quality_passed: bool
-    
 
-def topic_node(state: PipelineState) -> PipelineState:
-    """
-    Generate topics using SerpAPI (REQUIRED).
-    This function uses generate_topics() from topic_agent.py which fetches
-    trending topics directly from Google search via SerpAPI.
-    """
-    logging.info("topic_node() called - using SerpAPI via generate_topics()")
-    
-    # Use SerpAPI-based topic generation (REQUIRED)
-    # Focus on Stoic philosophy and wisdom-based content
-    # n=None means return all available trending topics (flexible count)
-    topics_result = generate_topics(
-        theme="discipline and self-improvement",
-        n=None,  # Get all available trending topics (flexible)
-        audience="general_self_improver",
-    )
-    
-    topics = topics_result.topics
-    chosen = random.choice(topics) if topics else ""
-    
-    logging.info("topic_node() complete - generated %d topics, chosen: %r", len(topics), chosen)
 
-    return {"topics": topics, "chosen_topic": chosen}
+def _seo_for_storage(seo: SEOResult) -> dict:
+    """
+    Normalize SEO payload so captions are explicitly available in Supabase.
+    """
+    raw = seo.model_dump()
+    for platform in ("youtube", "instagram", "tiktok", "facebook"):
+        block = raw.get(platform)
+        if isinstance(block, dict):
+            block["caption"] = block.get("description", "")
+    return raw
 
 
 def script_node(state: PipelineState) -> PipelineState:
     """
-    Generate a production-ready short-form script using the dedicated script agent.
+    Generate a short-form script using the existing Arthur persona generator.
     """
-    script = generate_script(topic=state["chosen_topic"], audience="general_self_improver")
-    return {"script": script.text.strip()}
+    daily = generate_daily_wisdom_script()
+    script_text = daily.spoken_script.full_script.strip()
+    return {"script": script_text}
 
 
 def script_quality_node(state: PipelineState) -> PipelineState:
@@ -59,15 +53,10 @@ def script_quality_node(state: PipelineState) -> PipelineState:
     Validate the generated script before it moves further down the pipeline.
 
     Checks:
-    - Script length (aiming for ~30–45 seconds spoken, roughly 110–220 words).
+    - Length (aiming for ~30–45 seconds spoken, roughly 110–220 words).
     - Tone and clarity (direct, practical, motivational, no fluff).
-    - Platform suitability (short-form vertical video, strong opening, short paragraphs,
-      no platform name mentions, no like/subscribe/follow CTAs).
-    - Engagement potential (clear hook, concrete insight, specific takeaway).
-
-    The node returns:
-    - quality_report: a human-readable review with scores.
-    - quality_passed: True if the script meets minimum thresholds, False otherwise.
+    - Platform suitability (short-form vertical video, strong opening, line breaks).
+    - Engagement (hook, insight, takeaway).
     """
     llm = script_llm()
     prompt = ChatPromptTemplate.from_template(
@@ -120,26 +109,77 @@ Do not add any additional commentary outside this format.
 
 
 def seo_node(state: PipelineState) -> PipelineState:
+    script_text = state.get("script", "") or ""
+    first_line = script_text.splitlines()[0] if script_text.splitlines() else ""
+    derived_topic = state.get("chosen_topic") or first_line or "Daily Winning Wisdom"
+
     seo_result = generate_seo_metadata(
-        topic=state["chosen_topic"],
-        script_text=state["script"],
+        topic=derived_topic,
+        script_text=script_text,
         audience="general_self_improver",
     )
     return {"seo_result": seo_result}
 
 
+def _load_pipeline_runs() -> List[Dict[str, Any]]:
+    if not PIPELINE_RUNS_FILE.exists():
+        return []
+    try:
+        with PIPELINE_RUNS_FILE.open("r", encoding="utf-8") as f:
+            data = json.load(f)
+        return data if isinstance(data, list) else []
+    except (json.JSONDecodeError, ValueError):
+        return []
+
+
+def _save_pipeline_run(state: PipelineState) -> Dict[str, Any]:
+    run_id = datetime.utcnow().isoformat(timespec="seconds")
+    payload: Dict[str, Any] = {
+        # Let Supabase generate UUID/created_at if configured
+        "id": run_id,
+        "created_at": datetime.utcnow().isoformat(),
+        "chosen_topic": state.get("chosen_topic", ""),
+        "script": state.get("script", ""),
+        "quality_report": state.get("quality_report", ""),
+        "quality_passed": bool(state.get("quality_passed", False)),
+        "topic_approved": False,
+        "script_approved": False,
+        "final_approved": False,
+    }
+
+    seo = state.get("seo_result")
+    if isinstance(seo, SEOResult):
+        payload["seo_result"] = _seo_for_storage(seo)
+    elif seo is not None:
+        payload["seo_result"] = seo
+    else:
+        payload["seo_result"] = None
+
+    # Prefer Supabase if configured; fallback to local JSON file
+    if is_supabase_configured():
+        # Remove id/created_at so Supabase defaults apply (uuid + now())
+        row = {k: v for k, v in payload.items() if k not in {"id", "created_at"}}
+        return insert_pipeline_run(row)
+
+    PIPELINE_RUNS_FILE.parent.mkdir(parents=True, exist_ok=True)
+    existing = _load_pipeline_runs()
+    existing.append(payload)
+    with PIPELINE_RUNS_FILE.open("w", encoding="utf-8") as f:
+        json.dump(existing, f, indent=2, ensure_ascii=False)
+    return payload
+
+
 def build_text_only_graph():
     graph = StateGraph(PipelineState)
-    graph.add_node("topics", topic_node)
-    graph.add_node("script", script_node)
-    graph.add_node("script_quality", script_quality_node)
-    graph.add_node("seo", seo_node)
+    # Node names must NOT collide with state keys (e.g., "script")
+    graph.add_node("generate_script", script_node)
+    graph.add_node("validate_script", script_quality_node)
+    graph.add_node("generate_seo", seo_node)
 
-    graph.set_entry_point("topics")
-    graph.add_edge("topics", "script")
-    graph.add_edge("script", "script_quality")
-    graph.add_edge("script_quality", "seo")
-    graph.add_edge("seo", END)
+    graph.set_entry_point("generate_script")
+    graph.add_edge("generate_script", "validate_script")
+    graph.add_edge("validate_script", "generate_seo")
+    graph.add_edge("generate_seo", END)
 
     return graph.compile()
 
@@ -151,35 +191,33 @@ def print_seo_output(seo: SEOResult):
             "description": seo.youtube.description,
             "hashtags": seo.youtube.hashtags,
         },
-        "instagram": {
-            "caption": seo.instagram.description,
-            "hashtags": seo.instagram.hashtags,
-        },
-        "tiktok": {
-            "caption": seo.tiktok.description,
-            "hashtags": seo.tiktok.hashtags,
-        },
-        "facebook": {
-            "caption": seo.facebook.description,
-            "hashtags": seo.facebook.hashtags,
-        },
+        "instagram": {"caption": seo.instagram.description, "hashtags": seo.instagram.hashtags},
+        "tiktok": {"caption": seo.tiktok.description, "hashtags": seo.tiktok.hashtags},
+        "facebook": {"caption": seo.facebook.description, "hashtags": seo.facebook.hashtags},
     }
-    print(json.dumps(platforms, indent=2))
+    print(json.dumps(platforms, indent=2, ensure_ascii=False))
 
 
 def run_langgraph_pipeline():
     app = build_text_only_graph()
     final_state = app.invoke({})
 
-    print("=== Topics ===")
-    for i, t in enumerate(final_state["topics"], start=1):
-        print(f"{i}. {t}")
-
-    print("\n=== Chosen Topic ===")
-    print(final_state["chosen_topic"])
+    saved = _save_pipeline_run(final_state)
 
     print("\n=== Script ===")
     print(final_state["script"])
 
+    print("\n=== Quality Report ===")
+    print(final_state["quality_report"])
+
     print("\n=== SEO JSON ===")
     print_seo_output(final_state["seo_result"])
+
+    print("\n=== Saved Run Metadata ===")
+    print(f"ID: {saved['id']}")
+    print(f"File: {PIPELINE_RUNS_FILE}")
+
+
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
+    run_langgraph_pipeline()
