@@ -8,6 +8,7 @@ from pydantic import BaseModel
 from openai import OpenAI
 from dotenv import load_dotenv
 from winning_wisdom_ai.config.system_config import OPENAI_API_KEY, OPENAI_MODEL_TOPIC
+from winning_wisdom_ai.config.personas import get_persona
 from .topic_agent import fetch_winning_wisdom_quote
 
 load_dotenv()
@@ -135,6 +136,7 @@ class OnScreenText(BaseModel):
 
 
 class DailyWisdomScript(BaseModel):
+    persona: str = "arthur"
     quote: str
     source: str
     spoken_script: SpokenScript
@@ -145,9 +147,56 @@ class DailyWisdomScript(BaseModel):
 # ─────────────────────────────────────────────────────────────────────
 # SCRIPT GENERATOR
 # ─────────────────────────────────────────────────────────────────────
+def _build_tony_generation_prompt(quote: str, source: str, entry_angle: str, banned_phrases: list[str]) -> str:
+    return f"""
+You are Tony, a high-energy fitness motivator creating a 30-60 second short-form script.
+
+VOICE:
+- Energetic, direct, action-oriented, conversational but commanding.
+- Use practical gym language and mindset psychology.
+- Speak in first person when sharing lessons.
+
+CONTENT FOCUS:
+- Workout motivation, training mindset, recovery, nutrition truth, physical transformation.
+
+BANNED PHRASES (NEVER USE):
+{", ".join(banned_phrases)}
+
+ENTRY ANGLE:
+{entry_angle}
+
+QUOTE / CORE IDEA:
+"{quote}"
+— {source}
+
+REQUIREMENTS:
+- 8-14 lines total.
+- Strong scroll-stopping first line.
+- Keep lines punchy and concrete.
+- Include one practical takeaway.
+- No generic fluff, no cliches, no hashtags, no calls to like/follow.
+
+Also produce:
+- quote_display: strongest 4-8 words from the quote.
+- caption: 4-7 words, punchy fitness insight.
+- highlight_words: 3-5 single words from script.
+
+Return valid JSON only:
+{{
+  "spoken_script": {{"full_script": "line 1\\nline 2"}},
+  "on_screen_text": {{
+    "quote_display": "...",
+    "caption": "...",
+    "highlight_words": ["word1", "word2", "word3"]
+  }}
+}}
+"""
+
+
 def generate_daily_wisdom_script(
     quote_override: Optional[str] = None,
     source_override: Optional[str] = None,
+    persona: str = "arthur",
 ) -> DailyWisdomScript:
     """
     Generate a full daily Winning Wisdom script for the Arthur persona.
@@ -164,6 +213,8 @@ def generate_daily_wisdom_script(
         DailyWisdomScript
     """
     # 1. Get the quote
+    persona_cfg = get_persona(persona)
+
     if quote_override:
         quote_data = {
             "quote": quote_override,
@@ -171,13 +222,14 @@ def generate_daily_wisdom_script(
             "fetched_at": datetime.now().isoformat(),
         }
     else:
-        quote_data = fetch_winning_wisdom_quote()
+        quote_data = fetch_winning_wisdom_quote(persona=persona_cfg.name)
 
     quote = quote_data["quote"]
     source = quote_data["source"]
 
     # 2. Pick entry angle
-    entry_angle = random.choice(ENTRY_ANGLES)
+    entry_angles = ENTRY_ANGLES if persona_cfg.name == "arthur" else persona_cfg.entry_angles
+    entry_angle = random.choice(entry_angles)
 
     # 3. Build prompt
     prompt = f"""
@@ -370,28 +422,42 @@ OUTPUT — valid JSON only, no markdown, no extra text
   }}
 }}
 """
+    if persona_cfg.name != "arthur":
+        prompt = _build_tony_generation_prompt(
+            quote=quote,
+            source=source,
+            entry_angle=entry_angle,
+            banned_phrases=persona_cfg.banned_phrases,
+        )
+
+    system_content = (
+        "You write short daily wisdom video scripts for Arthur — "
+        "a 78-year-old retired schoolteacher and widower who lost his wife Margaret. "
+        "Arthur speaks the way a loving grandfather writes a letter: "
+        "warm, direct, personal, and completely without performance. "
+        "He is not a wisdom account. He is a real person speaking to ONE viewer "
+        "who needs to hear exactly this, today. "
+        "The viewer must feel seen - not educated. "
+        "The first line must feel like Arthur already knows something about their life. "
+        "The ending must land quietly and stay with them. "
+        if persona_cfg.name == "arthur"
+        else (
+            "You write high-energy short-form fitness motivation scripts as Tony. "
+            "Your style is punchy, direct, practical, and action-oriented. "
+            "Use gym mindset language, avoid cliches, and keep every line concrete. "
+        )
+    ) + "Respond with valid JSON only. No markdown. No preamble. No explanation."
 
     response = client.chat.completions.create(
         model=OPENAI_MODEL_TOPIC,
         messages=[
             {
                 "role": "system",
-                "content": (
-                    "You write short daily wisdom video scripts for Arthur — "
-                    "a 78-year-old retired schoolteacher and widower who lost his wife Margaret. "
-                    "Arthur speaks the way a loving grandfather writes a letter: "
-                    "warm, direct, personal, and completely without performance. "
-                    "He is not a wisdom account. He is a real person speaking to ONE viewer "
-                    "who needs to hear exactly this, today. "
-                    "The viewer must feel seen — not educated. "
-                    "The first line must feel like Arthur already knows something about their life. "
-                    "The ending must land quietly and stay with them. "
-                    "Respond with valid JSON only. No markdown. No preamble. No explanation."
-                ),
+                "content": system_content,
             },
             {"role": "user", "content": prompt},
         ],
-        temperature=0.88,
+        temperature=persona_cfg.temperature,
     )
 
     raw = response.choices[0].message.content.strip()
@@ -406,6 +472,7 @@ OUTPUT — valid JSON only, no markdown, no extra text
     parsed = json.loads(raw)
 
     script = DailyWisdomScript(
+        persona=persona_cfg.name,
         quote=quote,
         source=source,
         spoken_script=SpokenScript(**parsed["spoken_script"]),
@@ -422,7 +489,9 @@ def revise_wisdom_script(
     source: str,
     current_script: str,
     suggestions: str,
+    persona: str = "arthur",
 ) -> DailyWisdomScript:
+    persona_cfg = get_persona(persona)
     """
     Regenerate an Arthur script given client suggestions.
 
@@ -430,7 +499,8 @@ def revise_wisdom_script(
     spoken script in Arthur's voice, applying the requested changes.
     """
     # Reuse a random entry angle to keep variety
-    entry_angle = random.choice(ENTRY_ANGLES)
+    entry_angles = ENTRY_ANGLES if persona_cfg.name == "arthur" else persona_cfg.entry_angles
+    entry_angle = random.choice(entry_angles)
 
     prompt = f"""
 You are revising an existing short daily wisdom video script for an elderly gentleman named {PERSONA["name"]}, age {PERSONA["age"]}.
@@ -511,24 +581,37 @@ OUTPUT — valid JSON only, no markdown, no extra text
   }}
 }}
 """
+    if persona_cfg.name != "arthur":
+        prompt = _build_tony_generation_prompt(
+            quote=quote,
+            source=source,
+            entry_angle=entry_angle,
+            banned_phrases=persona_cfg.banned_phrases,
+        ) + f"\n\nRevise this existing script using feedback:\n{suggestions}\n\nCurrent script:\n{current_script}\n"
+
+    revision_system_content = (
+        "You revise short daily wisdom video scripts for Arthur - "
+        "a 78-year-old retired schoolteacher and widower who lost his wife Margaret. "
+        "Arthur speaks the way a loving grandfather writes a letter: "
+        "warm, direct, personal, and completely without performance. "
+        "You MUST apply the client's suggestions while keeping Arthur's voice. "
+        if persona_cfg.name == "arthur"
+        else (
+            "You revise Tony fitness scripts with high energy, direct delivery, and actionable details. "
+            "You MUST apply client feedback while preserving Tony's motivational gym persona. "
+        )
+    ) + "Respond with valid JSON only. No markdown. No preamble. No explanation."
 
     response = client.chat.completions.create(
         model=OPENAI_MODEL_TOPIC,
         messages=[
             {
                 "role": "system",
-                "content": (
-                    "You revise short daily wisdom video scripts for Arthur — "
-                    "a 78-year-old retired schoolteacher and widower who lost his wife Margaret. "
-                    "Arthur speaks the way a loving grandfather writes a letter: "
-                    "warm, direct, personal, and completely without performance. "
-                    "You MUST apply the client's suggestions while keeping Arthur's voice. "
-                    "Respond with valid JSON only. No markdown. No preamble. No explanation."
-                ),
+                "content": revision_system_content,
             },
             {"role": "user", "content": prompt},
         ],
-        temperature=0.9,
+        temperature=persona_cfg.temperature,
     )
 
     raw = response.choices[0].message.content.strip()
@@ -543,6 +626,7 @@ OUTPUT — valid JSON only, no markdown, no extra text
     parsed = json.loads(raw)
 
     script = DailyWisdomScript(
+        persona=persona_cfg.name,
         quote=quote,
         source=source,
         spoken_script=SpokenScript(**parsed["spoken_script"]),

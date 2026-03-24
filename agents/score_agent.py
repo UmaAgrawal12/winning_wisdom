@@ -11,7 +11,8 @@ from typing import Optional
 from pydantic import BaseModel, Field
 from openai import OpenAI
 from winning_wisdom_ai.config.system_config import OPENAI_API_KEY, OPENAI_MODEL_TOPIC
-from .script_agent import DailyWisdomScript, PERSONA
+from winning_wisdom_ai.config.personas import get_persona
+from .script_agent import DailyWisdomScript
 
 
 client = OpenAI(api_key=OPENAI_API_KEY)
@@ -46,7 +47,7 @@ class ReelScriptScore(BaseModel):
     pacing: DimensionScore = Field(description="Appropriate for 30-60 second reel format")
     emotional_impact: DimensionScore = Field(description="Does it resonate and connect?")
     structure: DimensionScore = Field(description="Clear flow, beginning-middle-end")
-    persona_consistency: DimensionScore = Field(description="Matches Arthur's voice and style")
+    persona_consistency: DimensionScore = Field(description="Matches selected persona voice and style")
     visual_potential: DimensionScore = Field(description="Can it work well with video/visuals?")
     
     # Overall assessment
@@ -71,7 +72,7 @@ def score_reel_script(script: DailyWisdomScript) -> ReelScriptScore:
     - Pacing for 30-60 second format
     - Emotional impact
     - Structure and flow
-    - Persona consistency (Arthur's voice)
+    - Persona consistency (selected persona voice)
     - Visual potential
     
     Args:
@@ -80,6 +81,7 @@ def score_reel_script(script: DailyWisdomScript) -> ReelScriptScore:
     Returns:
         ReelScriptScore with detailed breakdown
     """
+    persona_cfg = get_persona(getattr(script, "persona", None))
     spoken_lines = script.spoken_script.full_script.split("\n")
     spoken_text = script.spoken_script.full_script
     first_lines = "\n".join(spoken_lines[:3]) if len(spoken_lines) >= 3 else spoken_text[:100]
@@ -104,9 +106,18 @@ Caption: {script.on_screen_text.caption}
 Highlight Words: {', '.join(script.on_screen_text.highlight_words)}
 
 =============================
-THE PERSONA — "Arthur"
+THE PERSONA
 =============================
-{json.dumps(PERSONA, indent=2)}
+{json.dumps(
+    {
+        "name": persona_cfg.display_name,
+        "description": persona_cfg.description,
+        "voice_style": persona_cfg.voice_style,
+        "content_focus": persona_cfg.content_focus,
+        "banned_phrases": persona_cfg.banned_phrases,
+    },
+    indent=2,
+)}
 
 =============================
 SCORING CRITERIA
@@ -116,8 +127,8 @@ SCORING CRITERIA
    - Measures the combined power of the first 2-3 seconds:
      · How strong and specific the hook is
      · How likely it is to stop scrolling
-   - A quiet, intimate Arthur-style opening can still score high if it feels deeply personal.
-   - Do NOT over-penalize calm openings that are specific and emotionally direct.
+   - Evaluate opening in the selected persona style.
+   - Do NOT over-penalize non-shouty openings if they still feel specific and emotionally direct.
    - Creates tension, curiosity, or clear recognition of a real problem
    - Examples of strong openings:
      · "Most people I knew never did the thing they kept talking about."
@@ -129,7 +140,7 @@ SCORING CRITERIA
 
 3. PACING (1-10):
    - Appropriate for 30-60 second reel format
-   - Sentences should be 5-8 words (Arthur's style)
+   - Pacing should fit the selected persona style and still land in 30-60s reel delivery.
    - Not too rushed, not too slow
    - Natural pauses between thoughts
    - Score 9-10: Perfect pacing for reel format
@@ -156,14 +167,12 @@ SCORING CRITERIA
    - Score 1-4: Poor structure, no clear arc
 
 6. PERSONA CONSISTENCY (1-10):
-   - Matches Arthur's voice: warm, unhurried, specific
-   - Short sentences (5-8 words)
-   - No banned phrases (no "level up", "hustle", "crush it", etc.)
-   - Sounds like a grandfather, not a motivational speaker
-   - Score 9-10: Perfect Arthur voice
+   - Matches selected persona voice and energy
+   - Respects persona banned phrases list
+   - Score 9-10: Perfect persona voice
    - Score 7-8: Mostly consistent, minor voice issues
    - Score 5-6: Some voice inconsistencies
-   - Score 1-4: Doesn't sound like Arthur
+   - Score 1-4: Doesn't sound like selected persona
 
 7. VISUAL POTENTIAL (1-10):
    - Can this work well with video/visuals?
@@ -178,9 +187,8 @@ SCORING CRITERIA
 CRITICAL RULES
 =============================
 
-- The first 2 lines should create opening impact, but Arthur's calm/intimate voice is valid.
-  If the opening is specific + personal, hook_strength can be 7-9 even without aggressive phrasing.
-- Arthur NEVER uses motivational speaker language. If you see phrases like "level up", "crush it", "hustle", persona_consistency should be penalized.
+- The first 2 lines should create opening impact according to selected persona style.
+- If any persona banned phrase appears, persona_consistency should be penalized.
 - The ending MUST hit hard. If it's soft, summary-like, or uplifting in a generic way, structure score should be penalized.
 - Sentences should be SHORT (5-8 words). If sentences are too long, pacing should be penalized.
 - The script should feel PERSONAL and SPECIFIC, not philosophical or abstract. If it's too abstract, emotional_impact should be penalized.

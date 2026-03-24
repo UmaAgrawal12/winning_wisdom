@@ -4,6 +4,7 @@ from typing import List, Dict
 import json
 
 from winning_wisdom_ai.config.system_config import OPENAI_API_KEY, OPENAI_MODEL_SEO
+from winning_wisdom_ai.config.personas import get_persona
 
 client = OpenAI(api_key=OPENAI_API_KEY)
 
@@ -42,7 +43,9 @@ def generate_seo_metadata(
     topic: str,
     script_text: str,
     audience: str = "general_self_improver",
+    persona: str = "arthur",
 ) -> SEOResult:
+    persona_cfg = get_persona(persona)
     """
     Generate audience-targeted SEO metadata for YouTube, Instagram, TikTok, and Facebook.
 
@@ -78,6 +81,10 @@ TARGET AUDIENCE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Caption voice guide: {caption_voice}
 Audience content universe: {hashtag_context}
+Persona name: {persona_cfg.display_name}
+Persona description: {persona_cfg.description}
+Persona focus: {persona_cfg.content_focus}
+Persona base hashtags (must include): {", ".join(persona_cfg.seo_base_tags)}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 PLATFORM-BY-PLATFORM INSTRUCTIONS
@@ -149,6 +156,7 @@ HASHTAG RULES (apply to all platforms)
     Tier 2 — Mid-broad (audience universe): e.g., "mindsetshift", "motivationmatters"
     Tier 3 — Broad reach: e.g., "motivation", "success", "personaldevelopment"
 - Always include: "winningwisdom" as a brand tag.
+- Always include persona base hashtags: {", ".join(persona_cfg.seo_base_tags)}.
 - Tailor Tier 1 tags to the audience context: {hashtag_context}
 - All lowercase. No spaces. Use camelCase for multi-word tags (e.g., "morningRoutine").
 - No duplicate tags across tiers.

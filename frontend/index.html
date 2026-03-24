@@ -318,6 +318,27 @@
       gap: 18px;
     }
 
+    .voice-box {
+      padding: 14px 16px;
+      border: 1px solid rgba(148, 163, 184, 0.12);
+      border-radius: var(--radius-md);
+      background: rgba(18, 18, 26, 0.55);
+      margin-bottom: 14px;
+    }
+
+    .voice-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .voice-note {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
     .platform-row {
       padding: 14px 16px 16px;
       border: 1px solid rgba(148, 163, 184, 0.08);
@@ -864,6 +885,60 @@
       gap: 16px;
     }
 
+    .persona-switch {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .persona-btn {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: rgba(168, 85, 247, 0.06);
+      color: var(--text-secondary);
+      padding: 10px 12px;
+      text-align: left;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+
+    .persona-btn .name {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .persona-btn .desc {
+      display: block;
+      margin-top: 4px;
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.35;
+    }
+
+    .persona-btn.active {
+      border-color: rgba(168, 85, 247, 0.45);
+      background: linear-gradient(135deg, rgba(168, 85, 247, 0.2) 0%, rgba(59, 130, 246, 0.2) 100%);
+      box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.16);
+    }
+
+    .persona-btn:hover {
+      border-color: rgba(168, 85, 247, 0.35);
+      background: rgba(168, 85, 247, 0.12);
+    }
+
+    :root[data-theme="light"] .persona-btn {
+      background: rgba(124, 58, 237, 0.08);
+      border-color: rgba(15, 23, 42, 0.12);
+    }
+
+    :root[data-theme="light"] .persona-btn.active {
+      border-color: rgba(124, 58, 237, 0.45);
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.2) 0%, rgba(59, 130, 246, 0.16) 100%);
+      box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.16);
+    }
+
     .btn-row-left {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -1373,7 +1448,7 @@
         <div class="screen-hero">
           <div class="screen-title">Pick Your Quote</div>
           <div class="screen-subtitle">
-            Start with a topic and quote. Tweak the wording if you want, then continue to generate Arthur's script.
+            Start with a topic and quote. Tweak the wording, choose your character, then generate the script.
           </div>
         </div>
 
@@ -1407,6 +1482,20 @@
               <div class="pill">✏️ Edit</div>
             </div>
             <div class="work-card-body">
+              <div>
+                <div class="field-label">Persona</div>
+                <div class="persona-switch">
+                  <button id="persona-arthur" class="persona-btn active" data-persona="arthur" type="button">
+                    <span class="name">Arthur</span>
+                    <span class="desc">Stoic, warm, reflective</span>
+                  </button>
+                  <button id="persona-tony" class="persona-btn" data-persona="tony" type="button">
+                    <span class="name">Tony</span>
+                    <span class="desc">Fitness, energetic, direct</span>
+                  </button>
+                </div>
+              </div>
+
               <div>
                 <div class="field-label">Topic</div>
                 <input id="topic-input" type="text" placeholder="e.g., Morning routines, Leadership, Creativity..." />
@@ -1446,7 +1535,7 @@
         <div class="screen-hero">
           <div class="screen-title">Review The Script</div>
           <div class="screen-subtitle">
-            Read Arthur's voice, adjust with a quick note, then approve to score the reel and generate SEO hashtags.
+            Read the generated voice, adjust with a quick note, then approve to score the reel and generate SEO hashtags.
           </div>
         </div>
 
@@ -1463,7 +1552,7 @@
               </div>
 
               <div>
-                <div class="field-label">Tell Arthur what to change</div>
+                <div class="field-label">Tell the character what to change</div>
                 <textarea
                   id="script-suggestions"
                   placeholder="Example: Make the opening stronger and shorter. Mention mornings. Keep the ending softer."
@@ -1572,6 +1661,14 @@
               <div class="pill">🤖 AI-Optimized</div>
             </div>
             <div class="results-card-body">
+              <div class="voice-box">
+                <div class="voice-actions">
+                  <button id="btn-generate-voice" class="btn" type="button">🎙️ Generate Voice</button>
+                  <span id="voice-status" class="voice-note">Generate audio after script approval.</span>
+                </div>
+                <audio id="voice-player" controls style="width: 100%; display: none;"></audio>
+              </div>
+
               <div class="hashtags-block">
                 <div class="platform-row">
                   <div class="platform-title"><span>YouTube</span></div>
@@ -1621,6 +1718,8 @@
       quoteSource: document.getElementById("current-source"),
       quoteInput: document.getElementById("quote-input"),
       sourceInput: document.getElementById("source-input"),
+      personaArthur: document.getElementById("persona-arthur"),
+      personaTony: document.getElementById("persona-tony"),
       btnRefresh: document.getElementById("btn-refresh"),
       btnQuoteForTopic: document.getElementById("btn-quote-for-topic"),
       btnGenerateScript: document.getElementById("btn-generate-script"),
@@ -1650,6 +1749,9 @@
       osQuoteDisplay: document.getElementById("os-quote-display"),
       osCaption: document.getElementById("os-caption"),
       osHighlightWords: document.getElementById("os-highlight-words"),
+      btnGenerateVoice: document.getElementById("btn-generate-voice"),
+      voiceStatus: document.getElementById("voice-status"),
+      voicePlayer: document.getElementById("voice-player"),
     };
 
     function applyTheme(theme) {
@@ -1667,7 +1769,18 @@
     let lastSource = null;
     let lastScript = null;
     let lastTopic = null;
+    let selectedPersona = "arthur";
     let started = false;
+
+    function applyPersonaUI() {
+      const arthur = selectedPersona === "arthur";
+      els.personaArthur.classList.toggle("active", arthur);
+      els.personaTony.classList.toggle("active", !arthur);
+    }
+
+    function getSelectedPersona() {
+      return selectedPersona === "tony" ? "tony" : "arthur";
+    }
 
     function setStatus(el, text, variant = "pending") {
       const dot = el.querySelector(".status-dot");
@@ -1716,7 +1829,8 @@
         setStatus(els.statusTopic, "Fetching a fresh quote for you…");
         setStep(1);
 
-        const data = await fetchJSON(`${API_BASE}/topic`);
+        selectedPersona = getSelectedPersona();
+        const data = await fetchJSON(`${API_BASE}/topic?persona=${encodeURIComponent(selectedPersona)}`);
         lastTopic = data.topic || null;
         lastQuote = data.quote;
         lastSource = data.source;
@@ -1749,9 +1863,10 @@
           return;
         }
 
+        selectedPersona = getSelectedPersona();
         const data = await fetchJSON(`${API_BASE}/topic/quote`, {
           method: "POST",
-          body: JSON.stringify({ topic }),
+          body: JSON.stringify({ topic, persona: selectedPersona }),
         });
 
         lastTopic = data.topic || topic;
@@ -1782,7 +1897,9 @@
     async function onGenerateScript() {
       try {
         els.btnGenerateScript.disabled = true;
-        setStatus(els.statusTopic, "Generating Arthur's script for this quote…");
+        selectedPersona = getSelectedPersona();
+        const personaLabel = selectedPersona === "tony" ? "Tony" : "Arthur";
+        setStatus(els.statusTopic, `Generating ${personaLabel}'s script for this quote…`);
         setStep(2);
 
         const quote = els.quoteInput.value.trim();
@@ -1790,7 +1907,7 @@
 
         const script = await fetchJSON(`${API_BASE}/topic/approve`, {
           method: "POST",
-          body: JSON.stringify({ quote, source }),
+          body: JSON.stringify({ quote, source, persona: selectedPersona }),
         });
 
         const full = script.spoken_script.full_script || "";
@@ -1864,6 +1981,7 @@
             quote: lastQuote,
             source: lastSource,
             approved_script: approvedText,
+            persona: selectedPersona,
           }),
         });
 
@@ -1941,6 +2059,7 @@
             source: lastSource,
             current_script: current,
             suggestions,
+            persona: selectedPersona,
           }),
         });
 
@@ -1965,6 +2084,42 @@
       }
     }
 
+    async function onGenerateVoice() {
+      try {
+        const scriptText = (els.scriptView.textContent || "").trim();
+        if (!scriptText || scriptText.startsWith("No script yet")) {
+          setStatus(els.statusScript, "✗ Generate a script first, then create voice.", "error");
+          return;
+        }
+
+        els.btnGenerateVoice.disabled = true;
+        els.voiceStatus.textContent = "Generating ElevenLabs voice...";
+
+        const scriptId = `${selectedPersona}_${Date.now()}`;
+        const result = await fetchJSON(`${API_BASE}/script/voice`, {
+          method: "POST",
+          body: JSON.stringify({
+            script_text: scriptText,
+            persona: selectedPersona,
+            script_id: scriptId,
+          }),
+        });
+
+        let src = result.audio_url || "";
+        if (src.startsWith("/")) {
+          src = `http://127.0.0.1:8000${src}`;
+        }
+        els.voicePlayer.src = src;
+        els.voicePlayer.style.display = "block";
+        els.voiceStatus.textContent = `✓ Voice ready for ${selectedPersona === "tony" ? "Tony" : "Arthur"}.`;
+      } catch (err) {
+        console.error(err);
+        els.voiceStatus.textContent = "✗ Voice generation failed. Check ElevenLabs key/voice IDs.";
+      } finally {
+        els.btnGenerateVoice.disabled = false;
+      }
+    }
+
     els.btnRefresh.addEventListener("click", () => {
       // "New" should only refresh topic + quote (stay on step 1)
       setStep(1);
@@ -1984,6 +2139,9 @@
     els.btnReviseScript.addEventListener("click", () => {
       onReviseScript().catch(err => console.error(err));
     });
+    els.btnGenerateVoice.addEventListener("click", () => {
+      onGenerateVoice().catch(err => console.error(err));
+    });
 
     function setStarted(on) {
       started = Boolean(on);
@@ -2001,6 +2159,18 @@
         loadQuote().catch(err => console.error(err));
       });
     }
+
+    els.personaArthur.addEventListener("click", () => {
+      selectedPersona = "arthur";
+      applyPersonaUI();
+      setStatus(els.statusTopic, "Arthur selected. Click Start or refresh quote.");
+    });
+
+    els.personaTony.addEventListener("click", () => {
+      selectedPersona = "tony";
+      applyPersonaUI();
+      setStatus(els.statusTopic, "Tony selected. Click Start or refresh quote.");
+    });
 
     els.tab1.addEventListener("click", () => setStep(1));
     els.tab2.addEventListener("click", () => setStep(2));
@@ -2031,6 +2201,7 @@
     });
 
     // Start is user-driven now
+    applyPersonaUI();
     setStarted(false);
   </script>
 </body>

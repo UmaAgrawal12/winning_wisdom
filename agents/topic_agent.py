@@ -8,6 +8,7 @@ import re
 
 from dotenv import load_dotenv
 from pydantic import BaseModel
+from winning_wisdom_ai.config.personas import get_persona
 
 try:
     # When running from `winning_wisdom_ai/` as the working directory
@@ -51,8 +52,29 @@ def _normalize_topic(text: str) -> str:
     if not text:
         return ""
     text = re.sub(r"\s+", " ", text)
-    # Remove obvious suffixes frequently found in titles
-    text = re.sub(r"\s*[-–|:]\s*(youtube|tiktok|reels|shorts|quotes|quote|meaning|explained)\s*$", "", text, flags=re.I)
+
+    # Drop obvious low-value listicle/quote page titles.
+    reject_patterns = [
+        r"^top\s*\d+",
+        r"\b\d+\s*(best|greatest|most powerful)\b",
+        r"\bquotes?\b",
+        r"\bby\s+(marcus aurelius|seneca|epictetus)\b",
+        r"\b(list|collection|compilation)\b",
+        r"\bfor instagram\b",
+        r"\bfor tiktok\b",
+    ]
+    lower = text.lower()
+    for pattern in reject_patterns:
+        if re.search(pattern, lower, flags=re.I):
+            return ""
+
+    # Remove obvious suffixes frequently found in generic SEO titles
+    text = re.sub(
+        r"\s*[-–|:]\s*(youtube|tiktok|reels|shorts|meaning|explained|guide|202[0-9])\s*$",
+        "",
+        text,
+        flags=re.I,
+    )
     text = text.strip(" .-–|:")
     # Keep short topics only
     words = text.split()
@@ -65,6 +87,7 @@ def generate_topics_serpapi(
     theme: str = "Winning Wisdom: discipline, meaning, resilience, self-mastery",
     n: int = 8,
     location: str = "United States",
+    persona: str = "arthur",
 ) -> TopicsResult:
     """
     SerpAPI-only topic discovery.
@@ -72,7 +95,9 @@ def generate_topics_serpapi(
     Strategy: search for trending discussions/articles around the theme and
     derive short, actionable topics from result titles.
     """
-    query = f"{theme} discipline habits resilience stoicism"
+    persona_cfg = get_persona(persona)
+    query_seed = " OR ".join(persona_cfg.topic_queries)
+    query = f"{theme} {query_seed} lessons mindset habits"
     results = _serpapi_get(
         {
             "engine": "google",
@@ -100,8 +125,21 @@ def generate_topics_serpapi(
         if len(topics) >= n:
             break
 
+    # Guarantee useful output even when Google returns noisy quote/list pages.
+    if len(topics) < n:
+        curated = ARTHUR_FALLBACK_TOPICS if persona_cfg.name == "arthur" else TONY_FALLBACK_TOPICS
+        random.shuffle(curated)
+        for item in curated:
+            key = item.lower()
+            if key in seen:
+                continue
+            topics.append(item)
+            seen.add(key)
+            if len(topics) >= n:
+                break
+
     if len(topics) < 2:
-        raise RuntimeError("SerpAPI returned insufficient topics. Try again or adjust the query.")
+        raise RuntimeError("SerpAPI returned insufficient persona-aligned topics.")
 
     return TopicsResult(topics=topics, generated_at=datetime.now().isoformat())
 
@@ -110,21 +148,24 @@ def generate_topics(
     theme: str = "Winning Wisdom: discipline, meaning, resilience, self-mastery",
     n: Optional[int] = 8,
     audience: str = "general_self_improver",
+    persona: str = "arthur",
 ) -> TopicsResult:
     """
     Generate short-form video topics aligned to the Winning Wisdom theme.
 
     Returns a list of short, actionable topics (not quotes).
     """
+    persona_cfg = get_persona(persona)
     llm = topic_llm()
 
     target_n = n or 8
     prompt = (
         "You are the editorial lead for 'Winning Wisdom' short videos.\n"
-        "Generate topic ideas that fit: stoic/winning wisdom, discipline, meaning, resilience, self-mastery.\n"
+        f"Generate topic ideas that fit persona '{persona_cfg.display_name}': {persona_cfg.content_focus}\n"
         "Constraints:\n"
         f"- Audience: {audience}\n"
         f"- Theme: {theme}\n"
+        f"- Keywords to prioritize: {', '.join(persona_cfg.topic_keywords)}\n"
         "- Each topic: 4–10 words, plain English, no quotes, no emojis.\n"
         "- Avoid generic filler ('be better', 'success mindset'). Make them specific and human.\n"
         f"- Return exactly {target_n} topics.\n\n"
@@ -145,16 +186,7 @@ def generate_topics(
         # Fall through to fallback topics
         pass
 
-    fallback = [
-        "Stop waiting for confidence",
-        "Discipline on the hard days",
-        "The cost of staying comfortable",
-        "What you can control today",
-        "How to face criticism calmly",
-        "When motivation disappears",
-        "Doing the right thing quietly",
-        "The difference between pain and suffering",
-    ]
+    fallback = ARTHUR_FALLBACK_TOPICS if persona_cfg.name == "arthur" else TONY_FALLBACK_TOPICS
     random.shuffle(fallback)
     topics = fallback[: (n or 8)]
     return TopicsResult(topics=topics, generated_at=datetime.now().isoformat())
@@ -166,6 +198,7 @@ def fetch_winning_wisdom_quote_for_topic(
     location: str = "United States",
     use_serpapi: bool = True,
     require_serpapi: bool = False,
+    persona: str = "arthur",
 ) -> dict:
     """
     Fetch a quote aligned to a specific topic, still within the Winning Wisdom theme.
@@ -174,6 +207,7 @@ def fetch_winning_wisdom_quote_for_topic(
     - Try SerpAPI searches that combine the topic with our author-specific configs
     - Fall back to the generic Winning Wisdom quote picker
     """
+    persona_cfg = get_persona(persona)
     topic = (topic or "").strip()
     if not topic:
         return fetch_winning_wisdom_quote(
@@ -181,6 +215,7 @@ def fetch_winning_wisdom_quote_for_topic(
             location=location,
             use_serpapi=use_serpapi,
             require_serpapi=require_serpapi,
+            persona=persona_cfg.name,
         )
 
     used_quotes = _load_used_quotes() if avoid_used else set()
@@ -192,7 +227,11 @@ def fetch_winning_wisdom_quote_for_topic(
                     "SERPAPI_API_KEY is REQUIRED. Add SERPAPI_API_KEY to your .env file."
                 )
         else:
-            configs = WINNING_WISDOM_SEARCH_CONFIG.copy()
+            configs = (
+                WINNING_WISDOM_SEARCH_CONFIG.copy()
+                if persona_cfg.name == "arthur"
+                else TONY_SEARCH_CONFIG.copy()
+            )
             random.shuffle(configs)
 
             # Try a few focused searches first
@@ -218,7 +257,11 @@ def fetch_winning_wisdom_quote_for_topic(
                 raise RuntimeError("SerpAPI returned no clean quote aligned to the topic.")
 
     # Fallback: generic Winning Wisdom quote selection
-    base = fetch_winning_wisdom_quote(avoid_used=avoid_used, location=location)
+    base = fetch_winning_wisdom_quote(
+        avoid_used=avoid_used,
+        location=location,
+        persona=persona_cfg.name,
+    )
     base["topic"] = topic
     return base
 
@@ -274,6 +317,13 @@ WINNING_WISDOM_SEARCH_CONFIG = [
     {"query": "James Clear quotes on habits and systems", "source": "James Clear"},
     {"query": "Jim Rohn quotes on discipline and success", "source": "Jim Rohn"},
     {"query": "F. M. Alexander quotes on habits and life", "source": "F. M. Alexander"},
+]
+
+TONY_SEARCH_CONFIG = [
+    {"query": "workout motivation quotes consistency discipline", "source": "Fitness Wisdom"},
+    {"query": "gym mindset lessons quote", "source": "Gym Mindset"},
+    {"query": "fitness psychology wisdom quote", "source": "Fitness Psychology"},
+    {"query": "training mindset quotes resilience", "source": "Training Mindset"},
 ]
 
 # ─────────────────────────────────────────────────────────────────────
@@ -337,6 +387,79 @@ WINNING_WISDOM_QUOTES = [
     {"quote": "You do not rise to the level of your goals. You fall to the level of your systems.", "source": "James Clear — Atomic Habits"},
     {"quote": "People do not decide their futures, they decide their habits and their habits decide their futures.", "source": "F. M. Alexander"},
     {"quote": "Suffer the pain of discipline or suffer the pain of regret.", "source": "Unknown"},
+]
+
+TONY_FITNESS_QUOTES = [
+    {"quote": "The iron never lies to you.", "source": "Henry Rollins"},
+    {"quote": "Your body can stand almost anything. It is your mind you have to convince.", "source": "Unknown"},
+    {"quote": "The only bad workout is the one that did not happen.", "source": "Unknown"},
+    {"quote": "Strength comes from overcoming what you thought you could not do.", "source": "Rikki Rogers"},
+    {"quote": "Take care of your body. It is the only place you have to live.", "source": "Jim Rohn"},
+    {"quote": "Discipline is choosing between what you want now and what you want most.", "source": "Unknown"},
+    {"quote": "You do not get the body you wish for. You get the body you work for.", "source": "Unknown"},
+    {"quote": "Progress is built one rep at a time.", "source": "Unknown"},
+    {"quote": "Consistency beats intensity when intensity cannot last.", "source": "Unknown"},
+    {"quote": "The work you avoid is usually the work you need most.", "source": "Unknown"},
+    {"quote": "Motivation gets you started. Habit keeps you going.", "source": "Jim Ryun"},
+    {"quote": "Champions keep going when they have nothing left in the tank.", "source": "Unknown"},
+    {"quote": "Do not limit your challenges. Challenge your limits.", "source": "Jerry Dunn"},
+    {"quote": "A one hour workout is 4 percent of your day.", "source": "Unknown"},
+    {"quote": "Results happen over time, not overnight.", "source": "Unknown"},
+    {"quote": "When you feel like quitting, remember why you started.", "source": "Unknown"},
+    {"quote": "Train for life, not just for looks.", "source": "Unknown"},
+    {"quote": "Recovery is where adaptation happens.", "source": "Unknown"},
+    {"quote": "Sleep is part of the program, not a break from it.", "source": "Unknown"},
+    {"quote": "The scale does not measure discipline, only gravity.", "source": "Unknown"},
+    {"quote": "Technique before load. Always.", "source": "Unknown"},
+    {"quote": "You earn confidence by keeping promises to yourself.", "source": "Unknown"},
+    {"quote": "Small daily wins become visible transformations.", "source": "Unknown"},
+    {"quote": "Form is your long-term progress insurance.", "source": "Unknown"},
+    {"quote": "What you repeat, you become.", "source": "Unknown"},
+    {"quote": "You are one workout away from a better mood.", "source": "Unknown"},
+    {"quote": "The mirror reflects effort, not excuses.", "source": "Unknown"},
+    {"quote": "Train with intent, fuel with purpose, recover with discipline.", "source": "Unknown"},
+    {"quote": "The strongest muscle is the mind that shows up.", "source": "Unknown"},
+    {"quote": "Focus on performance and the physique follows.", "source": "Unknown"},
+    {"quote": "Build a body that carries your future.", "source": "Unknown"},
+    {"quote": "You do not have to be extreme, just consistent.", "source": "Unknown"},
+]
+
+ARTHUR_FALLBACK_TOPICS = [
+    "Stop waiting for confidence",
+    "Discipline on the hard days",
+    "The cost of staying comfortable",
+    "What you can control today",
+    "How to face criticism calmly",
+    "When motivation disappears",
+    "Doing the right thing quietly",
+    "The difference between pain and suffering",
+    "The price of avoiding hard choices",
+    "Building calm under pressure",
+    "How to practice self-command daily",
+    "Turning setbacks into character",
+    "Choosing action over overthinking",
+    "Using discomfort as a teacher",
+    "What real resilience looks like",
+    "Living by values when stressed",
+]
+
+TONY_FALLBACK_TOPICS = [
+    "Why your workouts keep stalling",
+    "The discipline behind body change",
+    "Gym mindset when motivation drops",
+    "Recovery habits that build strength",
+    "Beginner lifting mistakes to avoid",
+    "Nutrition myths hurting your progress",
+    "Training consistency beats intensity",
+    "How to train through plateaus",
+    "What to do on low-energy days",
+    "The warm-up mistake ruining lifts",
+    "How to build unbreakable gym habits",
+    "When to push and when to deload",
+    "Fixing form before adding weight",
+    "Mindset shifts for body recomposition",
+    "Recovery rules for faster progress",
+    "Why sleep is your secret workout",
 ]
 
 
@@ -404,6 +527,7 @@ def fetch_winning_wisdom_quote(
     location: str = "United States",
     use_serpapi: bool = True,
     require_serpapi: bool = False,
+    persona: str = "arthur",
 ) -> dict:
     """
     Fetch a quote for the Winning Wisdom theme.
@@ -416,6 +540,7 @@ def fetch_winning_wisdom_quote(
     Returns:
         dict with keys: quote, source, fetched_at
     """
+    persona_cfg = get_persona(persona)
     used_quotes = _load_used_quotes() if avoid_used else set()
 
     # ── 1. Try SerpAPI first (multi-author) ───────────────────────────
@@ -426,7 +551,11 @@ def fetch_winning_wisdom_quote(
                     "SERPAPI_API_KEY is REQUIRED. Add SERPAPI_API_KEY to your .env file."
                 )
         else:
-            configs = WINNING_WISDOM_SEARCH_CONFIG.copy()
+            configs = (
+                WINNING_WISDOM_SEARCH_CONFIG.copy()
+                if persona_cfg.name == "arthur"
+                else TONY_SEARCH_CONFIG.copy()
+            )
             random.shuffle(configs)
 
             for cfg in configs:
@@ -453,7 +582,11 @@ def fetch_winning_wisdom_quote(
                 raise RuntimeError("SerpAPI returned no clean Winning Wisdom quotes.")
 
     # ── 2. Fallback: hardcoded multi-author bank ──────────────────────
-    candidates = WINNING_WISDOM_QUOTES.copy()
+    candidates = (
+        WINNING_WISDOM_QUOTES.copy()
+        if persona_cfg.name == "arthur"
+        else TONY_FITNESS_QUOTES.copy()
+    )
     random.shuffle(candidates)
 
     for candidate in candidates:

@@ -1,11 +1,13 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from typing import Optional, Any
 from pathlib import Path
 import json
 import random
 import concurrent.futures
+from datetime import datetime
 
 # Supabase (optional; falls back to local JSON file if not configured)
 from winning_wisdom_ai.supabase_db import (
@@ -30,6 +32,7 @@ from winning_wisdom_ai.agents.script_agent import (
 )
 from winning_wisdom_ai.agents.score_agent import score_reel_script
 from winning_wisdom_ai.agents.seo_agent import generate_seo_metadata, SEOResult
+from winning_wisdom_ai.media_pipeline.voice_generation import generate_voice_for_script
 
 
 
@@ -37,10 +40,12 @@ class TopicProposal(BaseModel):
     topic: str
     quote: str
     source: str
+    persona: str = "arthur"
 
 
 class TopicQuoteRequest(BaseModel):
     topic: str
+    persona: str = "arthur"
 
 
 class DailyFullFlowResponse(BaseModel):
@@ -55,6 +60,7 @@ class TopicApproval(BaseModel):
     topic: Optional[str] = None
     quote: str
     source: str
+    persona: str = "arthur"
 
 
 class ScriptApproval(BaseModel):
@@ -62,10 +68,12 @@ class ScriptApproval(BaseModel):
     quote: str
     source: str
     approved_script: str
+    persona: str = "arthur"
 
 
 class KeywordRequest(BaseModel):
     keyword: str
+    persona: str = "arthur"
 
 
 class ScriptRevision(BaseModel):
@@ -74,12 +82,19 @@ class ScriptRevision(BaseModel):
     source: str
     current_script: str
     suggestions: str
+    persona: str = "arthur"
 
 
 class DailyFlowResponse(BaseModel):
     script: DailyWisdomScript
     score: dict
     seo: SEOResult
+
+
+class ScriptVoiceRequest(BaseModel):
+    script_text: str
+    persona: str = "arthur"
+    script_id: Optional[str] = None
 
 
 def _seo_for_storage(seo: SEOResult) -> dict:
@@ -172,9 +187,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+MEDIA_DIR = PROJECT_ROOT / "media"
+MEDIA_DIR.mkdir(parents=True, exist_ok=True)
+app.mount("/media", StaticFiles(directory=str(MEDIA_DIR)), name="media")
+
 
 @app.get("/api/topic")
-def get_topic():
+def get_topic(persona: str = "arthur"):
     """
     Step 1: Generate a topic, then a quote for that topic.
     """
@@ -183,14 +202,16 @@ def get_topic():
             theme="Winning Wisdom: discipline, meaning, resilience, self-mastery",
             n=8,
             location="United States",
+            persona=persona,
         )
         topic = random.choice(topics_result.topics) if topics_result.topics else "Discipline on the hard days"
         quote_data = fetch_winning_wisdom_quote_for_topic(
             topic=topic,
             use_serpapi=True,
             require_serpapi=True,
+            persona=persona,
         )
-        return {"topic": topic, "quote": quote_data["quote"], "source": quote_data["source"]}
+        return {"topic": topic, "quote": quote_data["quote"], "source": quote_data["source"], "persona": persona}
     except Exception as e:
         raise HTTPException(status_code=503, detail=f"SerpAPI topic/quote generation failed: {e}")
 
@@ -206,10 +227,11 @@ def get_quote_for_topic(payload: TopicQuoteRequest) -> TopicProposal:
             topic=topic,
             use_serpapi=True,
             require_serpapi=True,
+            persona=payload.persona,
         )
     except Exception as e:
         raise HTTPException(status_code=503, detail=f"SerpAPI quote generation failed: {e}")
-    return TopicProposal(topic=topic, quote=quote_data["quote"], source=quote_data["source"])
+    return TopicProposal(topic=topic, quote=quote_data["quote"], source=quote_data["source"], persona=payload.persona)
 
 
 @app.post("/api/topic/approve")
@@ -220,12 +242,13 @@ def approve_topic(payload: TopicApproval):
     script = generate_daily_wisdom_script(
         quote_override=payload.quote,
         source_override=payload.source,
+        persona=payload.persona,
     )
     return script
 
 
 @app.get("/api/daily-flow")
-def daily_flow() -> DailyFullFlowResponse:
+def daily_flow(persona: str = "arthur") -> DailyFullFlowResponse:
     """
     End-to-end flow:
     topic -> quote -> script -> SEO
@@ -235,12 +258,14 @@ def daily_flow() -> DailyFullFlowResponse:
             theme="Winning Wisdom: discipline, meaning, resilience, self-mastery",
             n=8,
             location="United States",
+            persona=persona,
         )
         topic = random.choice(topics_result.topics) if topics_result.topics else "Discipline on the hard days"
         quote_data = fetch_winning_wisdom_quote_for_topic(
             topic=topic,
             use_serpapi=True,
             require_serpapi=True,
+            persona=persona,
         )
     except Exception as e:
         raise HTTPException(status_code=503, detail=f"SerpAPI topic/quote generation failed: {e}")
@@ -248,12 +273,14 @@ def daily_flow() -> DailyFullFlowResponse:
     script = generate_daily_wisdom_script(
         quote_override=quote_data["quote"],
         source_override=quote_data["source"],
+        persona=persona,
     )
 
     seo = generate_seo_metadata(
         topic=topic,
         script_text=script.spoken_script.full_script,
         audience="general_self_improver",
+        persona=persona,
     )
 
     return DailyFullFlowResponse(
@@ -274,6 +301,7 @@ def approve_script(payload: ScriptApproval):
     base_script = generate_daily_wisdom_script(
         quote_override=payload.quote,
         source_override=payload.source,
+        persona=payload.persona,
     )
     base_script.spoken_script.full_script = payload.approved_script
 
@@ -282,6 +310,7 @@ def approve_script(payload: ScriptApproval):
         topic=payload.topic or payload.quote,
         script_text=payload.approved_script,
         audience="general_self_improver",
+        persona=payload.persona,
     )
 
     # If Supabase is configured, persist the approved/scored run so the
@@ -334,6 +363,7 @@ def script_from_keyword(payload: KeywordRequest) -> DailyWisdomScript:
     script = generate_daily_wisdom_script(
         quote_override=payload.keyword,
         source_override="Client keyword",
+        persona=payload.persona,
     )
     return script
 
@@ -351,8 +381,41 @@ def revise_script(payload: ScriptRevision) -> DailyWisdomScript:
         source=payload.source,
         current_script=payload.current_script,
         suggestions=payload.suggestions,
+        persona=payload.persona,
     )
     return script
+
+
+@app.post("/api/script/voice")
+def generate_script_voice(payload: ScriptVoiceRequest):
+    """
+    Generate ElevenLabs audio from the current script text.
+    """
+    text = (payload.script_text or "").strip()
+    if not text:
+        raise HTTPException(status_code=400, detail="script_text is required.")
+
+    script_id = payload.script_id or f"{payload.persona}_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}"
+    try:
+        audio_path = generate_voice_for_script(
+            script_text=text,
+            script_id=script_id,
+            persona=payload.persona,
+        )
+    except Exception as e:
+        raise HTTPException(status_code=503, detail=f"Voice generation failed: {e}")
+
+    normalized = audio_path.replace("\\", "/")
+    if normalized.startswith("media/"):
+        audio_url = f"/{normalized}"
+    else:
+        audio_url = f"/media/audio/{Path(normalized).name}"
+    return {
+        "ok": True,
+        "persona": payload.persona,
+        "audio_path": audio_path,
+        "audio_url": audio_url,
+    }
 
 
 @app.get("/api/pipeline-runs")

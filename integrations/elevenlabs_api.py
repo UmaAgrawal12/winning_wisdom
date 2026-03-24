@@ -14,7 +14,13 @@ MEDIA_ROOT = Path("media/audio")
 MEDIA_ROOT.mkdir(parents=True, exist_ok=True)
 
 
-def generate_voice(script_text: str, filename_prefix: Optional[str] = None) -> str:
+def generate_voice(
+    script_text: str,
+    filename_prefix: Optional[str] = None,
+    voice_id: Optional[str] = None,
+    stability: float = 0.5,
+    similarity_boost: float = 0.8,
+) -> str:
     """
     Generate an audio file for the given script text using ElevenLabs.
 
@@ -22,7 +28,8 @@ def generate_voice(script_text: str, filename_prefix: Optional[str] = None) -> s
     """
     if not ELEVENLABS_API_KEY:
         raise ValueError("ELEVENLABS_API_KEY is not set in .env")
-    if not ELEVENLABS_VOICE_ID:
+    selected_voice_id = (voice_id or ELEVENLABS_VOICE_ID or "").strip()
+    if not selected_voice_id:
         raise ValueError("ELEVENLABS_VOICE_ID is not set in .env")
 
     text = (script_text or "").strip()
@@ -33,7 +40,7 @@ def generate_voice(script_text: str, filename_prefix: Optional[str] = None) -> s
     base_name = filename_prefix or text[:40].replace(" ", "_").replace("\n", "_")
     output_path = MEDIA_ROOT / f"{base_name}.mp3"
 
-    url = f"https://api.elevenlabs.io/v1/text-to-speech/{ELEVENLABS_VOICE_ID}"
+    url = f"https://api.elevenlabs.io/v1/text-to-speech/{selected_voice_id}"
     headers = {
         "xi-api-key": ELEVENLABS_API_KEY,
         "Content-Type": "application/json",
@@ -42,8 +49,8 @@ def generate_voice(script_text: str, filename_prefix: Optional[str] = None) -> s
         "text": text,
         "model_id": "eleven_multilingual_v2",
         "voice_settings": {
-            "stability": 0.5,
-            "similarity_boost": 0.8,
+            "stability": stability,
+            "similarity_boost": similarity_boost,
         },
     }
 
