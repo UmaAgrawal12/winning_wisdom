@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Winning Wisdom Studio | Quote Picker</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Space+Grotesk:wght@500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-secondary-container": "#00344e",
+                        "primary-fixed-dim": "#d0bcff",
+                        "primary-fixed": "#e9ddff",
+                        "background": "#0b1326",
+                        "error-container": "#93000a",
+                        "on-surface-variant": "#cbc3d7",
+                        "primary-container": "#a078ff",
+                        "on-tertiary-fixed-variant": "#783200",
+                        "surface-bright": "#31394d",
+                        "error": "#ffb4ab",
+                        "on-error": "#690005",
+                        "surface-dim": "#0b1326",
+                        "on-primary-fixed": "#23005c",
+                        "on-secondary-fixed": "#001e2f",
+                        "secondary-container": "#00a2e6",
+                        "secondary-fixed-dim": "#89ceff",
+                        "on-tertiary-container": "#4a1c00",
+                        "tertiary": "#ffb690",
+                        "surface-container-low": "#131b2e",
+                        "surface-container": "#171f33",
+                        "on-error-container": "#ffdad6",
+                        "inverse-surface": "#dae2fd",
+                        "surface": "#0b1326",
+                        "on-surface": "#dae2fd",
+                        "secondary-fixed": "#c9e6ff",
+                        "on-primary": "#3c0091",
+                        "tertiary-fixed-dim": "#ffb690",
+                        "secondary": "#89ceff",
+                        "on-secondary-fixed-variant": "#004c6e",
+                        "surface-variant": "#2d3449",
+                        "primary": "#d0bcff",
+                        "on-tertiary-fixed": "#341100",
+                        "on-secondary": "#00344d",
+                        "on-background": "#dae2fd",
+                        "inverse-on-surface": "#283044",
+                        "surface-container-highest": "#2d3449",
+                        "surface-tint": "#d0bcff",
+                        "tertiary-container": "#ec6a06",
+                        "outline-variant": "#494454",
+                        "on-primary-container": "#340080",
+                        "inverse-primary": "#6d3bd7",
+                        "on-tertiary": "#552100",
+                        "surface-container-high": "#222a3d",
+                        "on-primary-fixed-variant": "#5516be",
+                        "outline": "#958ea0",
+                        "surface-container-lowest": "#060e20",
+                        "tertiary-fixed": "#ffdbca"
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #0b1326; color: #dae2fd; }
+        .font-headline { font-family: 'Space Grotesk', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .glass-panel { backdrop-filter: blur(24px); border: 1px solid rgba(218, 226, 253, 0.1); }
+        .neon-glow { box-shadow: 0 0 20px rgba(208, 188, 255, 0.3); }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #2d3449; border-radius: 10px; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface min-h-screen">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-20 bg-[#0b1326]/80 backdrop-blur-xl shadow-[0_20px_50px_rgba(6,14,32,0.4)]">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[#d0bcff] text-2xl">auto_videocam</span>
+<h1 class="text-2xl font-black tracking-tighter bg-gradient-to-r from-[#d0bcff] to-[#a078ff] bg-clip-text text-transparent font-['Space_Grotesk']">Winning Wisdom</h1>
+</div>
+<div class="flex items-center gap-6">
+<nav class="hidden md:flex gap-8">
+<a class="text-[#d0bcff] font-bold font-['Space_Grotesk'] tracking-tighter" href="./stitch-step1.html">Studio</a>
+<a class="text-[#dae2fd]/60 font-bold font-['Space_Grotesk'] tracking-tighter hover:text-[#dae2fd] transition-colors" href="./stitch-step2.html">Personas</a>
+<a class="text-[#dae2fd]/60 font-bold font-['Space_Grotesk'] tracking-tighter hover:text-[#dae2fd] transition-colors" href="./stitch-step3.html">Assets</a>
+</nav>
+<span class="text-[#d0bcff] font-['Space_Grotesk'] font-bold tracking-tighter bg-surface-container px-4 py-1.5 rounded-full border border-primary/20">Step 1/3</span>
+</div>
+</header>
+<!-- Side Navigation Drawer (Desktop Only) -->
+<aside class="fixed left-0 top-0 h-full z-40 bg-[#0b1326] w-72 hidden md:flex flex-col pt-24 pb-8 border-r border-[#dae2fd]/5">
+<div class="px-6 mb-10 flex items-center gap-4">
+<div class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary-container flex items-center justify-center shadow-lg overflow-hidden">
+<img alt="User Avatar" class="w-full h-full object-cover" data-alt="close-up minimalist 3d render of a stylized profile avatar icon in soft purple lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBb0PQquoCQMXaohltRj6zoEvSSaq7S2x_19nJzghm7_dcqtyG4ANfdLTX9v0qnR1hQl9ihlF3istC3lSrTVWm6S72Xyq3Z5vzdqjtJER9OoPN2345cIsPoFqAGitu4PWBuXYOtp5VUiEwt5fbqE0GfT8u4g8TFWcKgFq3mKQ0TJroZeMddZwjr_Fa2g_vFLciw9ceAQ0F2vwAIwb1cce5FlemVLSvwG9_CAxGQwGDx6kVUlfp3gth8B_7nzYEpZLdXddOteFyFjXs"/>
+</div>
+<div>
+<p class="font-['Space_Grotesk'] text-lg font-bold text-[#dae2fd]">Auteur Studio</p>
+<p class="font-['Inter'] text-xs uppercase tracking-widest text-[#dae2fd]/50">Pro Plan</p>
+</div>
+</div>
+<nav class="flex-1 flex flex-col gap-1">
+<a class="flex items-center gap-4 py-4 px-6 bg-gradient-to-r from-[#d0bcff]/20 to-transparent text-[#d0bcff] border-l-4 border-[#d0bcff] font-['Inter'] text-sm uppercase tracking-widest" href="#">
+<span class="material-symbols-outlined">movie_edit</span>
+<span>Studio</span>
+</a>
+<a class="flex items-center gap-4 py-4 px-6 text-[#dae2fd]/50 hover:text-[#dae2fd] hover:bg-[#d0bcff]/10 transition-colors font-['Inter'] text-sm uppercase tracking-widest" href="#">
+<span class="material-symbols-outlined">record_voice_over</span>
+<span>Personas</span>
+</a>
+<a class="flex items-center gap-4 py-4 px-6 text-[#dae2fd]/50 hover:text-[#dae2fd] hover:bg-[#d0bcff]/10 transition-colors font-['Inter'] text-sm uppercase tracking-widest" href="#">
+<span class="material-symbols-outlined">folder_open</span>
+<span>Assets</span>
+</a>
+<a class="flex items-center gap-4 py-4 px-6 text-[#dae2fd]/50 hover:text-[#dae2fd] hover:bg-[#d0bcff]/10 transition-colors font-['Inter'] text-sm uppercase tracking-widest mt-auto" href="#">
+<span class="material-symbols-outlined">tune</span>
+<span>Settings</span>
+</a>
+</nav>
+</aside>
+<!-- Main Content Canvas -->
+<main class="md:pl-72 pt-24 pb-32 px-6 min-h-screen">
+<div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10">
+<!-- Left Column: Form & Persona -->
+<div class="lg:col-span-5 flex flex-col gap-8">
+<div class="space-y-2">
+<span class="text-primary-fixed-dim font-headline font-bold text-sm tracking-[0.2em] uppercase">Phase One</span>
+<h2 class="text-4xl font-headline font-black tracking-tight text-on-surface">Pick Your Quote</h2>
+<p class="text-on-surface-variant font-body">Define the core message for your cinematic visual essay.</p>
+</div>
+<!-- Topic & Text Inputs -->
+<div class="space-y-6">
+<div class="space-y-2">
+<label class="text-xs font-label uppercase tracking-widest text-on-surface-variant/70 ml-1">Universal Topic</label>
+<input class="w-full bg-surface-container-highest border-none rounded-xl px-4 py-4 focus:ring-2 focus:ring-primary/50 text-on-surface placeholder:text-on-surface-variant/30 transition-all font-body" id="topic-input" placeholder="e.g., Discipline, Resilience, Stoicism" type="text"/>
+</div>
+<div class="space-y-2">
+<label class="text-xs font-label uppercase tracking-widest text-on-surface-variant/70 ml-1">The Wisdom Text</label>
+<textarea class="w-full bg-surface-container-highest border-none rounded-xl px-4 py-4 focus:ring-2 focus:ring-primary/50 text-on-surface placeholder:text-on-surface-variant/30 transition-all font-body custom-scrollbar resize-none" id="quote-input" placeholder="Enter the transformative quote here..." rows="4"></textarea>
+</div>
+<div class="space-y-2">
+<label class="text-xs font-label uppercase tracking-widest text-on-surface-variant/70 ml-1">Source / Attribution</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-primary/50 text-sm">history_edu</span>
+<input class="w-full bg-surface-container-highest border-none rounded-xl pl-11 pr-4 py-4 focus:ring-2 focus:ring-primary/50 text-on-surface placeholder:text-on-surface-variant/30 transition-all font-body" id="source-input" placeholder="e.g., Marcus Aurelius" type="text"/>
+</div>
+</div>
+</div>
+<!-- Persona Selector -->
+<div class="space-y-4">
+<label class="text-xs font-label uppercase tracking-widest text-on-surface-variant/70 ml-1">Narrative Persona</label>
+<div class="grid grid-cols-2 gap-3 p-1.5 bg-surface-container-lowest rounded-2xl border border-outline-variant/10">
+<button class="flex items-center justify-center gap-3 py-4 rounded-xl bg-surface-container-highest text-primary font-bold transition-all border border-primary/20 neon-glow" data-persona="Arthur">
+<span class="material-symbols-outlined">self_care</span>
+<span class="font-headline tracking-tight">Arthur</span>
+</button>
+<button class="flex items-center justify-center gap-3 py-4 rounded-xl text-on-surface-variant/50 hover:bg-surface-container-high transition-all font-bold" data-persona="Tony">
+<span class="material-symbols-outlined">bolt</span>
+<span class="font-headline tracking-tight">Tony</span>
+</button>
+</div>
+</div>
+<!-- Actions -->
+<div class="flex flex-col gap-4 pt-4">
+<button class="w-full py-5 rounded-full bg-gradient-to-r from-primary to-primary-container text-on-primary font-black font-headline text-lg tracking-tight shadow-[0_10px_30px_rgba(160,120,255,0.3)] hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2" id="generate-script-btn">
+<span>Generate Script</span>
+<span class="material-symbols-outlined">auto_fix_high</span>
+</button>
+<button class="w-full py-4 rounded-full bg-surface-bright/10 backdrop-blur-md border border-outline-variant/20 text-on-surface font-bold font-headline tracking-tight hover:bg-surface-bright/20 transition-all" id="reset-topic-btn">
+                        New Topic + Quote
+                    </button>
+</div>
+</div>
+<!-- Right Column: Visual Preview -->
+<div class="lg:col-span-7 flex flex-col justify-start">
+<div class="relative group">
+<!-- Preview Card Shell -->
+<div class="aspect-[4/5] md:aspect-video lg:aspect-[4/5] rounded-[2.5rem] overflow-hidden bg-surface-container-lowest border border-[#dae2fd]/5 relative shadow-2xl">
+<img class="w-full h-full object-cover opacity-60 scale-105 group-hover:scale-100 transition-transform duration-1000" data-alt="dramatic cinematic wide shot of a lone person standing in a foggy forest with neon purple light beams piercing through the trees" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB3-fr4OeeoxhtnoVmJ9oUrlxcewt8PU4LHeh5qmdG-gPcsPxLSQyqF91mbteCF8odfi-X9NnrwJ6fd4QycKnOFw70rhOX4HlojoRuPYPtLg6sC-QxIYEec0BMCPPrydU0-GSeh_fbWDnT_5UXBofhkaDTBKBH2NyWsf_xTccY437jl2CICScboRZezMF53fL7QugD5OvkwVM17HN5geY0WHeSHaoaQNpiKDN-vJTMdFJ0FNlHyySRzBvKexlC-mFrYo580qahJm2w"/>
+<!-- Overlay Content -->
+<div class="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent"></div>
+<div class="absolute inset-0 p-10 flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<div class="bg-primary/20 backdrop-blur-md px-4 py-1.5 rounded-full border border-primary/30 flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="text-primary text-[10px] font-bold uppercase tracking-[0.2em]">Live Preview</span>
+</div>
+<div class="flex gap-2">
+<div class="w-10 h-10 rounded-full glass-panel flex items-center justify-center text-on-surface/70">
+<span class="material-symbols-outlined text-sm">fullscreen</span>
+</div>
+</div>
+</div>
+<div class="space-y-6">
+<span class="material-symbols-outlined text-6xl text-primary opacity-40 font-variation-settings-'FILL'-1">format_quote</span>
+<div class="space-y-4 max-w-lg">
+<p class="text-4xl md:text-5xl font-headline font-black leading-tight text-white drop-shadow-lg" id="preview-quote">
+                                        The soul becomes dyed with the color of its thoughts.
+                                    </p>
+<div class="flex items-center gap-3">
+<div class="h-[1px] w-8 bg-primary/50"></div>
+<p class="font-headline font-bold text-primary tracking-widest text-sm uppercase" id="preview-source">Marcus Aurelius</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Interactive Tooltips / Visual cues -->
+<div class="absolute bottom-8 right-8 flex gap-3">
+<div class="p-3 rounded-2xl glass-panel bg-white/5 flex flex-col items-center gap-1">
+<span class="material-symbols-outlined text-primary">psychology</span>
+<span class="text-[8px] uppercase font-black">Stoic</span>
+</div>
+<div class="p-3 rounded-2xl glass-panel bg-white/5 flex flex-col items-center gap-1">
+<span class="material-symbols-outlined text-primary">theaters</span>
+<span class="text-[8px] uppercase font-black">Cinematic</span>
+</div>
+</div>
+</div>
+<!-- Floating Floating Accent -->
+<div class="absolute -top-10 -right-10 w-40 h-40 bg-primary/20 rounded-full blur-[80px] pointer-events-none"></div>
+<div class="absolute -bottom-20 -left-10 w-64 h-64 bg-secondary-container/10 rounded-full blur-[100px] pointer-events-none"></div>
+</div>
+<div class="mt-8 grid grid-cols-3 gap-4">
+<div class="bg-surface-container-low p-4 rounded-2xl border border-outline-variant/5">
+<p class="text-[10px] uppercase font-bold text-on-surface-variant/40 tracking-widest mb-1">Tone Analysis</p>
+<p class="text-sm font-headline font-bold text-on-surface">Philosophical</p>
+</div>
+<div class="bg-surface-container-low p-4 rounded-2xl border border-outline-variant/5">
+<p class="text-[10px] uppercase font-bold text-on-surface-variant/40 tracking-widest mb-1">Estimated Length</p>
+<p class="text-sm font-headline font-bold text-on-surface">54 Seconds</p>
+</div>
+<div class="bg-surface-container-low p-4 rounded-2xl border border-outline-variant/5">
+<p class="text-[10px] uppercase font-bold text-on-surface-variant/40 tracking-widest mb-1">Visual Style</p>
+<p class="text-sm font-headline font-bold text-on-surface">Noir Minimal</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 bg-[#0b1326]/60 backdrop-blur-2xl md:hidden rounded-t-3xl border-t border-[#dae2fd]/10">
+<a class="flex flex-col items-center justify-center text-[#dae2fd]/40 p-2 hover:text-[#d0bcff] transition-all" href="#">
+<span class="material-symbols-outlined">history_edu</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase mt-1">Drafts</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-[#d0bcff] text-[#0b1326] rounded-full p-3 scale-110 -translate-y-2 shadow-[0_0_20px_rgba(208,188,255,0.4)]" href="#">
+<span class="material-symbols-outlined">add_circle</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase mt-1">Create</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#dae2fd]/40 p-2 hover:text-[#d0bcff] transition-all" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase mt-1">Status</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#dae2fd]/40 p-2 hover:text-[#d0bcff] transition-all" href="#">
+<span class="material-symbols-outlined">video_library</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase mt-1">Library</span>
+</a>
+</nav>
+<script>
+  (function () {
+    const STORAGE_KEY = "winningWisdomFlow";
+    const defaultState = {
+      topic: "",
+      quote: "The soul becomes dyed with the color of its thoughts.",
+      source: "Marcus Aurelius",
+      persona: "Arthur",
+      script: [
+        { t: "00:00", text: "Success is not final, failure is not fatal: it is the courage to continue that counts." },
+        { t: "00:12", text: "We often confuse the path with the destination. The path is meant to be rugged." },
+        { t: "00:28", text: "Look at the greats. They didn't wait for permission. They started with a spark." },
+        { t: "00:45", text: "In a world of echoes, be the original sound." }
+      ]
+    };
+
+    const loadState = () => {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+        return { ...defaultState, ...parsed };
+      } catch {
+        return { ...defaultState };
+      }
+    };
+
+    const saveState = (state) => localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+
+    const state = loadState();
+    const topicInput = document.getElementById("topic-input");
+    const quoteInput = document.getElementById("quote-input");
+    const sourceInput = document.getElementById("source-input");
+    const previewQuote = document.getElementById("preview-quote");
+    const previewSource = document.getElementById("preview-source");
+
+    topicInput.value = state.topic || "";
+    quoteInput.value = state.quote || "";
+    sourceInput.value = state.source || "";
+    previewQuote.textContent = quoteInput.value || defaultState.quote;
+    previewSource.textContent = sourceInput.value || defaultState.source;
+
+    const syncPreview = () => {
+      previewQuote.textContent = quoteInput.value.trim() || defaultState.quote;
+      previewSource.textContent = sourceInput.value.trim() || defaultState.source;
+    };
+    quoteInput.addEventListener("input", syncPreview);
+    sourceInput.addEventListener("input", syncPreview);
+
+    document.querySelectorAll("[data-persona]").forEach((btn) => {
+      const active = btn.dataset.persona === state.persona;
+      btn.classList.toggle("bg-surface-container-highest", active);
+      btn.classList.toggle("text-primary", active);
+      btn.classList.toggle("border", active);
+      btn.classList.toggle("border-primary/20", active);
+      btn.classList.toggle("neon-glow", active);
+      btn.classList.toggle("text-on-surface-variant/50", !active);
+      btn.addEventListener("click", () => {
+        state.persona = btn.dataset.persona;
+        saveState(state);
+        document.querySelectorAll("[data-persona]").forEach((b) => {
+          const isActive = b === btn;
+          b.classList.toggle("bg-surface-container-highest", isActive);
+          b.classList.toggle("text-primary", isActive);
+          b.classList.toggle("border", isActive);
+          b.classList.toggle("border-primary/20", isActive);
+          b.classList.toggle("neon-glow", isActive);
+          b.classList.toggle("text-on-surface-variant/50", !isActive);
+        });
+      });
+    });
+
+    document.getElementById("reset-topic-btn").addEventListener("click", () => {
+      topicInput.value = "";
+      quoteInput.value = "";
+      sourceInput.value = "";
+      state.topic = "";
+      state.quote = defaultState.quote;
+      state.source = defaultState.source;
+      state.script = [...defaultState.script];
+      saveState(state);
+      syncPreview();
+    });
+
+    document.getElementById("generate-script-btn").addEventListener("click", () => {
+      state.topic = topicInput.value.trim();
+      state.quote = quoteInput.value.trim() || defaultState.quote;
+      state.source = sourceInput.value.trim() || defaultState.source;
+      state.script = [
+        { t: "00:00", text: `${state.quote} Most people stop when they face their first major obstacle, but the auteur keeps moving.` },
+        { t: "00:12", text: "We often confuse the path with the destination. The path is meant to test your resolve." },
+        { t: "00:28", text: "Look at the greats. They did not wait for permission. They turned sparks into flames through consistency." },
+        { t: "00:45", text: "Your voice has power. In a world of echoes, be the original sound." }
+      ];
+      saveState(state);
+      window.location.href = "./stitch-step2.html";
+    });
+  })();
+</script>
+</body></html>

@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Space+Grotesk:wght@500;700;900&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-secondary-container": "#00344e",
+              "primary-fixed-dim": "#d0bcff",
+              "primary-fixed": "#e9ddff",
+              "background": "#0b1326",
+              "error-container": "#93000a",
+              "on-surface-variant": "#cbc3d7",
+              "primary-container": "#a078ff",
+              "on-tertiary-fixed-variant": "#783200",
+              "surface-bright": "#31394d",
+              "error": "#ffb4ab",
+              "on-error": "#690005",
+              "surface-dim": "#0b1326",
+              "on-primary-fixed": "#23005c",
+              "on-secondary-fixed": "#001e2f",
+              "secondary-container": "#00a2e6",
+              "secondary-fixed-dim": "#89ceff",
+              "on-tertiary-container": "#4a1c00",
+              "tertiary": "#ffb690",
+              "surface-container-low": "#131b2e",
+              "surface-container": "#171f33",
+              "on-error-container": "#ffdad6",
+              "inverse-surface": "#dae2fd",
+              "surface": "#0b1326",
+              "on-surface": "#dae2fd",
+              "secondary-fixed": "#c9e6ff",
+              "on-primary": "#3c0091",
+              "tertiary-fixed-dim": "#ffb690",
+              "secondary": "#89ceff",
+              "on-secondary-fixed-variant": "#004c6e",
+              "surface-variant": "#2d3449",
+              "primary": "#d0bcff",
+              "on-tertiary-fixed": "#341100",
+              "on-secondary": "#00344d",
+              "on-background": "#dae2fd",
+              "inverse-on-surface": "#283044",
+              "surface-container-highest": "#2d3449",
+              "surface-tint": "#d0bcff",
+              "tertiary-container": "#ec6a06",
+              "outline-variant": "#494454",
+              "on-primary-container": "#340080",
+              "inverse-primary": "#6d3bd7",
+              "on-tertiary": "#552100",
+              "surface-container-high": "#222a3d",
+              "on-primary-fixed-variant": "#5516be",
+              "outline": "#958ea0",
+              "surface-container-lowest": "#060e20",
+              "tertiary-fixed": "#ffdbca"
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Inter"],
+              "label": ["Inter"],
+              "mono": ["JetBrains Mono"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(45, 52, 73, 0.6);
+            backdrop-filter: blur(24px);
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body selection:bg-primary/30">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-20 bg-[#0b1326]/80 backdrop-blur-xl shadow-[0_20px_50px_rgba(6,14,32,0.4)]">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[#d0bcff] text-2xl" style="font-variation-settings: 'FILL' 1;">auto_videocam</span>
+<h1 class="text-2xl font-black tracking-tighter bg-gradient-to-r from-[#d0bcff] to-[#a078ff] bg-clip-text text-transparent font-['Space_Grotesk']">Winning Wisdom</h1>
+</div>
+<div class="flex items-center gap-6">
+<nav class="hidden md:flex gap-8">
+<a class="text-[#dae2fd]/60 font-medium hover:text-[#d0bcff] transition-all cursor-pointer" href="./stitch-step1.html">Studio</a>
+<span class="text-[#d0bcff] font-bold cursor-default">Review The Script</span>
+<a class="text-[#dae2fd]/60 font-medium hover:text-[#d0bcff] transition-all cursor-pointer" href="./stitch-step3.html">Export</a>
+</nav>
+<div class="px-4 py-1.5 rounded-full bg-surface-container-highest border border-outline-variant/20 text-[#d0bcff] font-bold text-sm">
+                Step 2/3
+            </div>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="pt-28 pb-32 px-6 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10">
+<!-- Left Column: Script Editor -->
+<div class="lg:col-span-7 flex flex-col gap-8">
+<div class="flex flex-col gap-2">
+<span class="text-xs font-bold uppercase tracking-[0.2em] text-primary/60">Script Editor</span>
+<h2 class="text-4xl font-headline font-bold tracking-tight text-on-surface">Spoken Script</h2>
+</div>
+<!-- Scrollable Script Field -->
+<div class="relative group">
+<div class="absolute -inset-0.5 bg-gradient-to-b from-primary/20 to-transparent rounded-xl blur opacity-30 group-hover:opacity-50 transition duration-1000"></div>
+<div class="relative bg-surface-container-low rounded-xl p-8 h-[500px] overflow-y-auto border border-outline-variant/10 shadow-2xl no-scrollbar">
+<div class="font-mono text-lg leading-relaxed text-on-surface-variant space-y-6" id="script-blocks">
+<p><span class="text-primary font-bold">[00:00]</span> Success is not final, failure is not fatal: it is the courage to continue that counts. Most people stop when they face their first major obstacle, but the auteur knows that every shadow is just an opportunity for better lighting.</p>
+<p><span class="text-primary font-bold">[00:12]</span> We often confuse the path with the destination. The path is meant to be rugged. It is meant to test your resolve. If the journey was easy, the victory would be hollow. True wisdom comes from the friction of reality meeting your vision.</p>
+<p><span class="text-primary font-bold">[00:28]</span> Look at the greats. They didn't wait for permission. They didn't wait for the perfect script. They started with a spark and fanned it into a flame through sheer, relentless consistency. This is your moment to decide: are you a spectator or the creator of your own narrative?</p>
+<p><span class="text-primary font-bold">[00:45]</span> Your voice has power. Not because it is perfect, but because it is uniquely yours. In a world of echoes, be the original sound. Let the world hear the wisdom you've won through your own struggles.</p>
+</div>
+</div>
+</div>
+<!-- Revision Input -->
+<div class="bg-surface-container-high rounded-2xl p-6 border border-outline-variant/5">
+<label class="block text-sm font-bold uppercase tracking-widest text-on-surface/40 mb-4">Arthur AI Assistant</label>
+<div class="relative">
+<textarea class="w-full bg-surface-container-lowest border-none rounded-xl p-4 text-on-surface placeholder:text-on-surface-variant/30 focus:ring-2 focus:ring-primary/50 min-h-[100px] resize-none transition-all" placeholder="Tell Arthur what to change... (e.g., 'Make the tone more aggressive' or 'Shorten the intro')"></textarea>
+<button class="absolute bottom-3 right-3 p-2 bg-primary text-on-primary rounded-lg hover:scale-105 active:scale-95 transition-all">
+<span class="material-symbols-outlined">auto_fix</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Right Column: Overlay Preview & Actions -->
+<div class="lg:col-span-5 flex flex-col gap-10">
+<!-- On-Screen Text Card Preview -->
+<div class="flex flex-col gap-4">
+<span class="text-xs font-bold uppercase tracking-[0.2em] text-secondary/60">Visual Overlay</span>
+<div class="relative aspect-video rounded-3xl overflow-hidden group shadow-[0_30px_60px_rgba(0,0,0,0.6)]">
+<img class="absolute inset-0 w-full h-full object-cover" data-alt="Cinematic close-up of a person looking thoughtfully into the distance, moody blue and purple lighting with soft bokeh background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-WhIbOp6ZmXoA1f9G5-8jzikAS-lVSiTZxwG_sUvy-aDda6uVAKNdHH2gzep_ZF9CryZbmYsUioCuY1xcIC5179uM0qEcv5yjhTE9_oyhWMHXyoGCX8NKCi50ZLNmtBjNaXWhYMKc0UdN9-m63whyvHLV4jMN7n7wkShWXYUx3zziYmkptWYpoQ0JOAMTKa5sluXfpkrBZdtruMNOHh49Gn3RkQlH-4Qx4bcCxRKqv7hs32QIdjbqH5X8-UNrLzMMIjS4pE7gQVE"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent"></div>
+<!-- Text Overlay Mockup -->
+<div class="absolute inset-0 flex flex-col items-center justify-center p-8 text-center">
+<div class="glass-panel p-6 rounded-2xl border border-white/10 max-w-[80%]">
+<span class="material-symbols-outlined text-secondary mb-2">format_quote</span>
+<h3 class="text-xl font-headline font-bold leading-tight italic" id="overlay-quote">
+                                "In a world of echoes, <span class="text-primary">be the original sound</span>."
+                            </h3>
+</div>
+</div>
+<!-- Floating Badge -->
+<div class="absolute top-4 right-4 flex gap-2">
+<div class="px-3 py-1 bg-black/40 backdrop-blur-md rounded-full text-[10px] font-bold uppercase tracking-tighter border border-white/10">
+                            4K Preview
+                        </div>
+</div>
+</div>
+</div>
+<!-- Highlight Words Control -->
+<div class="bg-surface-container rounded-3xl p-8 border border-outline-variant/10">
+<div class="flex justify-between items-center mb-6">
+<h4 class="font-headline font-bold text-lg">Highlight Words</h4>
+<span class="material-symbols-outlined text-on-surface-variant/40">settings_suggest</span>
+</div>
+<div class="flex flex-wrap gap-2">
+<div class="px-4 py-2 bg-primary text-on-primary rounded-full text-xs font-bold flex items-center gap-2">
+                        original sound <span class="material-symbols-outlined text-sm">close</span>
+</div>
+<div class="px-4 py-2 bg-primary text-on-primary rounded-full text-xs font-bold flex items-center gap-2">
+                        courage <span class="material-symbols-outlined text-sm">close</span>
+</div>
+<div class="px-4 py-2 bg-surface-container-highest text-on-surface-variant rounded-full text-xs font-bold hover:bg-surface-bright cursor-pointer transition-colors">
+                        + Add Keyword
+                    </div>
+<div class="px-4 py-2 bg-surface-container-highest text-on-surface-variant rounded-full text-xs font-bold hover:bg-surface-bright cursor-pointer transition-colors">
+                        Auto-detect
+                    </div>
+</div>
+</div>
+<!-- Primary Action -->
+<div class="mt-auto">
+<button class="relative w-full group overflow-hidden rounded-full p-[2px] focus:outline-none" id="approve-score-btn">
+<div class="absolute inset-0 bg-gradient-to-r from-primary via-secondary to-primary-container animate-shimmer"></div>
+<div class="relative bg-background group-hover:bg-transparent transition-colors duration-300 px-8 py-5 rounded-full flex items-center justify-center gap-4">
+<span class="font-headline font-black text-xl tracking-tight text-on-surface uppercase">Approve &amp; Score</span>
+<span class="material-symbols-outlined font-bold">bolt</span>
+</div>
+</button>
+<p class="text-center mt-4 text-xs text-on-surface-variant/40 font-medium">
+                    Arthur will generate the final voiceover &amp; B-roll sequence.
+                </p>
+</div>
+</div>
+</main>
+<!-- NavigationDrawer (Mobile Hidden Overlay) -->
+<aside class="fixed left-0 top-0 h-full z-40 bg-[#0b1326] w-72 -translate-x-full md:translate-x-0 border-r border-outline-variant/10 hidden lg:flex flex-col">
+<div class="p-8">
+<div class="flex items-center gap-3 mb-10">
+<div class="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">movie_edit</span>
+</div>
+<div>
+<h3 class="font-headline font-bold text-on-surface">Auteur Studio</h3>
+<p class="text-[10px] text-primary font-bold uppercase tracking-widest">Pro Plan</p>
+</div>
+</div>
+<nav class="flex flex-col gap-2">
+<div class="flex items-center gap-4 px-4 py-3 text-[#dae2fd]/50 hover:text-[#dae2fd] hover:bg-[#d0bcff]/10 rounded-xl transition-all cursor-pointer group">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">movie_edit</span>
+<span class="font-['Inter'] text-sm uppercase tracking-widest font-medium">Studio</span>
+</div>
+<div class="flex items-center gap-4 px-4 py-3 bg-gradient-to-r from-[#d0bcff]/20 to-transparent text-[#d0bcff] border-l-4 border-[#d0bcff] rounded-r-xl cursor-default">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">record_voice_over</span>
+<span class="font-['Inter'] text-sm uppercase tracking-widest font-bold">Personas</span>
+</div>
+<div class="flex items-center gap-4 px-4 py-3 text-[#dae2fd]/50 hover:text-[#dae2fd] hover:bg-[#d0bcff]/10 rounded-xl transition-all cursor-pointer group">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">folder_open</span>
+<span class="font-['Inter'] text-sm uppercase tracking-widest font-medium">Assets</span>
+</div>
+<div class="flex items-center gap-4 px-4 py-3 text-[#dae2fd]/50 hover:text-[#dae2fd] hover:bg-[#d0bcff]/10 rounded-xl transition-all cursor-pointer group">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">tune</span>
+<span class="font-['Inter'] text-sm uppercase tracking-widest font-medium">Settings</span>
+</div>
+</nav>
+</div>
+<div class="mt-auto p-8">
+<div class="bg-surface-container-highest rounded-2xl p-4 border border-outline-variant/10">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-secondary-container/30 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-sm">cloud_done</span>
+</div>
+<div class="text-[10px] font-bold uppercase tracking-widest opacity-60">Sync Active</div>
+</div>
+</div>
+</div>
+</aside>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 bg-[#0b1326]/60 backdrop-blur-2xl md:hidden border-t border-[#dae2fd]/10">
+<div class="flex flex-col items-center justify-center text-[#dae2fd]/40 p-2">
+<span class="material-symbols-outlined">history_edu</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase mt-1">Drafts</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-[#d0bcff] text-[#0b1326] rounded-full p-3 scale-110 -translate-y-2 shadow-[0_0_20px_rgba(208,188,255,0.4)]">
+<span class="material-symbols-outlined">add_circle</span>
+<span class="font-['Inter'] text-[10px] font-bold uppercase mt-1">Create</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#dae2fd]/40 p-2">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase mt-1">Status</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#dae2fd]/40 p-2">
+<span class="material-symbols-outlined">video_library</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase mt-1">Library</span>
+</div>
+</nav>
+<script>
+  (function () {
+    const STORAGE_KEY = "winningWisdomFlow";
+    const defaultState = {
+      quote: "The soul becomes dyed with the color of its thoughts.",
+      source: "Marcus Aurelius",
+      script: [
+        { t: "00:00", text: "Success is not final, failure is not fatal: it is the courage to continue that counts." },
+        { t: "00:12", text: "We often confuse the path with the destination. The path is meant to be rugged." },
+        { t: "00:28", text: "Look at the greats. They didn't wait for permission. They started with a spark." },
+        { t: "00:45", text: "In a world of echoes, be the original sound." }
+      ]
+    };
+
+    const loadState = () => {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+        return { ...defaultState, ...parsed };
+      } catch {
+        return { ...defaultState };
+      }
+    };
+
+    const state = loadState();
+    const scriptBlocks = document.getElementById("script-blocks");
+    const overlayQuote = document.getElementById("overlay-quote");
+    if (scriptBlocks) {
+      scriptBlocks.innerHTML = (state.script || defaultState.script)
+        .map((item) => `<p><span class="text-primary font-bold">[${item.t}]</span> ${item.text}</p>`)
+        .join("");
+    }
+
+    if (overlayQuote) {
+      const line = state.script && state.script.length ? state.script[state.script.length - 1].text : defaultState.script[3].text;
+      overlayQuote.innerHTML = `"${line.replace("original sound", "<span class='text-primary'>original sound</span>")}"`;
+    }
+
+    document.getElementById("approve-score-btn").addEventListener("click", () => {
+      window.location.href = "./stitch-step3.html";
+    });
+  })();
+</script>
+</body></html>

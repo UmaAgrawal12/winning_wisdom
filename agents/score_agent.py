@@ -295,6 +295,21 @@ Priority fix: Only include if overall_score < 7.0. Pick the single most impactfu
     # Round overall_score to integer (AI may return float like 7.3)
     overall_score = int(round(parsed["overall_score"]))
     
+    # Enforce deterministic verdict from numeric score so UI/result
+    # is always consistent even if model text drifts.
+    if overall_score >= 8:
+        verdict = "Ready to post"
+    elif overall_score >= 7:
+        verdict = "Needs minor tweaks"
+    elif overall_score >= 5:
+        verdict = "Needs revision"
+    else:
+        verdict = "Regenerate"
+
+    priority_fix = parsed.get("priority_fix")
+    if overall_score >= 7:
+        priority_fix = None
+
     # Build the score object
     score = ReelScriptScore(
         hook_strength=DimensionScore(**parsed["hook_strength"]),
@@ -306,8 +321,8 @@ Priority fix: Only include if overall_score < 7.0. Pick the single most impactfu
         overall_score=overall_score,
         strengths=ScriptStrengths(**parsed["strengths"]),
         weaknesses=ScriptWeaknesses(**parsed["weaknesses"]),
-        verdict=parsed["verdict"],
-        priority_fix=parsed.get("priority_fix"),
+        verdict=verdict,
+        priority_fix=priority_fix,
     )
     
     return score

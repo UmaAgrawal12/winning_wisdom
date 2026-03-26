@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Winning Wisdom Studio - Score &amp; SEO</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-secondary-container": "#00344e",
+              "primary-fixed-dim": "#d0bcff",
+              "primary-fixed": "#e9ddff",
+              "background": "#0b1326",
+              "error-container": "#93000a",
+              "on-surface-variant": "#cbc3d7",
+              "primary-container": "#a078ff",
+              "on-tertiary-fixed-variant": "#783200",
+              "surface-bright": "#31394d",
+              "error": "#ffb4ab",
+              "on-error": "#690005",
+              "surface-dim": "#0b1326",
+              "on-primary-fixed": "#23005c",
+              "on-secondary-fixed": "#001e2f",
+              "secondary-container": "#00a2e6",
+              "secondary-fixed-dim": "#89ceff",
+              "on-tertiary-container": "#4a1c00",
+              "tertiary": "#ffb690",
+              "surface-container-low": "#131b2e",
+              "surface-container": "#171f33",
+              "on-error-container": "#ffdad6",
+              "inverse-surface": "#dae2fd",
+              "surface": "#0b1326",
+              "on-surface": "#dae2fd",
+              "secondary-fixed": "#c9e6ff",
+              "on-primary": "#3c0091",
+              "tertiary-fixed-dim": "#ffb690",
+              "secondary": "#89ceff",
+              "on-secondary-fixed-variant": "#004c6e",
+              "surface-variant": "#2d3449",
+              "primary": "#d0bcff",
+              "on-tertiary-fixed": "#341100",
+              "on-secondary": "#00344d",
+              "on-background": "#dae2fd",
+              "inverse-on-surface": "#283044",
+              "surface-container-highest": "#2d3449",
+              "surface-tint": "#d0bcff",
+              "tertiary-container": "#ec6a06",
+              "outline-variant": "#494454",
+              "on-primary-container": "#340080",
+              "inverse-primary": "#6d3bd7",
+              "on-tertiary": "#552100",
+              "surface-container-high": "#222a3d",
+              "on-primary-fixed-variant": "#5516be",
+              "outline": "#958ea0",
+              "surface-container-lowest": "#060e20",
+              "tertiary-fixed": "#ffdbca"
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .cinematic-bg {
+        background: radial-gradient(circle at 20% 30%, rgba(208, 188, 255, 0.08) 0%, transparent 40%),
+                    radial-gradient(circle at 80% 70%, rgba(0, 162, 230, 0.05) 0%, transparent 40%),
+                    #0b1326;
+      }
+      .glass-card {
+        background: rgba(23, 31, 51, 0.6);
+        backdrop-filter: blur(24px);
+        border: 1px solid rgba(218, 226, 253, 0.05);
+      }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body min-h-screen cinematic-bg selection:bg-primary selection:text-on-primary">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-20 bg-[#0b1326]/80 backdrop-blur-xl shadow-[0_20px_50px_rgba(6,14,32,0.4)]">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[#d0bcff] text-2xl">auto_videocam</span>
+<h1 class="text-2xl font-black tracking-tighter bg-gradient-to-r from-[#d0bcff] to-[#a078ff] bg-clip-text text-transparent font-['Space_Grotesk']">Winning Wisdom</h1>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex gap-4">
+<a class="text-[#dae2fd]/60 font-['Space_Grotesk'] font-bold tracking-tighter hover:text-[#dae2fd]" href="./stitch-step1.html">Step 1</a>
+<a class="text-[#dae2fd]/60 font-['Space_Grotesk'] font-bold tracking-tighter hover:text-[#dae2fd]" href="./stitch-step2.html">Step 2</a>
+<span class="text-[#d0bcff] font-['Space_Grotesk'] font-bold tracking-tighter border-b-2 border-[#d0bcff]">Step 3: Score &amp; SEO</span>
+</div>
+<button class="bg-[#d0bcff] text-[#0b1326] px-5 py-2 rounded-full font-bold text-sm hover:scale-[1.05] transition-all" id="publish-btn">Publish</button>
+</div>
+</header>
+<!-- Side Navigation Drawer -->
+<aside class="fixed left-0 top-0 h-full z-40 bg-[#0b1326] w-72 pt-24 hidden md:flex flex-col gap-2 px-4">
+<div class="flex items-center gap-4 p-4 mb-6">
+<img class="w-10 h-10 rounded-full bg-surface-container-highest" data-alt="high-quality cinematic portrait of a professional film editor in a dark studio setting with neon purple highlights" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVnGSxnydBtj4redNzCf2iKGcZxlI6k6eGjwtVOH4QEsArSI_2n2QYVZVsBEhjoGpTYpqIHrYy0ZIq-9nI-yUV6qCREfqlpfkTvp0hzVx5O7zWnedG8RzDLBg-0kvodH-EUlibl4Qy2BvkXoYdwbDrgUtl30bqjYyhcjbTu-AYu9ihfZZcEFfcJJI7LDWNwdZ6GJwqiuVkr92nFgfzSV4YRt6ffVaLs_6_ENB618o-PDnZq6m95SqglECatf3V7Z85vnzCipR_PwY"/>
+<div>
+<p class="font-['Space_Grotesk'] text-sm font-bold text-[#dae2fd]">Auteur Studio</p>
+<p class="text-[10px] text-[#dae2fd]/50 uppercase tracking-widest font-['Inter']">Pro Plan</p>
+</div>
+</div>
+<nav class="flex flex-col gap-1">
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-[#dae2fd]/50 hover:text-[#dae2fd] hover:bg-[#d0bcff]/10 transition-all font-['Inter'] text-sm uppercase tracking-widest" href="#">
+<span class="material-symbols-outlined">movie_edit</span> Studio
+            </a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-[#dae2fd]/50 hover:text-[#dae2fd] hover:bg-[#d0bcff]/10 transition-all font-['Inter'] text-sm uppercase tracking-widest" href="#">
+<span class="material-symbols-outlined">record_voice_over</span> Personas
+            </a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-[#dae2fd]/50 hover:text-[#dae2fd] hover:bg-[#d0bcff]/10 transition-all font-['Inter'] text-sm uppercase tracking-widest" href="#">
+<span class="material-symbols-outlined">folder_open</span> Assets
+            </a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-[#dae2fd]/50 hover:text-[#dae2fd] hover:bg-[#d0bcff]/10 transition-all font-['Inter'] text-sm uppercase tracking-widest" href="#">
+<span class="material-symbols-outlined">tune</span> Settings
+            </a>
+</nav>
+</aside>
+<!-- Main Content -->
+<main class="md:ml-72 pt-28 pb-32 px-6 lg:px-12 max-w-7xl mx-auto">
+<!-- Reel Score Dashboard -->
+<section class="mb-12">
+<div class="flex items-end justify-between mb-8">
+<div>
+<span class="text-primary-container font-headline font-bold text-sm tracking-[0.2em] uppercase mb-2 block">Performance Analysis</span>
+<h2 class="text-4xl font-headline font-bold tracking-tight text-on-surface">Reel Score Dashboard</h2>
+</div>
+<div class="bg-surface-container-high px-6 py-4 rounded-2xl flex items-baseline gap-2 border border-outline-variant/20 shadow-xl">
+<span class="text-5xl font-black font-headline text-primary" id="overall-score">8.4</span>
+<span class="text-on-surface-variant font-bold">/ 10</span>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+<!-- Card 1: Hook -->
+<div class="glass-card p-6 rounded-3xl hover:bg-surface-container-high transition-all group">
+<div class="flex justify-between items-start mb-6">
+<span class="material-symbols-outlined text-secondary text-3xl">anchor</span>
+<span class="text-secondary font-headline font-bold text-xl">9/10</span>
+</div>
+<p class="text-on-surface-variant text-xs font-bold tracking-widest uppercase mb-1">Hook</p>
+<p class="text-on-surface font-semibold text-sm">Strong Opener</p>
+<div class="mt-4 h-1 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-secondary w-[90%] shadow-[0_0_12px_rgba(137,206,255,0.6)]"></div>
+</div>
+</div>
+<!-- Card 2: Emotion -->
+<div class="glass-card p-6 rounded-3xl hover:bg-surface-container-high transition-all group border-primary/20">
+<div class="flex justify-between items-start mb-6">
+<span class="material-symbols-outlined text-primary text-3xl">favorite</span>
+<span class="text-primary font-headline font-bold text-xl">8/10</span>
+</div>
+<p class="text-on-surface-variant text-xs font-bold tracking-widest uppercase mb-1">Emotion</p>
+<p class="text-on-surface font-semibold text-sm">High Resonance</p>
+<div class="mt-4 h-1 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[80%] shadow-[0_0_12px_rgba(208,188,255,0.6)]"></div>
+</div>
+</div>
+<!-- Card 3: Structure -->
+<div class="glass-card p-6 rounded-3xl hover:bg-surface-container-high transition-all group border-tertiary-container/20">
+<div class="flex justify-between items-start mb-6">
+<span class="material-symbols-outlined text-tertiary text-3xl">view_quilt</span>
+<span class="text-tertiary font-headline font-bold text-xl">7/10</span>
+</div>
+<p class="text-on-surface-variant text-xs font-bold tracking-widest uppercase mb-1">Structure</p>
+<p class="text-on-surface font-semibold text-sm">Linear Flow</p>
+<div class="mt-4 h-1 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-tertiary w-[70%] shadow-[0_0_12px_rgba(255,182,144,0.6)]"></div>
+</div>
+</div>
+<!-- Card 4: Persona -->
+<div class="glass-card p-6 rounded-3xl hover:bg-surface-container-high transition-all group">
+<div class="flex justify-between items-start mb-6">
+<span class="material-symbols-outlined text-on-surface text-3xl">face_6</span>
+<span class="text-on-surface font-headline font-bold text-xl">8/10</span>
+</div>
+<p class="text-on-surface-variant text-xs font-bold tracking-widest uppercase mb-1">Persona</p>
+<p class="text-on-surface font-semibold text-sm">Brand Alignment</p>
+<div class="mt-4 h-1 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-on-surface w-[80%]"></div>
+</div>
+</div>
+<!-- Card 5: Visual -->
+<div class="glass-card p-6 rounded-3xl hover:bg-surface-container-high transition-all group border-error/20">
+<div class="flex justify-between items-start mb-6">
+<span class="material-symbols-outlined text-error text-3xl">visibility</span>
+<span class="text-error font-headline font-bold text-xl">5/10</span>
+</div>
+<p class="text-on-surface-variant text-xs font-bold tracking-widest uppercase mb-1">Visual</p>
+<p class="text-on-surface font-semibold text-sm">Low Contrast</p>
+<div class="mt-4 h-1 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-error w-[50%] shadow-[0_0_12px_rgba(255,180,171,0.6)]"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- Bento Grid: AI Verdict & Voice Gen -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+<!-- AI Verdict -->
+<div class="lg:col-span-2 glass-card rounded-[2.5rem] p-10 relative overflow-hidden">
+<div class="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-[80px] -mr-32 -mt-32"></div>
+<div class="relative z-10">
+<div class="flex items-center gap-3 mb-6">
+<span class="material-symbols-outlined text-primary-fixed-dim" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<h3 class="text-2xl font-headline font-bold">AI Verdict</h3>
+</div>
+<p class="text-xl text-on-surface-variant leading-relaxed mb-8" id="ai-verdict">
+                        Your hook is exceptional, but the visual retention drops at the <span class="text-on-surface font-bold">0:15 mark</span>. The current color grading is too dark for mobile viewers under bright sunlight.
+                    </p>
+<div class="flex flex-col md:flex-row gap-4">
+<div class="bg-error-container/20 border border-error/20 p-5 rounded-2xl flex-1">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-error text-sm">priority_high</span>
+<span class="text-error font-bold text-xs uppercase tracking-widest">Priority Fix</span>
+</div>
+<p class="text-sm text-on-error-container">Increase caption brightness by 40% in the second act to maintain engagement.</p>
+</div>
+<div class="bg-primary/10 border border-primary/10 p-5 rounded-2xl flex-1">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-primary text-sm">tips_and_updates</span>
+<span class="text-primary font-bold text-xs uppercase tracking-widest">Growth Hack</span>
+</div>
+<p class="text-sm text-on-primary-container">Use the 'Trending Transition' at the 12-second mark to spike the algorithm.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Voice Generator Widget -->
+<div class="glass-card rounded-[2.5rem] p-8 flex flex-col justify-between border-primary/10">
+<div>
+<h3 class="text-xl font-headline font-bold mb-2">Voice Studio</h3>
+<p class="text-on-surface-variant text-sm mb-6">AI-Generated Narration</p>
+<div class="bg-surface-container-highest/50 rounded-2xl p-6 mb-4 flex items-center gap-4">
+<button class="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-on-primary shadow-lg shadow-primary/20 hover:scale-110 transition-transform">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+<div class="flex-1">
+<div class="h-8 flex items-end gap-[2px]">
+<div class="h-2 flex-1 bg-primary/40 rounded-full"></div>
+<div class="h-4 flex-1 bg-primary/60 rounded-full"></div>
+<div class="h-6 flex-1 bg-primary rounded-full"></div>
+<div class="h-3 flex-1 bg-primary/50 rounded-full"></div>
+<div class="h-7 flex-1 bg-primary/80 rounded-full"></div>
+<div class="h-5 flex-1 bg-primary rounded-full"></div>
+<div class="h-8 flex-1 bg-primary rounded-full"></div>
+<div class="h-4 flex-1 bg-primary/40 rounded-full"></div>
+</div>
+</div>
+</div>
+<div class="flex justify-between text-[10px] text-on-surface-variant font-bold uppercase tracking-widest mb-8">
+<span>Voice: "Marcus" (Warm)</span>
+<span>0:45 / 0:45</span>
+</div>
+</div>
+<button class="w-full bg-surface-bright py-4 rounded-2xl font-bold flex items-center justify-center gap-3 border border-outline-variant/30 hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined">check_circle</span>
+                    Voice Ready
+                </button>
+</div>
+</div>
+<!-- SEO Section -->
+<section class="glass-card rounded-[2.5rem] p-10">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+<div>
+<h3 class="text-2xl font-headline font-bold mb-2">Distribution &amp; SEO</h3>
+<p class="text-on-surface-variant">Multi-platform hashtag optimization</p>
+</div>
+<div class="flex p-1 bg-surface-container-highest rounded-2xl">
+<button class="px-6 py-2 rounded-xl bg-surface-bright text-on-surface font-bold text-sm shadow-md">YouTube</button>
+<button class="px-6 py-2 rounded-xl text-on-surface-variant hover:text-on-surface font-bold text-sm transition-colors">Instagram</button>
+<button class="px-6 py-2 rounded-xl text-on-surface-variant hover:text-on-surface font-bold text-sm transition-colors">TikTok</button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+<div>
+<label class="text-xs font-bold uppercase tracking-widest text-primary mb-4 block">Recommended Hashtags</label>
+<div class="flex flex-wrap gap-3">
+<span class="px-4 py-2 bg-primary/10 border border-primary/20 rounded-full text-primary text-sm font-medium hover:bg-primary/20 transition-all cursor-pointer">#WinningWisdom</span>
+<span class="px-4 py-2 bg-primary/10 border border-primary/20 rounded-full text-primary text-sm font-medium hover:bg-primary/20 transition-all cursor-pointer">#ContentStrategy</span>
+<span class="px-4 py-2 bg-primary/10 border border-primary/20 rounded-full text-primary text-sm font-medium hover:bg-primary/20 transition-all cursor-pointer">#CreatorEconomy</span>
+<span class="px-4 py-2 bg-primary/10 border border-primary/20 rounded-full text-primary text-sm font-medium hover:bg-primary/20 transition-all cursor-pointer">#AIVideo</span>
+<span class="px-4 py-2 bg-primary/10 border border-primary/20 rounded-full text-primary text-sm font-medium hover:bg-primary/20 transition-all cursor-pointer">#Storytelling</span>
+<span class="px-4 py-2 bg-primary/10 border border-primary/20 rounded-full text-primary text-sm font-medium hover:bg-primary/20 transition-all cursor-pointer">#TechTrends</span>
+</div>
+</div>
+<div>
+<label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-4 block">Platform Meta</label>
+<div class="space-y-4">
+<div class="flex justify-between items-center p-4 bg-surface-container/40 rounded-2xl">
+<span class="text-sm font-semibold">Visibility Rank</span>
+<span class="text-secondary font-headline font-bold">Tier A</span>
+</div>
+<div class="flex justify-between items-center p-4 bg-surface-container/40 rounded-2xl">
+<span class="text-sm font-semibold">Keywords Density</span>
+<span class="text-secondary font-headline font-bold">Optimal</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 bg-[#0b1326]/60 backdrop-blur-2xl rounded-t-3xl border-t border-[#dae2fd]/10 h-24">
+<div class="flex flex-col items-center justify-center text-[#dae2fd]/40 p-2">
+<span class="material-symbols-outlined">history_edu</span>
+<span class="text-[10px] font-medium uppercase font-['Inter'] mt-1">Drafts</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#dae2fd]/40 p-2">
+<span class="material-symbols-outlined">add_circle</span>
+<span class="text-[10px] font-medium uppercase font-['Inter'] mt-1">Create</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-[#d0bcff] text-[#0b1326] rounded-full p-4 scale-110 -translate-y-4 shadow-[0_0_20px_rgba(208,188,255,0.4)]">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">analytics</span>
+<span class="text-[10px] font-bold uppercase font-['Inter'] mt-1">Status</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#dae2fd]/40 p-2">
+<span class="material-symbols-outlined">video_library</span>
+<span class="text-[10px] font-medium uppercase font-['Inter'] mt-1">Library</span>
+</div>
+</nav>
+<!-- Visual Background Element -->
+<div class="fixed top-0 right-0 -z-10 w-full h-full opacity-30 pointer-events-none">
+<img class="w-full h-full object-cover" data-alt="ultra-minimalist dark background with subtle abstract light leaks in deep indigo and neon violet with fine grain texture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDxJyBObfVGWvPivgfjKeuGq-MZO3Jm6iKvTBUswZcBEH1IOlnrOB4SOx8WGKSpEaaCiD8mlpM7hfsQgrc52GwFpwwNlu4Rtww-fxqV599gJM2ixdWOmJDv3a2hK6lS9W9zuFoyt8TQYiBoZ0i-tEjTUsljURiuUn7CBqSAd57LrRFuxQ6I9VyQT-diovK5SzfIrlp5GILH2xc3s5swQYD0ZhMMyaHOgSHFTmOlnVXY9EXw_Ea9xOzOvz-DvgayagRgh2VkPYQWYKE"/>
+</div>
+<script>
+  (function () {
+    const STORAGE_KEY = "winningWisdomFlow";
+    const defaultState = {
+      quote: "The soul becomes dyed with the color of its thoughts.",
+      source: "Marcus Aurelius",
+      persona: "Arthur",
+      topic: ""
+    };
+
+    const loadState = () => {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+        return { ...defaultState, ...parsed };
+      } catch {
+        return { ...defaultState };
+      }
+    };
+
+    const state = loadState();
+    const aiVerdict = document.getElementById("ai-verdict");
+    const score = document.getElementById("overall-score");
+
+    if (aiVerdict) {
+      aiVerdict.innerHTML =
+        `Your <span class="text-on-surface font-bold">${state.persona}</span> narration around "<span class="text-on-surface font-bold">${state.quote}</span>" is strong, but visual retention may drop at the <span class="text-on-surface font-bold">0:15 mark</span>. Increase caption brightness for better mobile readability.`;
+    }
+
+    if (score) {
+      const base = 8.0;
+      const topicBoost = state.topic ? 0.2 : 0;
+      const sourceBoost = state.source ? 0.2 : 0;
+      score.textContent = (base + topicBoost + sourceBoost).toFixed(1);
+    }
+
+    document.getElementById("publish-btn").addEventListener("click", () => {
+      alert("Published successfully.");
+    });
+  })();
+</script>
+</body></html>
