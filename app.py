@@ -20,10 +20,9 @@ from winning_wisdom_ai.supabase_db import (
 
 # Prefer package imports (works when running from project root)
 from winning_wisdom_ai.agents.topic_agent import (
-    fetch_winning_wisdom_quote,
     fetch_winning_wisdom_quote_for_topic,
     generate_topics,
-    generate_topics_serpapi,
+    get_curated_topics,
 )
 from winning_wisdom_ai.agents.script_agent import (
     generate_daily_wisdom_script,
@@ -33,6 +32,10 @@ from winning_wisdom_ai.agents.script_agent import (
 from winning_wisdom_ai.agents.score_agent import score_reel_script
 from winning_wisdom_ai.agents.seo_agent import generate_seo_metadata, SEOResult
 from winning_wisdom_ai.media_pipeline.voice_generation import generate_voice_for_script
+from winning_wisdom_ai.media_pipeline.avatar_generation import (
+    create_heygen_video,
+    get_heygen_video_status,
+)
 
 
 
@@ -95,6 +98,13 @@ class ScriptVoiceRequest(BaseModel):
     script_text: str
     persona: str = "arthur"
     script_id: Optional[str] = None
+
+
+class ScriptVideoRequest(BaseModel):
+    script_text: str
+    persona: str = "arthur"
+    script_id: Optional[str] = None
+    aspect_ratio: str = "9:16"
 
 
 def _seo_for_storage(seo: SEOResult) -> dict:
@@ -192,28 +202,34 @@ MEDIA_DIR.mkdir(parents=True, exist_ok=True)
 app.mount("/media", StaticFiles(directory=str(MEDIA_DIR)), name="media")
 
 
+@app.get("/api/topics")
+def list_curated_topics(persona: str = "arthur"):
+    """All hardcoded topics for the persona (for client topic picker)."""
+    result = get_curated_topics(persona=persona, n=None, shuffle=False)
+    return {"persona": persona, "topics": result.topics}
+
+
 @app.get("/api/topic")
 def get_topic(persona: str = "arthur"):
     """
-    Step 1: Generate a topic, then a quote for that topic.
+    Step 1: Pick a random curated topic and a quote from the hardcoded bank.
     """
     try:
-        topics_result = generate_topics_serpapi(
-            theme="Winning Wisdom: discipline, meaning, resilience, self-mastery",
-            n=8,
-            location="United States",
-            persona=persona,
+        topics_result = get_curated_topics(persona=persona, n=8, shuffle=True)
+        topic = (
+            random.choice(topics_result.topics)
+            if topics_result.topics
+            else "Discipline on the hard days"
         )
-        topic = random.choice(topics_result.topics) if topics_result.topics else "Discipline on the hard days"
-        quote_data = fetch_winning_wisdom_quote_for_topic(
-            topic=topic,
-            use_serpapi=True,
-            require_serpapi=True,
-            persona=persona,
-        )
-        return {"topic": topic, "quote": quote_data["quote"], "source": quote_data["source"], "persona": persona}
+        quote_data = fetch_winning_wisdom_quote_for_topic(topic=topic, persona=persona)
+        return {
+            "topic": topic,
+            "quote": quote_data["quote"],
+            "source": quote_data["source"],
+            "persona": persona,
+        }
     except Exception as e:
-        raise HTTPException(status_code=503, detail=f"SerpAPI topic/quote generation failed: {e}")
+        raise HTTPException(status_code=503, detail=f"Topic/quote selection failed: {e}")
 
 
 @app.post("/api/topic/quote")
@@ -225,12 +241,10 @@ def get_quote_for_topic(payload: TopicQuoteRequest) -> TopicProposal:
     try:
         quote_data = fetch_winning_wisdom_quote_for_topic(
             topic=topic,
-            use_serpapi=True,
-            require_serpapi=True,
             persona=payload.persona,
         )
     except Exception as e:
-        raise HTTPException(status_code=503, detail=f"SerpAPI quote generation failed: {e}")
+        raise HTTPException(status_code=503, detail=f"Quote selection failed: {e}")
     return TopicProposal(topic=topic, quote=quote_data["quote"], source=quote_data["source"], persona=payload.persona)
 
 
@@ -254,21 +268,15 @@ def daily_flow(persona: str = "arthur") -> DailyFullFlowResponse:
     topic -> quote -> script -> SEO
     """
     try:
-        topics_result = generate_topics_serpapi(
-            theme="Winning Wisdom: discipline, meaning, resilience, self-mastery",
-            n=8,
-            location="United States",
-            persona=persona,
+        topics_result = get_curated_topics(persona=persona, n=8, shuffle=True)
+        topic = (
+            random.choice(topics_result.topics)
+            if topics_result.topics
+            else "Discipline on the hard days"
         )
-        topic = random.choice(topics_result.topics) if topics_result.topics else "Discipline on the hard days"
-        quote_data = fetch_winning_wisdom_quote_for_topic(
-            topic=topic,
-            use_serpapi=True,
-            require_serpapi=True,
-            persona=persona,
-        )
+        quote_data = fetch_winning_wisdom_quote_for_topic(topic=topic, persona=persona)
     except Exception as e:
-        raise HTTPException(status_code=503, detail=f"SerpAPI topic/quote generation failed: {e}")
+        raise HTTPException(status_code=503, detail=f"Daily flow topic/quote failed: {e}")
 
     script = generate_daily_wisdom_script(
         quote_override=quote_data["quote"],
@@ -416,6 +424,47 @@ def generate_script_voice(payload: ScriptVoiceRequest):
         "audio_path": audio_path,
         "audio_url": audio_url,
     }
+
+
+@app.post("/api/script/video")
+def generate_script_video(payload: ScriptVideoRequest):
+    """
+    Generate HeyGen avatar video directly from script text (HeyGen native voice + video).
+    """
+    text = (payload.script_text or "").strip()
+    if not text:
+        raise HTTPException(status_code=400, detail="script_text is required.")
+    try:
+        result = create_heygen_video(
+            script_text=text,
+            script_id=payload.script_id,
+            persona=payload.persona,
+            aspect_ratio=payload.aspect_ratio or "9:16",
+        )
+    except Exception as e:
+        raise HTTPException(status_code=503, detail=f"HeyGen video submit failed: {e}")
+    return {"ok": True, **result}
+
+
+@app.get("/api/script/video/{video_id}")
+def get_script_video_status(video_id: str):
+    """
+    Poll HeyGen video job status.
+    """
+    try:
+        result = get_heygen_video_status(video_id=video_id)
+    except Exception as e:
+        raise HTTPException(status_code=503, detail=f"HeyGen video status failed: {e}")
+
+    # Helpful for debugging repeated failures (credits/quota vs invalid payload).
+    state = str(result.get("status") or "").lower()
+    if state in ("failed", "error"):
+        print(
+            f"HeyGen job failed: video_id={video_id} "
+            f"code={result.get('error_code','')} message={result.get('error_message','')} "
+            f"detail={result.get('error_detail','')}"
+        )
+    return {"ok": True, **result}
 
 
 @app.get("/api/pipeline-runs")

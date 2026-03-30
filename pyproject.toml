@@ -5,6 +5,16 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "google-search-results>=2.4.2",
-    "serpapi>=0.1.5",
+    "openai",
+    "python-dotenv",
+    "pydantic>=2.7",
+    "langchain>=0.2.5",
+    "langchain-core>=0.2.8",
+    "langgraph>=0.2.0",
+    "langsmith>=0.1.90",
+    "langchain-openai>=0.1.0",
+    "requests",
+    "fastapi",
+    "uvicorn",
+    "supabase",
 ]

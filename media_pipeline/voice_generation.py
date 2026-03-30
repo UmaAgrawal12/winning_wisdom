@@ -22,9 +22,9 @@ def generate_voice_for_script(
     """
     prefix = script_id or "winning_wisdom"
     persona_cfg = get_persona(persona)
-    # Tone tuning per persona for better delivery.
-    stability = 0.62 if persona_cfg.name == "arthur" else 0.38
-    similarity_boost = 0.82 if persona_cfg.name == "arthur" else 0.76
+    # Arthur: warm baritone, measured pauses. Tony: calm evidence coach.
+    stability = 0.66 if persona_cfg.name == "arthur" else 0.55
+    similarity_boost = 0.83 if persona_cfg.name == "arthur" else 0.80
     return generate_voice(
         script_text=script_text,
         filename_prefix=prefix,
