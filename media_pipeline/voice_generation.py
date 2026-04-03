@@ -1,13 +1,8 @@
 from pathlib import Path
 from typing import Optional
 
-try:
-    # When running from `winning_wisdom_ai/` as the working directory
-    from integrations.elevenlabs_api import generate_voice
-except ModuleNotFoundError:
-    # When importing as a package (e.g., uvicorn winning_wisdom_ai.app:app)
-    from winning_wisdom_ai.integrations.elevenlabs_api import generate_voice
-from winning_wisdom_ai.config.personas import get_persona
+from integrations.elevenlabs_api import generate_voice
+from config.personas import get_persona
 
 
 def generate_voice_for_script(

@@ -1,149 +1,237 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="light" lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Winning Wisdom Frontend</title>
-  <link rel="stylesheet" href="./styles.css" />
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Winning Wisdom Studio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  <script src="./app.js?v=16"></script>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link rel="stylesheet" href="./styles.css?v=14" />
 </head>
-<body>
-  <div class="container">
-    <h2>🎬 Winning Wisdom Studio</h2>
-    <div class="subtitle">
-      📝 3-step flow: Topic → Script → Reel Score
-    </div>
-
-    <div class="studio-layout">
-      <aside class="tab-sidebar">
-        <button class="tab-btn active" data-tab="topic" id="tab-btn-topic">1) Topic</button>
-        <button class="tab-btn" data-tab="script" id="tab-btn-script">2) Script</button>
-        <button class="tab-btn" data-tab="score" id="tab-btn-score">3) Reel Score</button>
-      </aside>
-
-      <section class="tab-content">
-        <div class="tab-panel active" id="tab-topic">
-          <div class="card">
-            <h3>Step 1: Topic</h3>
-            <label>Persona</label>
-            <select id="persona">
-              <option value="arthur" selected>Arthur</option>
-              <option value="tony">Tony</option>
-            </select>
-
-            <div class="row">
-              <button id="btn-topic-quote">💡 New Quote For Topic</button>
-            </div>
-            <div class="muted status-message" id="s1-status"></div>
-
-            <label>Curated Topics</label>
-            <select id="topic-select">
-              <option value="">Loading topics...</option>
-            </select>
-
-            <label>Topic</label>
-            <input id="topic" type="text" placeholder="Enter your topic..." />
-
-            <label>Quote</label>
-            <textarea id="quote" rows="5" placeholder="Enter the quote..."></textarea>
-
-            <label>Source</label>
-            <input id="source" type="text" placeholder="Quote source or author..." />
-
-            <div class="row">
-              <button class="btn-next" data-go-tab="script">Continue to Script →</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="tab-panel" id="tab-script">
-          <div class="card">
-            <h3>Step 2: Script</h3>
-            <div class="row">
-              <button id="btn-generate-script">✨ Generate Script</button>
-              <button id="btn-revise">🔄 Regenerate Script</button>
-            </div>
-
-            <label>Script</label>
-            <textarea id="script" rows="12" class="mono" placeholder="Generated script will appear here..."></textarea>
-
-            <label>Revision Suggestions</label>
-            <textarea id="revise-suggestions" rows="4" placeholder="Enter your revision suggestions..."></textarea>
-
-            <div class="row">
-              <button id="btn-approve-score">✅ Approve & Score</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="tab-panel" id="tab-score">
-          <div class="card">
-            <h3>Step 3: Reel Score</h3>
-            <div class="muted status-message" id="s2-status"></div>
-
-            <div class="score-display">
-              <div class="score-item">
-                <b>Overall Score</b>
-                <span id="score-overall">--</span>
-              </div>
-              <div class="score-item">
-                <b>Verdict</b>
-                <span id="score-verdict">--</span>
-              </div>
-            </div>
-
-            <div class="metric-grid">
-              <div class="metric"><div class="name">Hook</div><div class="val" id="score-hook">--</div></div>
-              <div class="metric"><div class="name">Pacing</div><div class="val" id="score-pacing">--</div></div>
-              <div class="metric"><div class="name">Emotion</div><div class="val" id="score-emotion">--</div></div>
-              <div class="metric"><div class="name">Structure</div><div class="val" id="score-structure">--</div></div>
-              <div class="metric"><div class="name">Persona</div><div class="val" id="score-persona">--</div></div>
-              <div class="metric"><div class="name">Visual</div><div class="val" id="score-visual">--</div></div>
-            </div>
-
-            <h3 style="margin-top: 24px;">Caption & Hashtags</h3>
-            <div class="seo-grid">
-              <div class="seo-item">
-                <div class="name">YouTube Caption</div>
-                <div class="text" id="seo-youtube-caption">--</div>
-                <div class="name">YouTube Hashtags</div>
-                <div class="tags" id="seo-youtube-tags">--</div>
-              </div>
-              <div class="seo-item">
-                <div class="name">Instagram Caption</div>
-                <div class="text" id="seo-instagram-caption">--</div>
-                <div class="name">Instagram Hashtags</div>
-                <div class="tags" id="seo-instagram-tags">--</div>
-              </div>
-              <div class="seo-item">
-                <div class="name">TikTok Caption</div>
-                <div class="text" id="seo-tiktok-caption">--</div>
-                <div class="name">TikTok Hashtags</div>
-                <div class="tags" id="seo-tiktok-tags">--</div>
-              </div>
-              <div class="seo-item">
-                <div class="name">Facebook Caption</div>
-                <div class="text" id="seo-facebook-caption">--</div>
-                <div class="name">Facebook Hashtags</div>
-                <div class="tags" id="seo-facebook-tags">--</div>
-              </div>
-            </div>
-
-            <h3 style="margin-top: 24px;">Optional Voice + Video</h3>
-            <div class="row">
-              <button id="btn-generate-voice">🎤 Generate Voice</button>
-              <button id="btn-generate-video">🎥 Generate Avatar Video</button>
-            </div>
-            <div class="muted status-message" id="s3-status"></div>
-            <audio id="audio" controls></audio>
-            <div style="margin-top: 12px;">
-              <a id="video-link" href="#" target="_blank" rel="noreferrer"></a>
-            </div>
-          </div>
+<body class="step1-page bg-surface text-on-surface min-h-screen">
+  <header class="bg-[#f8f9ff] dark:bg-slate-950 w-full top-0 px-6 py-4 z-40 sticky">
+    <div class="flex justify-between items-center w-full">
+      <div class="flex items-center gap-4">
+        <span class="text-2xl font-extrabold text-[#4557b4] dark:text-[#8b9dff] tracking-tight text-headline">Winning Wisdom Studio</span>
+      </div>
+      <nav class="hidden md:flex items-center gap-8">
+        <a class="nav-item active font-['Plus_Jakarta_Sans'] font-bold text-lg" href="#topic" data-view-link="topic">Topic</a>
+        <a class="nav-item font-['Plus_Jakarta_Sans'] font-bold text-lg" href="#script" data-view-link="script">Script</a>
+        <a class="nav-item font-['Plus_Jakarta_Sans'] font-bold text-lg" href="#score" data-view-link="score">Score</a>
+        <a class="nav-item font-['Plus_Jakarta_Sans'] font-bold text-lg" href="#voice" data-view-link="voice">Voice</a>
+      </nav>
+      <div class="flex items-center gap-4">
+        <button class="text-sm font-semibold text-primary hover:opacity-80 transition-opacity" data-logout type="button">Sign out</button>
+        <button class="material-symbols-outlined text-slate-500 hover:scale-105 transition-transform duration-200">
+          <span class="material-symbols-outlined">help_outline</span>
+        </button>
+        <div class="w-10 h-10 rounded-full bg-primary-container overflow-hidden">
+          <img alt="Friendly child avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCsKp2CAK1Uxtb4QfMIE95kotV06ZtvVi8o0Ah9N_icN282B523gst-hZpTvRjHFVKj607TD_2piXHm3oGkFZohWrfXZsp494jZdIm9xnJNBqTmUF8DKj3BCdcIB4ejOGyrfaxLWR8oqLF9cPO85gdeYW0aePFJl7Vycz6IA00R8rLn0piiyOaUYKR-k7htsXXTKElXylBzyeDYGITlbm9D8E4rb0AUboB1jcUqNOlj-8OOoVoX7d6R9UWbhPSx31Fl6gusYYaSHoQ" />
         </div>
       </div>
     </div>
-  </div>
+  </header>
 
-  <script src="./app.js"></script>
+  <main id="view-topic" data-view="topic" class="relative z-10 max-w-7xl mx-auto px-6 pt-12 pb-44">
+    <section class="text-center mb-16">
+      <p class="step-pill mb-4">Step 1 of 3</p>
+      <h1 class="font-headline step-title mb-4">Step 1: Pick Your Super Story!</h1>
+      <p class="step-subtitle">Choose your favorite character to start your Adventure.</p>
+    </section>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 cards-container mb-16 px-4">
+      <button class="persona-card group relative flex flex-col items-center p-8 md:p-10 rounded-3xl animate-reveal stagger-1" data-persona="arthur">
+        <span class="select-badge material-symbols-outlined" aria-hidden="true">check_circle</span>
+        <div class="avatar-frame w-52 h-52 md:w-56 md:h-56 mb-6 rounded-full flex items-center justify-center overflow-hidden shadow-inner">
+          <img alt="Arthur" class="avatar-img w-full h-full object-cover transition-transform duration-500" src="./arthur.png" />
+        </div>
+        <h3 class="persona-name font-headline text-primary font-extrabold mb-2">Arthur the Wise</h3>
+        <p class="persona-copy font-medium">Ancient secrets & magical storytelling</p>
+      </button>
+
+      <button class="persona-card group relative flex flex-col items-center p-8 md:p-10 rounded-3xl animate-reveal stagger-2" data-persona="tony">
+        <span class="select-badge material-symbols-outlined" aria-hidden="true">check_circle</span>
+        <div class="avatar-frame w-52 h-52 md:w-56 md:h-56 mb-6 rounded-full flex items-center justify-center overflow-hidden shadow-inner">
+          <img alt="Tony" class="avatar-img w-full h-full object-cover transition-transform duration-500" src="./tony.png" />
+        </div>
+        <h3 class="persona-name font-headline text-secondary font-extrabold mb-2">Tony the Fast</h3>
+        <p class="persona-copy font-medium">High-energy adventures & quick wit</p>
+      </button>
+    </div>
+
+    <div class="flex flex-col items-center justify-center max-w-2xl mx-auto space-y-8">
+      <div class="w-full bg-surface-container p-2 rounded-xl topic-shell">
+        <label class="sr-only" for="topic">Pick a Topic!</label>
+        <div class="relative">
+          <span class="material-symbols-outlined topic-icon">category</span>
+          <select class="topic-select w-full bg-surface-container-lowest rounded-lg px-12 py-4 text-lg font-semibold text-tertiary appearance-none cursor-pointer" id="topic">
+            <option disabled hidden selected value="">Pick a Topic!</option>
+          </select>
+          <div class="absolute inset-y-0 right-6 flex items-center pointer-events-none">
+            <span class="material-symbols-outlined text-primary">expand_more</span>
+          </div>
+        </div>
+      </div>
+      <div class="w-full h-px bg-slate-200/80"></div>
+      <a class="primary-cta group relative px-12 py-4 rounded-xl font-headline text-xl flex items-center gap-4" href="#script" id="btn-step2">
+        <span>Generate Quote & Script</span>
+        <span class="material-symbols-outlined text-3xl group-hover:translate-x-2 transition-transform">arrow_forward</span>
+      </a>
+    </div>
+  </main>
+
+  <main id="view-script" data-view="script" class="script-workspace hidden">
+    <section class="editor-pane">
+      <div class="editor-header">
+        <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary">history_edu</span>
+          Story Script
+        </h2>
+        <span id="script-status" class="autosave text-xs font-bold uppercase tracking-widest">Autosaving...</span>
+      </div>
+
+      <div id="quote-panel" class="mb-4 rounded-2xl border border-indigo-100 bg-indigo-50/70 px-6 py-5">
+        <p id="selected-topic" class="text-sm md:text-base font-bold uppercase tracking-wider text-indigo-600 mb-2"></p>
+        <p id="selected-quote" class="text-slate-800 text-base md:text-lg leading-relaxed font-semibold"></p>
+        <p id="selected-source" class="text-slate-600 text-sm md:text-base mt-2 font-medium"></p>
+        <div class="mt-4 flex flex-wrap gap-2">
+          <button id="btn-edit-quote" class="px-3 py-2 rounded-lg bg-white border border-indigo-200 text-indigo-700 text-sm font-semibold hover:bg-indigo-50 transition-colors" type="button">
+            Edit Quote
+          </button>
+        </div>
+        <div id="quote-edit-form" class="hidden mt-4 space-y-3 rounded-xl border border-indigo-200 bg-white p-4">
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-indigo-600 mb-1" for="quote-edit-input">Quote text</label>
+            <textarea id="quote-edit-input" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none" rows="3"></textarea>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-indigo-600 mb-1" for="source-edit-input">Source</label>
+            <input id="source-edit-input" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none" type="text" />
+          </div>
+          <div class="flex gap-2">
+            <button id="btn-save-quote-edit" class="px-3 py-2 rounded-lg bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 transition-colors" type="button">Save & Regenerate</button>
+            <button id="btn-cancel-quote-edit" class="px-3 py-2 rounded-lg bg-slate-100 border border-slate-200 text-slate-700 text-sm font-semibold hover:bg-slate-200 transition-colors" type="button">Cancel</button>
+          </div>
+        </div>
+      </div>
+
+      <textarea id="script-text" class="script-text script-editor-area" placeholder="Your story starts here..."></textarea>
+
+      <div class="mt-4 flex flex-wrap gap-2 justify-end">
+        <button id="btn-edit-script" class="px-4 py-2 rounded-lg bg-white border border-slate-300 text-slate-700 text-sm font-semibold hover:bg-slate-50 transition-colors" type="button">
+          Edit Script
+        </button>
+        <button id="btn-regenerate-script" class="px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 transition-colors" type="button">
+          Regenerate Script
+        </button>
+        <button id="btn-finish-score" class="px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 transition-colors" type="button">
+          Approve &amp; Score
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <main id="view-score" data-view="score" class="score-main w-full max-w-none px-6 md:px-10 pt-5 pb-5 hidden">
+    <h1 class="score-title">Your Story Score</h1>
+    <section class="score-shell">
+      <section class="score-card left-panel">
+        <div class="score-top">
+          <div class="score-circle">
+            <div class="text-center text-on-primary">
+              <div class="score-number" id="overall-score">--</div>
+              <div class="score-verdict" id="score-verdict">Ready to Post</div>
+            </div>
+          </div>
+          <div class="metrics-grid">
+            <div class="metric-card"><p class="metric-label">Hook</p><p class="metric-value" id="metric-hook">--</p><div class="progress"><div class="progress-fill" id="metric-hook-bar"></div></div></div>
+            <div class="metric-card"><p class="metric-label">Pacing</p><p class="metric-value" id="metric-pacing">--</p><div class="progress"><div class="progress-fill" id="metric-pacing-bar"></div></div></div>
+            <div class="metric-card"><p class="metric-label">Emotion</p><p class="metric-value" id="metric-emotion">--</p><div class="progress"><div class="progress-fill" id="metric-emotion-bar"></div></div></div>
+            <div class="metric-card"><p class="metric-label">Visual</p><p class="metric-value" id="metric-visual">--</p><div class="progress"><div class="progress-fill" id="metric-visual-bar"></div></div></div>
+          </div>
+        </div>
+        <div class="score-actions">
+          <h2 class="score-section-title">Bring it to Life</h2>
+          <div class="actions-row">
+            <a class="btn-card action-btn" href="#script" data-nav-action="autogen-script" role="button" aria-label="Regenerate script">
+              <span class="material-symbols-outlined action-icon">history_edu</span>
+              Regenerate Script
+            </a>
+            <a class="btn-card action-btn" href="#voice" data-nav-action="autogen-voice" role="button" aria-label="Generate voice">
+              <span class="material-symbols-outlined action-icon">mic</span>
+              Generate Voice
+            </a>
+          </div>
+          <div class="media-output">
+            <div class="insights-grid">
+              <div class="insight-card">
+                <p class="insight-title">Top Strengths</p>
+                <ul id="score-strengths" class="insight-list">
+                  <li>Generating strengths...</li>
+                </ul>
+              </div>
+              <div class="insight-card">
+                <p class="insight-title">Priority Fix</p>
+                <p id="score-priority-fix" class="insight-copy">No major fix needed.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="score-card right-panel">
+        <h2 class="score-section-title">Social Preview</h2>
+        <div class="social-grid">
+          <div class="social-card"><div class="social-title-row"><span class="material-symbols-outlined social-icon">smart_display</span><h4 class="social-title">YouTube</h4></div><p class="social-content" id="yt-caption">Generating...</p><p class="social-tags" id="yt-tags">--</p></div>
+          <div class="social-card"><div class="social-title-row"><span class="material-symbols-outlined social-icon">photo_camera</span><h4 class="social-title">Instagram</h4></div><p class="social-content" id="ig-caption">Generating...</p><p class="social-tags" id="ig-tags">--</p></div>
+          <div class="social-card"><div class="social-title-row"><span class="material-symbols-outlined social-icon">music_note</span><h4 class="social-title">TikTok</h4></div><p class="social-content" id="tt-caption">Generating...</p><p class="social-tags" id="tt-tags">--</p></div>
+          <div class="social-card"><div class="social-title-row"><span class="material-symbols-outlined social-icon">groups</span><h4 class="social-title">Facebook</h4></div><p class="social-content" id="fb-caption">Generating...</p><p class="social-tags" id="fb-tags">--</p></div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <main id="view-voice" data-view="voice" class="w-full max-w-5xl mx-auto px-6 md:px-10 pt-6 pb-10 flex-1 hidden">
+    <h1 class="score-title">Regenerate Voice</h1>
+    <section class="score-card">
+      <h2 class="score-section-title">Bring it to Life (Voice)</h2>
+      <div class="score-actions" style="padding-top: 6px;">
+        <div class="actions-row">
+          <button id="btn-generate-voice" class="btn-card action-btn" aria-label="Regenerate voice from script text">
+            <span class="material-symbols-outlined action-icon">mic</span>
+            Regenerate Voice
+          </button>
+        </div>
+        <div class="media-output">
+          <p class="media-label">Voice Preview</p>
+          <div class="media-top">
+            <audio id="voice-audio" class="w-full" controls></audio>
+            <p class="media-help-text">Generate voice from your approved script text preview here.</p>
+            <a id="voice-link" class="media-link" href="#" target="_blank" rel="noreferrer"></a>
+            <p class="media-status" id="score-status"></p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-6 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl shadow-[0_-4px_40px_rgba(45,51,59,0.06)] rounded-t-[3rem]">
+    <a class="mobile-nav-link flex flex-col items-center justify-center text-[#37647e] dark:text-slate-400 px-4 py-2 hover:bg-[#eaeef7] dark:hover:bg-slate-800 rounded-full transition-all" href="#topic" data-mobile-view-link="topic">
+      <span class="material-symbols-outlined">auto_stories</span>
+      <span class="font-['Plus_Jakarta_Sans'] font-semibold text-xs mt-1">Topic</span>
+    </a>
+    <a class="mobile-nav-link flex flex-col items-center justify-center text-[#37647e] dark:text-slate-400 px-4 py-2 hover:bg-[#eaeef7] dark:hover:bg-slate-800 rounded-full transition-all" href="#script" data-mobile-view-link="script">
+      <span class="material-symbols-outlined">edit_note</span>
+      <span class="font-['Plus_Jakarta_Sans'] font-semibold text-xs mt-1">Script</span>
+    </a>
+    <a class="mobile-nav-link flex flex-col items-center justify-center text-[#37647e] dark:text-slate-400 px-4 py-2 hover:bg-[#eaeef7] dark:hover:bg-slate-800 rounded-full transition-all" href="#score" data-mobile-view-link="score">
+      <span class="material-symbols-outlined">emoji_events</span>
+      <span class="font-['Plus_Jakarta_Sans'] font-semibold text-xs mt-1">Score</span>
+    </a>
+    <a class="mobile-nav-link flex flex-col items-center justify-center text-[#37647e] dark:text-slate-400 px-4 py-2 hover:bg-[#eaeef7] dark:hover:bg-slate-800 rounded-full transition-all" href="#voice" data-mobile-view-link="voice">
+      <span class="material-symbols-outlined">mic</span>
+      <span class="font-['Plus_Jakarta_Sans'] font-semibold text-xs mt-1">Voice</span>
+    </a>
+  </nav>
 </body>
 </html>

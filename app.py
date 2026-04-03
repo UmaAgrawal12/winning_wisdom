@@ -1,16 +1,22 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
+from starlette.responses import JSONResponse
 from typing import Optional, Any
 from pathlib import Path
 import json
 import random
 import concurrent.futures
 from datetime import datetime
+import os
+import time
+import hmac
+import hashlib
+import base64
 
 # Supabase (optional; falls back to local JSON file if not configured)
-from winning_wisdom_ai.supabase_db import (
+from supabase_db import (
     is_supabase_configured,
     list_pipeline_runs as sb_list_pipeline_runs,
     list_approved_pipeline_runs as sb_list_approved_pipeline_runs,
@@ -19,20 +25,20 @@ from winning_wisdom_ai.supabase_db import (
 )
 
 # Prefer package imports (works when running from project root)
-from winning_wisdom_ai.agents.topic_agent import (
+from agents.topic_agent import (
     fetch_winning_wisdom_quote_for_topic,
     generate_topics,
     get_curated_topics,
 )
-from winning_wisdom_ai.agents.script_agent import (
+from agents.script_agent import (
     generate_daily_wisdom_script,
     DailyWisdomScript,
     revise_wisdom_script,
 )
-from winning_wisdom_ai.agents.score_agent import score_reel_script
-from winning_wisdom_ai.agents.seo_agent import generate_seo_metadata, SEOResult
-from winning_wisdom_ai.media_pipeline.voice_generation import generate_voice_for_script
-from winning_wisdom_ai.media_pipeline.avatar_generation import (
+from agents.score_agent import score_reel_script
+from agents.seo_agent import generate_seo_metadata, SEOResult
+from media_pipeline.voice_generation import generate_voice_for_script
+from media_pipeline.avatar_generation import (
     create_heygen_video,
     get_heygen_video_status,
 )
@@ -121,7 +127,7 @@ def _seo_for_storage(seo: SEOResult) -> dict:
 
 
 # Stored pipeline runs live at project root /data
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
+PROJECT_ROOT = Path(__file__).resolve().parent
 PIPELINE_RUNS_FILE = PROJECT_ROOT / "data" / "pipeline_runs.json"
 
 FALLBACK_TOPICS = [
@@ -187,6 +193,11 @@ class RunApprovalPatch(BaseModel):
     final_approved: Optional[bool] = None
 
 
+class StudioLoginRequest(BaseModel):
+    username: str
+    password: str
+
+
 app = FastAPI(title="Winning Wisdom Frontend API")
 
 app.add_middleware(
@@ -200,6 +211,88 @@ app.add_middleware(
 MEDIA_DIR = PROJECT_ROOT / "media"
 MEDIA_DIR.mkdir(parents=True, exist_ok=True)
 app.mount("/media", StaticFiles(directory=str(MEDIA_DIR)), name="media")
+
+SESSION_COOKIE = "ww_session"
+SESSION_TTL_SEC = int(os.getenv("WW_SESSION_TTL_SEC", "86400"))
+SESSION_SECRET = os.getenv("WW_SESSION_SECRET", "winning-wisdom-dev-secret")
+STUDIO_USERNAME = os.getenv("WW_STUDIO_USERNAME", "studio")
+STUDIO_PASSWORD = os.getenv("WW_STUDIO_PASSWORD", "wisdom")
+
+
+def _b64(data: bytes) -> str:
+    return base64.urlsafe_b64encode(data).decode("utf-8").rstrip("=")
+
+
+def _unb64(data: str) -> bytes:
+    pad = "=" * (-len(data) % 4)
+    return base64.urlsafe_b64decode(data + pad)
+
+
+def _create_session_token(username: str) -> str:
+    payload = json.dumps({"u": username, "exp": int(time.time()) + SESSION_TTL_SEC}, separators=(",", ":")).encode("utf-8")
+    payload_b64 = _b64(payload)
+    sig = hmac.new(SESSION_SECRET.encode("utf-8"), payload_b64.encode("utf-8"), hashlib.sha256).hexdigest()
+    return f"{payload_b64}.{sig}"
+
+
+def _verify_session_token(token: Optional[str]) -> Optional[str]:
+    if not token or "." not in token:
+        return None
+    payload_b64, sig = token.rsplit(".", 1)
+    expected = hmac.new(SESSION_SECRET.encode("utf-8"), payload_b64.encode("utf-8"), hashlib.sha256).hexdigest()
+    if not hmac.compare_digest(sig, expected):
+        return None
+    try:
+        payload = json.loads(_unb64(payload_b64).decode("utf-8"))
+    except Exception:
+        return None
+    if int(payload.get("exp", 0)) < int(time.time()):
+        return None
+    return str(payload.get("u") or "")
+
+
+@app.middleware("http")
+async def require_studio_session_for_api(request: Request, call_next):
+    path = request.url.path
+    if request.method == "OPTIONS":
+        return await call_next(request)
+    if path.startswith("/api/auth/login") or path.startswith("/api/auth/logout"):
+        return await call_next(request)
+    if path.startswith("/api/"):
+        user = _verify_session_token(request.cookies.get(SESSION_COOKIE))
+        if not user:
+            return JSONResponse({"detail": "Not authenticated"}, status_code=401)
+    return await call_next(request)
+
+
+@app.post("/api/auth/login")
+def studio_login(payload: StudioLoginRequest, response: Response):
+    if payload.username != STUDIO_USERNAME or payload.password != STUDIO_PASSWORD:
+        raise HTTPException(status_code=401, detail="Invalid username or password")
+    token = _create_session_token(STUDIO_USERNAME)
+    response.set_cookie(
+        key=SESSION_COOKIE,
+        value=token,
+        httponly=True,
+        samesite="lax",
+        max_age=SESSION_TTL_SEC,
+        path="/",
+    )
+    return {"ok": True, "username": STUDIO_USERNAME}
+
+
+@app.post("/api/auth/logout")
+def studio_logout(response: Response):
+    response.delete_cookie(SESSION_COOKIE, path="/")
+    return {"ok": True}
+
+
+@app.get("/api/auth/me")
+def studio_auth_me(request: Request):
+    user = _verify_session_token(request.cookies.get(SESSION_COOKIE))
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    return {"username": user}
 
 
 @app.get("/api/topics")
@@ -524,5 +617,9 @@ def approve_pipeline_run(run_id: str, patch: RunApprovalPatch):
 
     raise HTTPException(status_code=404, detail=f"Run id not found: {run_id}")
 
+
+FRONTEND_DIR = PROJECT_ROOT / "frontend"
+if FRONTEND_DIR.is_dir():
+    app.mount("/", StaticFiles(directory=str(FRONTEND_DIR), html=True), name="frontend")
 
 

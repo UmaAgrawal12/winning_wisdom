@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html class="light" lang="en" data-page="login">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Sign in — Winning Wisdom Studio</title>
+  <link href="https://fonts.googleapis.com" rel="preconnect" />
+  <link crossorigin href="https://fonts.gstatic.com" rel="preconnect" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Be+Vietnam+Pro:wght@400;500;600&display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+    rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link rel="stylesheet" href="./styles.css?v=7" />
+  <script>
+    window.tailwind = window.tailwind || {};
+    window.tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            primary: "#4557b4",
+            "primary-container": "#8b9dff",
+            secondary: "#894b6d",
+            surface: "#f8f9ff",
+            "on-surface": "#2d333b",
+            "on-surface-variant": "#595f69",
+            tertiary: "#37647e",
+            "surface-container": "#eaeef7",
+            "surface-container-lowest": "#ffffff"
+          },
+          fontFamily: {
+            headline: ["Plus Jakarta Sans", "sans-serif"],
+            body: ["Be Vietnam Pro", "sans-serif"]
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+    }
+
+    .login-root {
+      height: 100dvh;
+      min-height: 100dvh;
+      display: grid;
+      grid-template-columns: 1fr;
+      background: #f4f6fb;
+      overflow: hidden;
+    }
+
+    @media (min-width: 980px) {
+      .login-root {
+        grid-template-columns: 1.03fr 1fr;
+      }
+    }
+
+    .hero-panel {
+      position: relative;
+      height: 100%;
+      min-height: 100dvh;
+      overflow: hidden;
+      background: #0b0d14;
+    }
+
+    .hero-panel img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center center;
+      transform: scale(1);
+      animation: hero-pan 16s ease-in-out infinite alternate;
+      will-change: transform;
+    }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(to right, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.15)),
+        linear-gradient(135deg, rgba(14, 16, 24, 0.7), rgba(69, 8, 20, 0.5));
+    }
+
+    @keyframes hero-pan {
+      0% { transform: scale(1) translate3d(0, 0, 0); }
+      100% { transform: scale(1.06) translate3d(0, -1.5%, 0); }
+    }
+
+    .auth-panel {
+      height: 100%;
+      min-height: 100dvh;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.25rem;
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+      overflow: hidden;
+    }
+
+    .auth-card {
+      width: min(100%, 540px);
+    }
+
+    .premium-card {
+      border-radius: 16px;
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+      transition: all 0.3s ease;
+    }
+
+    .premium-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 26px 48px rgba(0, 0, 0, 0.1);
+    }
+
+    .social-btn {
+      border: 1px solid #d6d9e4;
+      background: #ffffff;
+      color: #263143;
+      transition: all 0.2s ease;
+    }
+
+    .social-btn:hover {
+      border-color: #c2c7dc;
+      transform: translateY(-1px);
+    }
+
+    .form-input {
+      transition: all 0.2s ease;
+    }
+
+    .form-input:focus {
+      border: 1px solid #6366f1 !important;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2) !important;
+    }
+
+    .btn-signin {
+      background: linear-gradient(135deg, #6366f1, #4f46e5);
+      transition: all 0.25s ease;
+    }
+
+    .btn-signin:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3);
+    }
+
+    .btn-signin[disabled] {
+      opacity: 0.9;
+      cursor: wait;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      border-top-color: #fff;
+      border-radius: 9999px;
+      animation: spin 0.8s linear infinite;
+    }
+  </style>
+</head>
+
+<body class="font-body text-[#2d333b]">
+  <div class="login-root">
+    <aside class="hero-panel" aria-hidden="true">
+      <img src="./login image.jpg" alt="" />
+      <div class="hero-overlay"></div>
+      <div class="absolute top-8 left-8 md:top-10 md:left-10 text-white z-10">
+        <p class="font-headline text-4xl md:text-5xl font-bold tracking-[-0.5px]">Winning Wisdom Studio</p>
+        <p class="text-sm md:text-base text-white/70 mt-1">AI-powered content studio</p>
+      </div>
+      <div class="absolute inset-x-10 bottom-12 text-white">
+        <div class="w-10 h-10 rounded-full bg-white/90 mb-5"></div>
+        <h2 class="font-headline text-4xl md:text-5xl font-extrabold mb-3">Design with us</h2>
+        <p class="text-base md:text-lg text-white/90 max-w-md">Build powerful daily wisdom stories with clean scripts, SEO, and media generation in one workflow.</p>
+      </div>
+    </aside>
+
+    <main class="auth-panel">
+      <p class="absolute top-8 right-8 md:top-10 md:right-12 text-sm leading-none text-slate-600 whitespace-nowrap">
+        <span>Don't have an account? </span>
+        <a class="font-medium text-slate-700 hover:underline" href="#">Sign up</a>
+      </p>
+      <section class="auth-card">
+        <div class="mb-5">
+          <h1 class="font-headline text-4xl text-slate-800 font-bold leading-none">Sign in</h1>
+        </div>
+        <div class="premium-card bg-white p-8 md:p-10">
+          <form id="login-form" class="space-y-5">
+            <div>
+              <label class="block text-sm font-medium text-slate-600 mb-2" for="username">User name or email address</label>
+              <input autocomplete="username"
+                class="form-input w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-400 outline-none"
+                id="username" name="username" required type="text" />
+            </div>
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <label class="block text-sm font-medium text-slate-600" for="password">Your password</label>
+                <a class="text-sm text-slate-500 hover:underline" href="#">Forgot your password</a>
+              </div>
+              <div class="relative">
+                <input autocomplete="current-password"
+                  class="form-input w-full rounded-xl border border-slate-300 bg-white px-4 py-3 pr-20 text-slate-900 placeholder-slate-400 outline-none"
+                  id="password" name="password" required type="password" />
+                <button id="toggle-password" class="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-slate-500 hover:text-slate-700" type="button">Show</button>
+              </div>
+            </div>
+            <div class="flex items-center justify-between">
+              <label class="inline-flex items-center gap-2 text-sm text-slate-600">
+                <input class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" id="remember-me" type="checkbox" />
+                Remember me
+              </label>
+            </div>
+            <p class="hidden text-sm text-rose-600 font-medium" id="login-error" role="alert"></p>
+            <button
+              class="btn-signin w-full flex items-center justify-center gap-2 rounded-xl text-white font-headline font-bold text-lg py-4 shadow-lg shadow-indigo-900/25 active:scale-[0.99]"
+              type="submit">
+              <span class="material-symbols-outlined text-xl">login</span>
+              Sign in
+            </button>
+          </form>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script>
+    (function () {
+      const API = "http://127.0.0.1:8000/api";
+      const form = document.getElementById("login-form");
+      const errEl = document.getElementById("login-error");
+      const togglePasswordBtn = document.getElementById("toggle-password");
+      const passwordInput = document.getElementById("password");
+
+      fetch(API + "/auth/me", { credentials: "include" })
+        .then(function (r) {
+          if (r.ok) window.location.replace("./index.html");
+        })
+        .catch(function () { });
+
+      if (togglePasswordBtn && passwordInput) {
+        togglePasswordBtn.addEventListener("click", function () {
+          const isPassword = passwordInput.getAttribute("type") === "password";
+          passwordInput.setAttribute("type", isPassword ? "text" : "password");
+          togglePasswordBtn.textContent = isPassword ? "Hide" : "Show";
+        });
+      }
+
+      form.addEventListener("submit", async function (e) {
+        e.preventDefault();
+        errEl.classList.add("hidden");
+        const username = document.getElementById("username").value.trim();
+        const password = document.getElementById("password").value;
+        const btn = form.querySelector('button[type="submit"]');
+        const btnOldHtml = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner" aria-hidden="true"></span><span>Signing in...</span>';
+        try {
+          const res = await fetch(API + "/auth/login", {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username: username, password: password }),
+          });
+          if (!res.ok) {
+            var detail = "Sign in failed.";
+            if (res.status === 404 || res.status === 405) {
+              detail =
+                "No API on this address (often wrong port). Run: python -m uvicorn app:app --host 127.0.0.1 --port 8000 --reload";
+            } else if (res.status === 401) {
+              detail = "Invalid username or password. Check WW_STUDIO_USERNAME and WW_STUDIO_PASSWORD in .env.";
+            } else {
+              try {
+                var j = await res.json();
+                if (j.detail) detail = typeof j.detail === "string" ? j.detail : detail;
+              } catch (_) { }
+            }
+            errEl.textContent = detail;
+            errEl.classList.remove("hidden");
+            return;
+          }
+          window.location.replace("./index.html");
+        } catch (_) {
+          errEl.textContent = "Could not reach the server. Is the API running?";
+          errEl.classList.remove("hidden");
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML = btnOldHtml;
+        }
+      });
+    })();
+  </script>
+</body>
+
+</html>

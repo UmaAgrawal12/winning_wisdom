@@ -3,8 +3,8 @@ from pydantic import BaseModel
 from typing import List, Dict
 import json
 
-from winning_wisdom_ai.config.system_config import OPENAI_API_KEY, OPENAI_MODEL_SEO
-from winning_wisdom_ai.config.personas import get_persona
+from config.system_config import OPENAI_API_KEY, OPENAI_MODEL_SEO
+from config.personas import get_persona
 
 client = OpenAI(api_key=OPENAI_API_KEY)
 

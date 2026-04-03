@@ -9,13 +9,13 @@ import logging
 from langchain_core.prompts import ChatPromptTemplate
 from langgraph.graph import END, StateGraph
 
-from winning_wisdom_ai.llm_client import script_llm
-from winning_wisdom_ai.agents.script_agent import generate_daily_wisdom_script
-from winning_wisdom_ai.agents.seo_agent import SEOResult, generate_seo_metadata
-from winning_wisdom_ai.supabase_db import insert_pipeline_run, is_supabase_configured
+from llm_client import script_llm
+from agents.script_agent import generate_daily_wisdom_script
+from agents.seo_agent import SEOResult, generate_seo_metadata
+from supabase_db import insert_pipeline_run, is_supabase_configured
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
 PIPELINE_RUNS_FILE = PROJECT_ROOT / "data" / "pipeline_runs.json"
 
 

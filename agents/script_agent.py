@@ -7,8 +7,8 @@ from typing import Optional
 from pydantic import BaseModel
 from openai import OpenAI
 from dotenv import load_dotenv
-from winning_wisdom_ai.config.system_config import OPENAI_API_KEY, OPENAI_MODEL_TOPIC
-from winning_wisdom_ai.config.personas import get_persona
+from config.system_config import OPENAI_API_KEY, OPENAI_MODEL_TOPIC
+from config.personas import get_persona
 from .topic_agent import fetch_winning_wisdom_quote
 
 load_dotenv()

@@ -2740,5 +2740,102 @@
       ]
     },
     "generated_at": "2026-04-02T19:38:44.733788"
+  },
+  {
+    "persona": "arthur",
+    "quote": "Begin at once to live, and count each separate day as a separate life.",
+    "source": "Marcus Aurelius — Meditations",
+    "spoken_script": {
+      "full_script": "You meant to start that.\nThe calendar turned anyway.\n\nTime slipped by, quiet and steady.\nNot the thunder of mistakes,\nbut the whisper of days unclaimed.\n\nMarcus said it plainly:\n\"Begin at once to live,\nand count each separate day as a separate life.\"\n\nEach morning is a fresh page.\nNot burdened by yesterday’s\nstalled intentions.\n\nI’ve held onto moments,\nthinking tomorrow would be easier.\nBut tomorrow is another day,\nwaiting just like today did.\n\nThere’s grace in starting now.\nNo perfect dawn needed."
+    },
+    "on_screen_text": {
+      "quote_display": "count each separate day",
+      "caption": "Each day a separate life",
+      "highlight_words": [
+        "start",
+        "time",
+        "day",
+        "grace"
+      ]
+    },
+    "generated_at": "2026-04-03T14:17:51.467724"
+  },
+  {
+    "persona": "arthur",
+    "quote": "Begin at once to live, and count each separate day as a separate life.",
+    "source": "Marcus Aurelius — Meditations",
+    "spoken_script": {
+      "full_script": "Chasing respect costs you more than you realize.\n\nIt feels urgent.\nLike you’ll lose your place without it.\n\nBut respect bought on others’ terms\nis a heavy debt.\n\nMarcus Aurelius had it right,\n\"Begin at once to live,\nand count each separate day\nas a separate life.\"\n\nNot tomorrow.\nNot the approval of the crowd.\nToday.\n\nYou carry that with you.\nQuietly.\nLike breathing.\n\nThat’s where your peace waits."
+    },
+    "on_screen_text": {
+      "quote_display": "Count each separate day",
+      "caption": "Respect starts with today",
+      "highlight_words": [
+        "respect",
+        "debt",
+        "live",
+        "today",
+        "peace"
+      ]
+    },
+    "generated_at": "2026-04-03T14:18:17.271686"
+  },
+  {
+    "persona": "arthur",
+    "quote": "You will never always be motivated, so you must learn to be disciplined.",
+    "source": "Unknown",
+    "spoken_script": {
+      "full_script": "You meant to start that.\nThe calendar turned anyway.\n\nMotivation is a flame that flickers.\nIt’s bright one moment, gone the next.\n\nYou will never always be motivated,\nso you must learn to be disciplined.\n\nThat’s the line that changed my understanding.\nMotivation, my friend, is unreliable company.\nDiscipline is the companion who stays.\n\nMarcus knew this, though he called it reason.\nReason, not feeling, guides the steady hand.\n\nIt’s not about waiting for fire to burn.\nIt’s about lighting the candle, every day.\n\nThat’s how you keep moving forward—quietly,\ndetermined, even when the spark fades."
+    },
+    "on_screen_text": {
+      "quote_display": "You must learn to be disciplined",
+      "caption": "Discipline outlasts motivation",
+      "highlight_words": [
+        "motivation",
+        "discipline",
+        "steady",
+        "reason",
+        "forward"
+      ]
+    },
+    "generated_at": "2026-04-03T16:04:16.886927"
+  },
+  {
+    "persona": "arthur",
+    "quote": "You will never always be motivated, so you must learn to be disciplined.",
+    "source": "Unknown",
+    "spoken_script": {
+      "full_script": "You meant to start this sooner.\nMaybe you told yourself tomorrow.\n\nMotivation feels like a guest.\nIt visits, then leaves without warning.\n\n\"You will never always be motivated,\nso you must learn to be disciplined.\"\n\nThat’s the quiet truth most miss.\nDiscipline isn’t fire, son.\nIt’s the slow, steady hand.\n\nMarcus hinted at this—\ncontrol what you can, release what you can’t.\n\nDiscipline holds the room when motivation walks out.\nAnd that’s where you find your edge.\n\nNot loud or flashy—just there.\nWaiting patiently for you to show up."
+    },
+    "on_screen_text": {
+      "quote_display": "you must learn to be disciplined",
+      "caption": "Patience beyond motivation",
+      "highlight_words": [
+        "discipline",
+        "motivation",
+        "steady",
+        "edge"
+      ]
+    },
+    "generated_at": "2026-04-03T16:04:26.124506"
+  },
+  {
+    "persona": "arthur",
+    "quote": "You will never always be motivated, so you must learn to be disciplined.",
+    "source": "Unknown",
+    "spoken_script": {
+      "full_script": "There was a time I waited for feeling right.\n\nI thought motivation would carry me through.\n\nI’d stare at my desk, hours passing.\n\nNothing moved.\n\nYou learn the hard way.\n\n“You will never always be motivated, so you must learn to be disciplined.”\n\nDiscipline doesn’t roar.\n\nIt’s the quiet voice saying, “Keep going,” when you don’t want to.\n\nI wasn’t born with it.\n\nI had to build it, piece by piece.\n\nLike saving a penny until it’s a dollar.\n\nListen carefully —\n\nIt’s not failing to feel motivated that breaks you.\n\nIt’s waiting for the feeling to come back."
+    },
+    "on_screen_text": {
+      "quote_display": "Never always be motivated",
+      "caption": "Discipline quiets the restless mind",
+      "highlight_words": [
+        "motivation",
+        "discipline",
+        "quiet",
+        "keep going"
+      ]
+    },
+    "generated_at": "2026-04-03T16:05:16.133179"
   }
 ]

@@ -7,7 +7,7 @@ from typing import Dict, Optional
 import requests
 from dotenv import load_dotenv
 
-from winning_wisdom_ai.config.personas import get_persona
+from config.personas import get_persona
 
 _ENV_PATH = Path(__file__).resolve().parents[1] / ".env"
 load_dotenv(dotenv_path=_ENV_PATH)

@@ -110,3 +110,4 @@ cython_debug/
 .cursorindexingignore
 
 .env
+/winning_wisdom_ai/

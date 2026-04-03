@@ -7,14 +7,9 @@ from typing import Optional, List
 
 from dotenv import load_dotenv
 from pydantic import BaseModel
-from winning_wisdom_ai.config.personas import get_persona
+from config.personas import get_persona
 
-try:
-    # When running from `winning_wisdom_ai/` as the working directory
-    from llm_client import topic_llm
-except ModuleNotFoundError:
-    # When importing as a package (e.g., `python -m winning_wisdom_ai...`)
-    from winning_wisdom_ai.llm_client import topic_llm
+from llm_client import topic_llm
 
 _ENV_PATH = Path(__file__).resolve().parents[1] / ".env"
 load_dotenv(dotenv_path=_ENV_PATH)

@@ -10,8 +10,8 @@ import json
 from typing import Optional
 from pydantic import BaseModel, Field
 from openai import OpenAI
-from winning_wisdom_ai.config.system_config import OPENAI_API_KEY, OPENAI_MODEL_TOPIC
-from winning_wisdom_ai.config.personas import get_persona
+from config.system_config import OPENAI_API_KEY, OPENAI_MODEL_TOPIC
+from config.personas import get_persona
 from .script_agent import DailyWisdomScript
 
 
