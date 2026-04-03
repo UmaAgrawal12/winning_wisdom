@@ -15,8 +15,4 @@ This repository's canonical source code lives at the repo root.
 
 ## Important Note About Duplicates
 
-A local folder named `winning_wisdom_ai/` may exist for experiments, but it is not tracked by this repository and is ignored to avoid duplicate-file confusion.
-
-Run the app from the canonical root code:
-
 `python -m uvicorn app:app --host 127.0.0.1 --port 8000 --reload`
