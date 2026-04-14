@@ -6,7 +6,7 @@
   <title>Winning Wisdom Studio</title>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-  <script src="./app.js?v=16"></script>
+  <script src="./app.js?v=17"></script>
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <link rel="stylesheet" href="./styles.css?v=14" />
 </head>
@@ -21,6 +21,7 @@
         <a class="nav-item font-['Plus_Jakarta_Sans'] font-bold text-lg" href="#script" data-view-link="script">Script</a>
         <a class="nav-item font-['Plus_Jakarta_Sans'] font-bold text-lg" href="#score" data-view-link="score">Score</a>
         <a class="nav-item font-['Plus_Jakarta_Sans'] font-bold text-lg" href="#voice" data-view-link="voice">Voice</a>
+        <a class="nav-item font-['Plus_Jakarta_Sans'] font-bold text-lg" href="#video" data-view-link="video">Video</a>
       </nav>
       <div class="flex items-center gap-4">
         <button class="text-sm font-semibold text-primary hover:opacity-80 transition-opacity" data-logout type="button">Sign out</button>
@@ -162,6 +163,10 @@
               <span class="material-symbols-outlined action-icon">mic</span>
               Generate Voice
             </a>
+            <a class="btn-card action-btn" href="#video" data-nav-action="autogen-video" role="button" aria-label="Generate HeyGen video">
+              <span class="material-symbols-outlined action-icon">smart_display</span>
+              Generate Video
+            </a>
           </div>
           <div class="media-output">
             <div class="insights-grid">
@@ -215,6 +220,43 @@
     </section>
   </main>
 
+  <main id="view-video" data-view="video" class="w-full max-w-5xl mx-auto px-6 md:px-10 pt-6 pb-10 flex-1 hidden">
+    <h1 class="score-title">HeyGen Video</h1>
+    <section class="score-card">
+      <h2 class="score-section-title">Avatar video (HeyGen)</h2>
+      <div class="score-actions" style="padding-top: 6px;">
+        <div class="actions-row">
+          <button id="btn-generate-video" class="btn-card action-btn" type="button" aria-label="Generate avatar video from script">
+            <span class="material-symbols-outlined action-icon">smart_display</span>
+            Generate Video
+          </button>
+          <button id="btn-generate-demo-arthur" class="btn-card action-btn" type="button" aria-label="Generate Arthur demo reel">
+            <span class="material-symbols-outlined action-icon">movie</span>
+            Generate Arthur Demo Reel
+          </button>
+        </div>
+        <div class="media-output" style="margin-top: 10px;">
+          <label class="media-label" for="video-generation-prompt">Visual / scene prompt (optional)</label>
+          <textarea
+            id="video-generation-prompt"
+            class="w-full min-h-[88px] rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-800 dark:text-slate-100"
+            rows="3"
+            placeholder="Optional: override HeyGen character prompt (lighting, camera, mood). Script text is not read from here."
+          ></textarea>
+        </div>
+        <div class="media-output">
+          <p class="media-label">Video preview</p>
+          <div class="media-top">
+            <video id="video-preview" class="w-full max-w-sm mx-auto rounded-2xl bg-black aspect-[9/16] object-contain" controls playsinline></video>
+            <p class="media-help-text">Uses the script and ElevenLabs audio from your last voice generation (ledger-bound), your optional prompt above, and HeyGen studio. Set PUBLIC_APP_URL on the server so HeyGen can fetch the audio file. Rendering can take a few minutes.</p>
+            <a id="video-link" class="media-link" href="#" target="_blank" rel="noreferrer"></a>
+            <p class="media-status" id="video-status"></p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
   <nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-6 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl shadow-[0_-4px_40px_rgba(45,51,59,0.06)] rounded-t-[3rem]">
     <a class="mobile-nav-link flex flex-col items-center justify-center text-[#37647e] dark:text-slate-400 px-4 py-2 hover:bg-[#eaeef7] dark:hover:bg-slate-800 rounded-full transition-all" href="#topic" data-mobile-view-link="topic">
       <span class="material-symbols-outlined">auto_stories</span>
@@ -231,6 +273,10 @@
     <a class="mobile-nav-link flex flex-col items-center justify-center text-[#37647e] dark:text-slate-400 px-4 py-2 hover:bg-[#eaeef7] dark:hover:bg-slate-800 rounded-full transition-all" href="#voice" data-mobile-view-link="voice">
       <span class="material-symbols-outlined">mic</span>
       <span class="font-['Plus_Jakarta_Sans'] font-semibold text-xs mt-1">Voice</span>
+    </a>
+    <a class="mobile-nav-link flex flex-col items-center justify-center text-[#37647e] dark:text-slate-400 px-4 py-2 hover:bg-[#eaeef7] dark:hover:bg-slate-800 rounded-full transition-all" href="#video" data-mobile-view-link="video">
+      <span class="material-symbols-outlined">smart_display</span>
+      <span class="font-['Plus_Jakarta_Sans'] font-semibold text-xs mt-1">Video</span>
     </a>
   </nav>
 </body>

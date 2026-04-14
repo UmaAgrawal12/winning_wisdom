@@ -3,10 +3,14 @@ from pydantic import BaseModel
 from typing import List, Dict
 import json
 
-from config.system_config import OPENAI_API_KEY, OPENAI_MODEL_SEO
+from config.system_config import (
+    GEMINI_API_KEY,
+    GEMINI_MODEL_SEO,
+    GEMINI_OPENAI_BASE_URL,
+)
 from config.personas import get_persona
 
-client = OpenAI(api_key=OPENAI_API_KEY)
+client = OpenAI(api_key=GEMINI_API_KEY, base_url=GEMINI_OPENAI_BASE_URL)
 
 
 class PlatformSEO(BaseModel):
@@ -200,7 +204,7 @@ Return ONLY valid JSON. No preamble, no explanation, no markdown fences.
 """
 
     response = client.chat.completions.create(
-        model=OPENAI_MODEL_SEO,
+        model=GEMINI_MODEL_SEO,
         messages=[
             {
                 "role": "system",

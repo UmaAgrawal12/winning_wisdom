@@ -71,7 +71,13 @@ window.tailwind.config = {
   }
 };
 
-const API_BASE = "http://127.0.0.1:8000";
+const API_BASE =
+  typeof window !== "undefined" &&
+  window.location &&
+  window.location.origin &&
+  window.location.protocol !== "file:"
+    ? window.location.origin
+    : "http://127.0.0.1:8000";
 const API = `${API_BASE}/api`;
 
 function apiFetch(input, init = {}) {
@@ -114,12 +120,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     return res.json();
   };
   const bodyEl = document.body;
-  const bodyViewClasses = ["step1-page", "script-page", "score-page", "voice-page"];
+  const bodyViewClasses = ["step1-page", "script-page", "score-page", "voice-page", "video-page"];
   const viewRoots = {
     topic: document.querySelector('[data-view="topic"]'),
     script: document.querySelector('[data-view="script"]'),
     score: document.querySelector('[data-view="score"]'),
     voice: document.querySelector('[data-view="voice"]'),
+    video: document.querySelector('[data-view="video"]'),
   };
   const hasSinglePageViews = Object.values(viewRoots).every(Boolean);
   const desktopViewLinks = document.querySelectorAll("[data-view-link]");
@@ -340,6 +347,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         localStorage.setItem("selectedQuote", quoteData.quote || "");
         localStorage.setItem("selectedSource", quoteData.source || "");
         localStorage.setItem("currentScript", fullScript);
+        if (typeof renderQuotePanel === "function") {
+          renderQuotePanel();
+        }
         if (hasSinglePageViews) {
           renderView("script");
         } else {
@@ -372,7 +382,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     scriptText.value = localStorage.getItem("currentScript") || "Generating script...";
   }
 
-  const renderQuotePanel = () => {
+  const getScriptTextForMedia = () => {
+    const fromEditor = scriptText?.value;
+    const trimmed = fromEditor != null ? String(fromEditor).trim() : "";
+    if (trimmed) return trimmed;
+    return String(localStorage.getItem("currentScript") || "").trim();
+  };
+
+  function renderQuotePanel() {
     if (!quotePanelEl) return;
     const selectedTopicLabel = localStorage.getItem("selectedTopicLabel") || "";
     const selectedQuote = localStorage.getItem("selectedQuote") || "";
@@ -391,7 +408,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (selectedSourceEl) {
       selectedSourceEl.textContent = selectedSource ? `Source: ${selectedSource}` : "";
     }
-  };
+  }
   renderQuotePanel();
 
   if (editScriptBtn && scriptText) {
@@ -551,14 +568,16 @@ document.addEventListener("DOMContentLoaded", async () => {
   const scoreStatus = $("score-status");
   const voiceBtn = $("btn-generate-voice");
   const videoBtn = $("btn-generate-video");
+  const demoArthurBtn = $("btn-generate-demo-arthur");
   const voiceAudio = $("voice-audio");
   const voiceLink = $("voice-link");
   const videoLink = $("video-link");
+  const videoPreview = $("video-preview");
+  const videoStatus = $("video-status");
   const scoreStrengths = $("score-strengths");
   const scorePriorityFix = $("score-priority-fix");
 
   const scorePage = !!scoreBox;
-  const scriptValue = localStorage.getItem("currentScript") || "";
 
   const animateCount = (el, targetValue) => {
     if (!el || !Number.isFinite(targetValue)) return;
@@ -645,13 +664,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     const topic = localStorage.getItem("selectedTopicLabel") || "";
     const quote = localStorage.getItem("selectedQuote") || "";
     const source = localStorage.getItem("selectedSource") || "";
-    if (!scriptValue || !quote) return;
+    const scriptForScore = getScriptTextForMedia();
+    if (!scriptForScore || !quote) return;
     try {
       const data = await safeJson(
         await apiFetch(`${API}/script/approve`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ topic, quote, source, approved_script: scriptValue, persona })
+          body: JSON.stringify({ topic, quote, source, approved_script: scriptForScore, persona })
         })
       );
       localStorage.setItem("scorePayload", JSON.stringify(data));
@@ -676,6 +696,11 @@ document.addEventListener("DOMContentLoaded", async () => {
           renderView("voice");
           if (voiceBtn) voiceBtn.click();
         }
+        if (action === "autogen-video") {
+          e.preventDefault();
+          renderView("video");
+          if (videoBtn) videoBtn.click();
+        }
       });
     });
   }
@@ -689,7 +714,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           await apiFetch(`${API}/script/voice`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ script_text: scriptValue, persona })
+            body: JSON.stringify({ script_text: getScriptTextForMedia(), persona })
           })
         );
         const mediaBase = API_BASE || window.location.origin;
@@ -701,6 +726,12 @@ document.addEventListener("DOMContentLoaded", async () => {
           const href = data.audio_url.startsWith("/") ? `${mediaBase}${data.audio_url}` : data.audio_url;
           voiceLink.href = href;
           voiceLink.textContent = "Open generated voice file";
+        }
+        if (data.audio_path) {
+          localStorage.setItem("lastAudioPath", String(data.audio_path).replace(/\\/g, "/"));
+        }
+        if (data.script_fingerprint) {
+          localStorage.setItem("lastBoundVoiceFingerprint", String(data.script_fingerprint));
         }
         // Intentionally do not set a "Voice ready" status message on success.
       } catch (err) {
@@ -725,30 +756,190 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
+  const sleep = (ms, signal) =>
+    new Promise((resolve, reject) => {
+      if (signal?.aborted) {
+        reject(new DOMException("Aborted", "AbortError"));
+        return;
+      }
+      const id = setTimeout(resolve, ms);
+      const onAbort = () => {
+        clearTimeout(id);
+        reject(new DOMException("Aborted", "AbortError"));
+      };
+      signal?.addEventListener("abort", onAbort, { once: true });
+    });
+
+  const pollHeyGenVideo = async (videoId, onTick, signal) => {
+    const maxRounds = 120;
+    const delayMs = 4000;
+    for (let round = 0; round < maxRounds; round++) {
+      await sleep(round === 0 ? 2500 : delayMs, signal);
+      const data = await safeJson(
+        await apiFetch(`${API}/script/video/${encodeURIComponent(videoId)}`)
+      );
+      if (onTick) onTick(data);
+      const st = String(data.status || "").toLowerCase();
+      const url = String(data.video_url || "").trim();
+      if (st === "failed" || st === "error") {
+        const msg = [data.error_message, data.error_detail].filter(Boolean).join(" — ");
+        throw new Error(msg || "HeyGen reported that the video failed.");
+      }
+      if (url && (st === "completed" || st === "success")) {
+        return data;
+      }
+    }
+    throw new Error("Timed out waiting for HeyGen. Check your HeyGen dashboard for this job.");
+  };
+
+  let videoJobAbort = null;
+
+  const videoGenPromptEl = $("video-generation-prompt");
+  const runArthurDemoReel = async () => {
+    if (!demoArthurBtn) return;
+    const stopLoading = setMediaButtonLoading(demoArthurBtn, "Generating Arthur Demo Reel...");
+    if (videoPreview) {
+      videoPreview.removeAttribute("src");
+      videoPreview.load();
+    }
+    if (videoLink) {
+      videoLink.href = "#";
+      videoLink.textContent = "";
+    }
+    if (videoStatus) videoStatus.textContent = "Submitting Arthur demo reel pipeline...";
+    try {
+      const submit = await safeJson(
+        await apiFetch(`${API}/demo/arthur/reel`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ aspect_ratio: "9:16" })
+        })
+      );
+      const mediaBase = API_BASE || window.location.origin;
+      const urlRaw = String(submit.video_url || "").trim();
+      const url = urlRaw ? (urlRaw.startsWith("/") ? `${mediaBase}${urlRaw}` : urlRaw) : "";
+      if (!url) throw new Error("Demo reel created without video_url.");
+      if (videoPreview) {
+        videoPreview.src = url;
+      }
+      if (videoLink) {
+        videoLink.href = url;
+        videoLink.textContent = "Open Arthur demo reel";
+      }
+      if (videoStatus) videoStatus.textContent = "Arthur demo reel ready.";
+    } catch (err) {
+      if (videoStatus) videoStatus.textContent = `Arthur demo reel failed: ${err.message}`;
+    } finally {
+      stopLoading();
+    }
+  };
+
   if (videoBtn) {
     videoBtn.addEventListener("click", async () => {
+      const audioPath = (localStorage.getItem("lastAudioPath") || "").trim();
+      const scriptFp = (localStorage.getItem("lastBoundVoiceFingerprint") || "").trim();
+      if (!audioPath || !scriptFp) {
+        if (videoStatus) {
+          videoStatus.textContent =
+            "Generate voice first. Video binds to that audio file and the script fingerprint from the server (no ad-hoc script text at this step).";
+        }
+        return;
+      }
+
+      videoJobAbort?.abort();
+      videoJobAbort = new AbortController();
+      const signal = videoJobAbort.signal;
+
       const persona = localStorage.getItem("selectedPersona") || "arthur";
-      const stopLoading = setMediaButtonLoading(videoBtn, "Submitting Video...");
+      const stopLoading = setMediaButtonLoading(videoBtn, "Generating Video...");
+
+      if (videoPreview) {
+        videoPreview.removeAttribute("src");
+        videoPreview.load();
+      }
+      if (videoLink) {
+        videoLink.href = "#";
+        videoLink.textContent = "";
+      }
+      if (videoStatus) videoStatus.textContent = "";
+
+      const generationPrompt = videoGenPromptEl ? String(videoGenPromptEl.value || "").trim() : "";
+
       try {
-        const data = await safeJson(
-          await apiFetch(`${API}/script/video`, {
+        const submit = await safeJson(
+          await apiFetch(`${API}/script/video-bound`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ script_text: scriptValue, persona, aspect_ratio: "9:16" })
+            body: JSON.stringify({
+              script_fingerprint: scriptFp,
+              audio_path: audioPath.replace(/\\/g, "/"),
+              persona,
+              aspect_ratio: "9:16",
+              ...(generationPrompt ? { generation_prompt: generationPrompt } : {})
+            })
           })
         );
-        if (videoLink) {
-          videoLink.href = "#";
-          videoLink.textContent = data.video_id ? `Video job submitted: ${data.video_id}` : "Video job submitted";
+        const mediaBase = API_BASE || window.location.origin;
+        const immediateUrlRaw = String(submit.video_url || "").trim();
+        const immediateUrl = immediateUrlRaw
+          ? (immediateUrlRaw.startsWith("/") ? `${mediaBase}${immediateUrlRaw}` : immediateUrlRaw)
+          : "";
+        if (immediateUrl && ["completed", "success"].includes(String(submit.status || "").toLowerCase())) {
+          if (videoPreview) {
+            videoPreview.src = immediateUrl;
+          }
+          if (videoLink) {
+            videoLink.href = immediateUrl;
+            videoLink.textContent = "Open video file";
+          }
+          if (videoStatus) videoStatus.textContent = "Reel ready.";
+          return;
         }
-        if (scoreStatus) scoreStatus.textContent = `Video job submitted: ${data.video_id || "ok"}`;
+        const vid = submit.video_id;
+        if (!vid) throw new Error("No video_id returned from server.");
+        if (videoStatus) videoStatus.textContent = "Video queued. Rendering with HeyGen…";
+
+        const done = await pollHeyGenVideo(
+          vid,
+          (st) => {
+            if (signal.aborted) return;
+            const s = String(st.status || "").toLowerCase();
+            if (videoStatus) {
+              videoStatus.textContent = s ? `Status: ${s}` : "Checking status…";
+            }
+          },
+          signal
+        );
+
+        const url = String(done.video_url || "").trim();
+        if (url && videoPreview) {
+          videoPreview.src = url;
+        }
+        if (url && videoLink) {
+          videoLink.href = url;
+          videoLink.textContent = "Open video file";
+        }
+        if (videoStatus) videoStatus.textContent = "Video ready.";
       } catch (err) {
-        if (scoreStatus) scoreStatus.textContent = `Video failed: ${err.message}`;
+        if (err && err.name === "AbortError") {
+          return;
+        }
+        if (videoStatus) videoStatus.textContent = `Video failed: ${err.message}`;
       } finally {
         stopLoading();
       }
     });
   }
+
+  if (demoArthurBtn) {
+    demoArthurBtn.addEventListener("click", runArthurDemoReel);
+  }
+  document.addEventListener("click", (e) => {
+    const target = e.target instanceof Element ? e.target.closest("#btn-generate-demo-arthur") : null;
+    if (!target || target !== demoArthurBtn) return;
+    if (demoArthurBtn.getAttribute("data-loading") === "true") return;
+    runArthurDemoReel();
+  });
 
   const copyButtons = document.querySelectorAll("[data-copy-target]");
   copyButtons.forEach((btn) => {

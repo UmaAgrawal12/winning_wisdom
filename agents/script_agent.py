@@ -1,3 +1,4 @@
+import hashlib
 import os
 import json
 import random
@@ -7,15 +8,70 @@ from typing import Optional
 from pydantic import BaseModel
 from openai import OpenAI
 from dotenv import load_dotenv
-from config.system_config import OPENAI_API_KEY, OPENAI_MODEL_TOPIC
+from config.system_config import (
+    GEMINI_API_KEY,
+    GEMINI_MODEL_TOPIC,
+    GEMINI_OPENAI_BASE_URL,
+)
 from config.personas import get_persona
 from .topic_agent import fetch_winning_wisdom_quote
 
 load_dotenv()
 
-client = OpenAI(api_key=OPENAI_API_KEY)
+client = OpenAI(api_key=GEMINI_API_KEY, base_url=GEMINI_OPENAI_BASE_URL)
 
 SCRIPTS_FILE = Path("data/generated_scripts.json")
+
+
+def script_fingerprint(full_script: str) -> str:
+    """Stable hash for binding voice/video steps to a script_agent-generated script."""
+    normalized = (full_script or "").replace("\r\n", "\n").replace("\r", "\n").strip()
+    return hashlib.sha256(normalized.encode("utf-8")).hexdigest()
+
+
+def resolve_script_text_by_fingerprint(persona: str, fingerprint: str) -> Optional[str]:
+    """
+    Return spoken script text from ledger (data/generated_scripts.json) when fingerprint matches.
+    If multiple entries match, return the one with the latest generated_at.
+    """
+    want = (persona or "arthur").strip().lower()
+    fp = (fingerprint or "").strip().lower()
+    if not fp:
+        return None
+    best_text: Optional[str] = None
+    best_ts = ""
+    for rec in _load_scripts():
+        if str(rec.get("persona", "arthur")).strip().lower() != want:
+            continue
+        full = (rec.get("spoken_script") or {}).get("full_script") or ""
+        if script_fingerprint(full).lower() != fp:
+            continue
+        ts = str(rec.get("generated_at") or "")
+        if ts >= best_ts:
+            best_ts = ts
+            best_text = full.strip()
+    return best_text
+
+
+def persist_spoken_script_snapshot(
+    persona: str,
+    full_script: str,
+    *,
+    quote: str = "",
+    source: str = "",
+) -> None:
+    """Append a ledger row so media steps can resolve spoken text by fingerprint."""
+    persona_cfg = get_persona(persona)
+    script = DailyWisdomScript(
+        persona=persona_cfg.name,
+        quote=quote or "(snapshot)",
+        source=source or "",
+        spoken_script=SpokenScript(full_script=(full_script or "").strip()),
+        on_screen_text=OnScreenText(quote_display="", caption="", highlight_words=[]),
+        generated_at=datetime.now().isoformat(),
+    )
+    _save_script(script)
+
 
 # ─────────────────────────────────────────────────────────────────────
 # PERSONA PROFILE — "Arthur"
@@ -74,6 +130,46 @@ ENTRY_ANGLES = [
     "Time passing, choices unmade: gentle observation, not a scolding — 'You meant to start that. Time kept walking.'",
     "Respect, status, proving: Arthur quietly names what the chase steals — no dominance language, no guru pose.",
     "Close with something that sits — sometimes an abrupt trailer line on short-form that leaves them leaning in.",
+]
+
+ARTHUR_CHARACTER_BIBLE = {
+    "verbal_patterns": [
+        "open with one intimate correction from lived experience",
+        "use one restrained direct-address cue, then move on",
+        "include one quiet reassurance line with imperfect honesty",
+        "acknowledge one delayed lesson without hero framing",
+    ],
+    "visual_rituals": [
+        "Warm amber study energy; grounded and steady, never theatrical.",
+        "A quiet library cadence: patient pauses, then one direct line to the viewer.",
+        "Leather chair and bookshelf stillness before the emotional turn.",
+    ],
+    "callbacks": [
+        "the room you keep proving yourself to",
+        "the kind of tired sleep can't fix",
+        "time kept walking while you waited",
+    ],
+}
+
+ARTHUR_IDENTITY_ROLE_POOL = [
+    "founder who rebuilt after early failure",
+    "operator who learned discipline the hard way",
+    "mentor who made expensive mistakes first",
+    "builder who values consistency over hype",
+]
+
+ARTHUR_MEMORY_ANCHOR_POOL = [
+    "at age 19 in his first real role",
+    "during an early season of financial pressure",
+    "in a week where one decision carried consequences",
+    "in a period where delay quietly became regret",
+]
+
+ARTHUR_CONSEQUENCE_POOL = [
+    "lost trust he had not earned yet",
+    "watched an opportunity close in silence",
+    "paid the cost of waiting too long",
+    "learned that comfort can look like progress",
 ]
 
 
@@ -158,12 +254,13 @@ def generate_daily_wisdom_script(
     quote_override: Optional[str] = None,
     source_override: Optional[str] = None,
     persona: str = "arthur",
+    theme: Optional[str] = None,
 ) -> DailyWisdomScript:
     """
     Generate a spoken script + on-screen text for the chosen persona.
 
     Arthur: anchor quote is thematic spine; hook comes first, quote mid-script.
-    Fetches quote when no override; uses OpenAI with persona-specific prompts.
+    Fetches quote when no override; uses Gemini (OpenAI-compatible API) with persona-specific prompts.
 
     Args:
         quote_override: optional quote text
@@ -188,9 +285,30 @@ def generate_daily_wisdom_script(
     quote = quote_data["quote"]
     source = quote_data["source"]
 
-    # 2. Pick entry angle
+    # 2. Pick entry angle + dynamic slots (non-static phrasing)
     entry_angles = ENTRY_ANGLES if persona_cfg.name == "arthur" else persona_cfg.entry_angles
     entry_angle = random.choice(entry_angles)
+    verbal_pattern = random.choice(ARTHUR_CHARACTER_BIBLE["verbal_patterns"])
+    visual_ritual = random.choice(ARTHUR_CHARACTER_BIBLE["visual_rituals"])
+    callback_token = random.choice(ARTHUR_CHARACTER_BIBLE["callbacks"])
+    identity_role = random.choice(ARTHUR_IDENTITY_ROLE_POOL)
+    memory_anchor = random.choice(ARTHUR_MEMORY_ANCHOR_POOL)
+    consequence_anchor = random.choice(ARTHUR_CONSEQUENCE_POOL)
+    theme_anchor = (theme or quote_data.get("topic") or quote or "").strip()
+
+    arthur_count = sum(
+        1
+        for s in _load_scripts()
+        if str(s.get("persona", "arthur")).strip().lower() == "arthur"
+    )
+    script_number = arthur_count + 1
+    must_vulnerable = script_number % 3 == 0
+    vulnerability_instruction = (
+        "MANDATORY FOR THIS SCRIPT: full vulnerability arc. Arthur must show where he was wrong, scared, "
+        "or failed, then what changed (without heroic chest-thumping)."
+        if must_vulnerable
+        else "Vulnerability is optional in this script; keep some human imperfection even when not using a full arc."
+    )
 
     # 3. Build prompt
     prompt = f"""
@@ -220,6 +338,42 @@ Write in Arthur's voice. Primary audience: young men and anyone craving a ground
 
 ENTRY ANGLE for this script:
 {entry_angle}
+
+=============================
+CLIENT STRATEGY (MUST APPLY)
+=============================
+- Authority method: the ANCHOR TEXT author is the star of the mid-script turn; other figures at most a fleeting gloss, never a replacement aphorism from a different book.
+- Keep references sparse: 1–2 mentions maximum; the anchor counts as one.
+- Hook sequencing: first ~1.5 seconds is a gut-punch. The quote/authority line lands later (~20–30 seconds in), never as opener.
+- Parasocial architecture: include exactly one recurring Arthur cue in a natural way:
+  · verbal pattern seed: "{verbal_pattern}"
+  · visual ritual seed: "{visual_ritual}"
+  · callback seed: "{callback_token}"
+- Vulnerability cadence target:
+  · script index for Arthur in local history: #{script_number}
+  · {vulnerability_instruction}
+- Tone safety: share, do not lecture. Avoid patronizing language or dominance vibes.
+- Continuity: do not contradict Arthur's prior worldview (grounded, warm, anti-hustle, anti-red-pill).
+
+=============================
+THEME ANCHOR (MUST PRESERVE)
+=============================
+Theme for this script: "{theme_anchor}"
+- The script must clearly stay on this theme from first hook to final landing.
+- Do not drift into generic motivation unrelated to this theme.
+
+=============================
+DYNAMIC SLOT ENGINE (NO STATIC LINES)
+=============================
+- Do NOT reuse fixed/canned hook lines verbatim.
+- Use this run's dynamic slots as semantic guidance, not literal copy:
+  · identity slot: {identity_role}
+  · memory-anchor slot: {memory_anchor}
+  · consequence slot: {consequence_anchor}
+  · verbal-cue style: {verbal_pattern}
+- Build fresh wording each time while keeping Arthur voice.
+- Include at least one specific memory anchor (age/time/place/person/consequence) so the story feels lived, not generic.
+- Keep identity-driven framing: Arthur sounds like someone who paid a real price, not a quote narrator.
 
 =============================
 THE MOST IMPORTANT THING — READ THIS FIRST
@@ -261,8 +415,9 @@ The hook is an emotional gut-punch or intimate father-shaped truth.
 RULE 2 — SCRIPT STRUCTURE (quote lands mid-script)
 =============================
 - No intro, no greeting. Arthur starts mid-thought on the emotional hook.
-- Build trust for several beats; then bring in the anchor idea — exact words, tight paraphrase, or clear "here's the line that's true."
-- At most ONE interpretive nod to another figure (Marcus, Frankl, Buffett, Munger, Naval) beyond the supplied source — only if it sharpens the insight. No name-dropping stacks.
+- Build trust for several beats; then the MID-SCRIPT TURN must be the ANCHOR TEXT above: same author/work, exact words or tight paraphrase of THAT idea — not a different book or celebrity quote.
+- FORBIDDEN unless that person is named in the supplied source line: James Clear, Atomic Habits, "fall to the level of your systems," or any other catchphrase that replaces the anchor author's idea.
+- Optional: one short clause naming ONLY the anchor author (from the source line) to introduce the anchor idea — never a second named author with a competing full quote.
 - Each sentence: often 5–8 words, own line; blank line between thought-groups (pause).
 - 8–14 lines total. No TED-summary closer unless it feels like a quiet trailer ending.
 
@@ -277,23 +432,12 @@ RULE 4 — ENDING
 Last lines sit quietly — true, not tidy. May feel like a trailer (viewer leans in) as long as it stays dignified.
 
 =============================
-STUDY THE RHYTHM — do NOT copy:
+RHYTHM (structure only — write NEW lines; do not reuse wording from any example in this prompt)
 =============================
-No one told you this when you were young.
-
-Not because they were cruel.
-Because they didn't know how to say it.
-
-You kept reaching for respect in the wrong rooms.
-
-I did that for years.
-
-There's a line I kept coming back to —
-about what you actually own inside your head.
-
-Everything else borrows you.
-
-I learned that slower than I should have.
+- 2–4 lines: hook only (topic emotion), zero quote, zero author names.
+- 3–5 lines: stakes / Arthur's beside-you honesty; vary metaphors — do NOT default to "finish line," "wrong rooms," or "chasing respect" every time unless the topic truly demands it.
+- 3–5 lines: ANCHOR TURN — lead with the supplied author if natural, then their idea (from ANCHOR TEXT); this block is the spine of the script.
+- 1–3 lines: quiet landing; you may reuse ONE verbal seed from CLIENT STRATEGY if it fits, not whole phrases from HOOK ENERGY examples above.
 =============================
 
 =============================
@@ -346,7 +490,7 @@ OUTPUT — valid JSON only, no markdown, no extra text
     ) + "Respond with valid JSON only. No markdown. No preamble. No explanation."
 
     response = client.chat.completions.create(
-        model=OPENAI_MODEL_TOPIC,
+        model=GEMINI_MODEL_TOPIC,
         messages=[
             {
                 "role": "system",
@@ -387,6 +531,7 @@ def revise_wisdom_script(
     current_script: str,
     suggestions: str,
     persona: str = "arthur",
+    theme: Optional[str] = None,
 ) -> DailyWisdomScript:
     persona_cfg = get_persona(persona)
     """
@@ -398,6 +543,13 @@ def revise_wisdom_script(
     # Reuse a random entry angle to keep variety
     entry_angles = ENTRY_ANGLES if persona_cfg.name == "arthur" else persona_cfg.entry_angles
     entry_angle = random.choice(entry_angles)
+    verbal_pattern = random.choice(ARTHUR_CHARACTER_BIBLE["verbal_patterns"])
+    visual_ritual = random.choice(ARTHUR_CHARACTER_BIBLE["visual_rituals"])
+    callback_token = random.choice(ARTHUR_CHARACTER_BIBLE["callbacks"])
+    identity_role = random.choice(ARTHUR_IDENTITY_ROLE_POOL)
+    memory_anchor = random.choice(ARTHUR_MEMORY_ANCHOR_POOL)
+    consequence_anchor = random.choice(ARTHUR_CONSEQUENCE_POOL)
+    theme_anchor = (theme or quote).strip()
 
     prompt = f"""
 You are revising a short video script for {PERSONA["name"]}, age {PERSONA["age"]}.
@@ -441,11 +593,41 @@ ENTRY ANGLE for this revision
 {entry_angle}
 
 =============================
+CLIENT STRATEGY (MUST APPLY)
+=============================
+- Authority method: interpret proven figures instead of dropping quotes for clout.
+- Keep references to 1–2 max.
+- Hook first, quote later; never lead with attribution.
+- Keep Arthur's recurring identity alive with one natural cue:
+  · verbal seed: "{verbal_pattern}"
+  · visual seed: "{visual_ritual}"
+  · callback seed: "{callback_token}"
+- If suggestions request vulnerability, commit to a real arc (wrong/scared/failed -> consequence -> quieter insight).
+- Stay anti-red-pill and anti-patronizing; Arthur shares from beside the viewer.
+
+=============================
+THEME ANCHOR (MUST PRESERVE)
+=============================
+Theme for this revision: "{theme_anchor}"
+- Keep the revised script tightly tied to this theme.
+
+=============================
+DYNAMIC SLOT ENGINE (NO STATIC LINES)
+=============================
+- Do NOT copy fixed Arthur stock lines verbatim.
+- Regenerate fresh phrasing using these slot intents:
+  · identity slot: {identity_role}
+  · memory-anchor slot: {memory_anchor}
+  · consequence slot: {consequence_anchor}
+  · verbal-cue style: {verbal_pattern}
+- Include at least one concrete memory anchor so revision feels personal and real.
+
+=============================
 STRUCTURE & TONE RULES (MUST FOLLOW)
 =============================
 - No intro. No greeting. Emotional hook in the first lines — not the quote.
-- Weave the anchor idea mid-script; at most one extra interpretive nod to a wise figure if it helps.
-- 5–8 word lines, blank lines between thought groups; 8–14 lines total.
+- Mid-script turn = ANCHOR TEXT (same author/source); do not substitute James Clear, Atomic Habits, or "fall to the level of your systems" unless the source names them.
+- 5–8 word lines, blank lines between thought groups; 8–14 lines total; vary imagery — do not recycle the same hook tropes from the current script unless suggestions ask for it.
 - No tidy summary sign-off; ending sits quietly or trailer-sharp.
 - Terms like "son" or "listen carefully" at most once if natural.
 
@@ -490,7 +672,7 @@ OUTPUT — valid JSON only, no markdown, no extra text
     ) + "Respond with valid JSON only. No markdown. No preamble. No explanation."
 
     response = client.chat.completions.create(
-        model=OPENAI_MODEL_TOPIC,
+        model=GEMINI_MODEL_TOPIC,
         messages=[
             {
                 "role": "system",

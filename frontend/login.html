@@ -237,7 +237,14 @@
   </div>
   <script>
     (function () {
-      const API = "http://127.0.0.1:8000/api";
+      const API_BASE =
+        typeof window !== "undefined" &&
+        window.location &&
+        window.location.origin &&
+        window.location.protocol !== "file:"
+          ? window.location.origin
+          : "http://127.0.0.1:8000";
+      const API = API_BASE + "/api";
       const form = document.getElementById("login-form");
       const errEl = document.getElementById("login-error");
       const togglePasswordBtn = document.getElementById("toggle-password");
@@ -291,8 +298,17 @@
             return;
           }
           window.location.replace("./index.html");
-        } catch (_) {
-          errEl.textContent = "Could not reach the server. Is the API running?";
+        } catch (err) {
+          const hint =
+            err && err.message
+              ? ` (${err.message})`
+              : "";
+          errEl.textContent =
+            "Could not reach the API at " +
+            API +
+            "." +
+            hint +
+            " Start the backend on the same host/port as this page (e.g. python -m uvicorn app:app --host 127.0.0.1 --port 8000 --reload).";
           errEl.classList.remove("hidden");
         } finally {
           btn.disabled = false;

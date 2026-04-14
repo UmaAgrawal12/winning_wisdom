@@ -10,12 +10,16 @@ import json
 from typing import Optional
 from pydantic import BaseModel, Field
 from openai import OpenAI
-from config.system_config import OPENAI_API_KEY, OPENAI_MODEL_TOPIC
+from config.system_config import (
+    GEMINI_API_KEY,
+    GEMINI_MODEL_TOPIC,
+    GEMINI_OPENAI_BASE_URL,
+)
 from config.personas import get_persona
 from .script_agent import DailyWisdomScript
 
 
-client = OpenAI(api_key=OPENAI_API_KEY)
+client = OpenAI(api_key=GEMINI_API_KEY, base_url=GEMINI_OPENAI_BASE_URL)
 
 
 # ─────────────────────────────────────────────────────────────────────
@@ -189,6 +193,9 @@ CRITICAL RULES
 
 - The first 2 lines should create opening impact according to selected persona style.
 - If any persona banned phrase appears, persona_consistency should be penalized.
+- For Arthur: if the script opens with attribution ("X said...", quote-first opening), hook_strength should be heavily penalized.
+- For Arthur: if there are more than 2 authority references/names, penalize structure and persona_consistency (over-quoting risk).
+- For Arthur: if tone feels patronizing, superiority-signaling, or red-pill adjacent, cap persona_consistency at 4.
 - The ending MUST hit hard. If it's soft, summary-like, or uplifting in a generic way, structure score should be penalized.
 - Sentences should be SHORT (5-8 words). If sentences are too long, pacing should be penalized.
 - The script should feel PERSONAL and SPECIFIC, not philosophical or abstract. If it's too abstract, emotional_impact should be penalized.
@@ -263,7 +270,7 @@ Priority fix: Only include if overall_score < 7.0. Pick the single most impactfu
 """
 
     response = client.chat.completions.create(
-        model=OPENAI_MODEL_TOPIC,
+        model=GEMINI_MODEL_TOPIC,
         messages=[
             {
                 "role": "system",
